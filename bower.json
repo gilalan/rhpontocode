@@ -54,10 +54,12 @@
     "textAngular": "~1.4.6",
     "angular-xeditable": "~0.5.0",
     "ng-js-tree": "~0.0.7",
-    "angular-ui-select": "^0.19.6"
+    "angular-ui-select": "^0.19.6",
+    "angular-jwt": "^0.1.9",
+    "ngstorage": "0.3.11"
   },
   "resolutions": {
-    "angular": "~1.5.9",
+    "angular": "~1.5.8",
     "jquery": "~3.1.1"
   },
   "overrides": {

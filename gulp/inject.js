@@ -15,9 +15,10 @@ gulp.task('inject-reload', ['inject'], function () {
   browserSync.reload();
 });
 
-gulp.task('inject', ['scripts', 'styles', 'injectAuth', 'inject404', 'copyVendorImages'], function () {
+gulp.task('inject', ['scripts', 'styles', 'injectMain', 'injectAuth', 'inject404', 'copyVendorImages'], function () {
   var injectStyles = gulp.src([
     path.join(conf.paths.tmp, '/serve/app/main.css'),
+    //path.join(conf.paths.tmp, '/serve/app/auth.css'),
     path.join('!' + conf.paths.tmp, '/serve/app/vendor.css')
   ], {read: false});
 
@@ -42,16 +43,26 @@ gulp.task('inject', ['scripts', 'styles', 'injectAuth', 'inject404', 'copyVendor
     .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve')));
 });
 
+gulp.task('injectMain', function () {
+  return injectAlone({
+    css: path.join('!' + conf.paths.tmp, '/serve/app/vendor.css'),  
+    paths: path.join(conf.paths.src, '/main.html')
+  })
+});
+
 gulp.task('injectAuth', ['stylesAuth'], function () {
   return injectAlone({
-    css: [path.join('!' + conf.paths.tmp, '/serve/app/vendor.css'), path.join(conf.paths.tmp, '/serve/app/auth.css')],
-    paths: [path.join(conf.paths.src, '/auth.html'), path.join(conf.paths.src, '/reg.html')]
+    css: [path.join('!' + conf.paths.tmp, '/serve/app/vendor.css'), path.join(conf.paths.tmp, '/serve/app/auth.css')],//'/serve/app/auth.css'
+    //scripts: [ path.join(conf.paths.src, '/assets/js/**/*.js'), path.join(conf.paths.src, '/app/**/*.module.js'), path.join(conf.paths.src, '/app/**/*.js')],
+    paths: [path.join(conf.paths.src, '/auth.html'), path.join(conf.paths.src, '/reg.html')]//'/auth.html'
   })
 });
 
 gulp.task('inject404', ['styles404'], function () {
   return injectAlone({
     css: [path.join('!' + conf.paths.tmp, '/serve/app/vendor.css'), path.join(conf.paths.tmp, '/serve/app/404.css')],
+    //scripts: [],
+    //path.join(conf.paths.src, '/assets/js/**/*.js'), path.join(conf.paths.src, '/app/**/*.module.js'), path.join(conf.paths.src, '/app/**/*.js')],
     paths: path.join(conf.paths.src, '/404.html')
   })
 });
@@ -61,6 +72,10 @@ var injectAlone = function (options) {
     options.css
     , {read: false});
 
+  // var injectScripts = gulp.src(
+  //   options.scripts
+  //   );
+
   var injectOptions = {
     ignorePath: [conf.paths.src, path.join(conf.paths.tmp, '/serve')],
     addRootSlash: false
@@ -68,6 +83,7 @@ var injectAlone = function (options) {
 
   return gulp.src(options.paths)
     .pipe($.inject(injectStyles, injectOptions))
+    //.pipe($.inject(injectScripts, injectOptions))
     .pipe(wiredep(_.extend({}, conf.wiredep)))
     .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve')));
 };

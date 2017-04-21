@@ -20,6 +20,7 @@
           templateUrl: 'app/pages/components/tree/tree.html',
           title: 'Tree View',
           sidebarMeta: {
+            //icon: 'ion-person-stalker',
             order: 200,
           },
         });
