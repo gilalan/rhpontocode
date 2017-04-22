@@ -1,6 +1,6 @@
 /**
  * @author Gilliard Lopes
- * created on 12.04.2017
+ * created on 21.04.2017
  */
 (function () {
   'use strict';

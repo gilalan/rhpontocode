@@ -15,17 +15,17 @@
   /** @ngInject */
   function routeConfig($stateProvider) {
   	$stateProvider
-        .state('entities', {
-          url: '/entities',
-          //templateUrl: 'app/pages/entities/entities.html',
-          template: '<ui-view  autoscroll="true" autoscroll-body-top></ui-view>',
-          abstract: true,
-          title: 'Entidades',
-          sidebarMeta: {
-            icon: 'ion-person-stalker',
-            order: 125,
-          },
-        });
+      .state('entities', {
+        url: '/entities',
+        //templateUrl: 'app/pages/entities/entities.html',
+        template: '<ui-view  autoscroll="true" autoscroll-body-top></ui-view>',
+        abstract: true,
+        title: 'Entidades',
+        sidebarMeta: {
+          icon: 'ion-android-home',
+          order: 125,
+        },
+      });
   }
 
 })();

@@ -1,3 +1,8 @@
+/**
+ * @author Gilliard Lopes
+ * created on 21/04/2017
+ */
+
 angular.module('BlurAdmin.pages.entities.institutions').service("institutionAPI", function($http, config){
 
 	var _urlBaseInstituicoes = config.baseUrl + '/api/instituicoes';

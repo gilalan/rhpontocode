@@ -1,6 +1,6 @@
 /**
  * @author Gilliard Lopes
- * created on 12.04.2017
+ * created on 21.04.2017
  */
 (function () {
   'use strict';
@@ -9,7 +9,7 @@
       .controller('NewInstitutionCtrl', NewInstitutionCtrl);
 
   /** @ngInject */
-  function NewInstitutionCtrl($scope, $filter, $location, institutionAPI) {
+  function NewInstitutionCtrl($scope, $filter, $state, institutionAPI) {
 
     console.log("dentro do NewInstitutionCtrl!");
     $scope.title = 'Nova';
@@ -25,6 +25,7 @@
         $scope.successMsg = response.data.message;      
         
         //back to list
+        $state.go('entities.institutions.list');
 
       }, function errorCallback(response){
         
