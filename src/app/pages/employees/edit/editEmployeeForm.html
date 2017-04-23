@@ -1,0 +1,120 @@
+{{funcionario}}
+<form name="funcionarioForm">
+  <h4 class="sub-header"><strong style="color: #334db7;">Dados</strong></h4>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputNome">Nome</label>
+        <input type="text" class="form-control" id="inputNome" placeholder="Nome" ng-model="funcionario.nome" ng-required="true">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputSobrenome">Sobrenome</label>
+        <input type="text" class="form-control" id="inputSobrenome" placeholder="Sobrenome" ng-model="funcionario.sobrenome" ng-required="true">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputPIS">PIS</label>
+        <input type="text" class="form-control" id="inputPIS" placeholder="PIS" ng-model="funcionario.PIS" ng-required="true">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputCPF">CPF</label>
+        <input type="text" class="form-control" id="inputCPF" placeholder="CPF" ng-model="funcionario.CPF" ng-required="true">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputMatricula">Matrícula</label>
+        <input type="text" class="form-control" id="inputMatricula" placeholder="Matrícula" ng-model="funcionario.matricula">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEmail">E-mail</label>
+        <input type="text" class="form-control" id="inputEmail" placeholder="E-mail" ng-model="funcionario.email">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputDataNascimento">Data de Nascimento</label>
+        <input type="text" class="form-control" id="inputDataNascimento" placeholder="ex.: 30/04/1986" ng-model="funcionario.dataNascimento" ui-date>
+      </div>
+    </div>
+  </div>
+  <h4 class="sub-header"><strong style="color: #334db7;">Alocação</strong></h4>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputInstituicao">Instituição</label>
+         <ui-select ng-model="selectedInst.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="false"
+               append-to-body="true"
+               search-enabled="false">
+          <ui-select-match placeholder="Selecione uma Instituição">
+            <span> {{$select.selected.sigla}}</span>
+          </ui-select-match>
+          <ui-select-choices repeat="instituicao in (instituicoes | filter: $select.search) track by instituicao._id">
+            <span ng-bind-html="instituicao.sigla"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputCargo">Cargo</label>
+         <ui-select ng-model="selectedCargo.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="false"
+               append-to-body="true"
+               search-enabled="false">
+        <ui-select-match placeholder="Selecione um Cargo">
+          <span> {{$select.selected.especificacao}}</span>
+        </ui-select-match>
+        <ui-select-choices repeat="cargo in (cargos | filter: $select.search) track by cargo._id">
+          <span ng-bind-html="cargo.especificacao"></span>
+        </ui-select-choices>
+      </ui-select>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputDataAdmissao">Data de Admissão</label>
+        <input type="text" class="form-control" id="inputDataAdmissao" placeholder="ex.: 4-30-2000" ng-model="funcionario.alocacao.dataAdmissao" ui-date>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputTurno">Turno</label>
+         <ui-select ng-model="selectedTurno.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="false"
+               append-to-body="true"
+               search-enabled="false">
+        <ui-select-match placeholder="Selecione um Turno">
+          <span> {{$select.selected.descricao}}</span>
+        </ui-select-match>
+        <ui-select-choices repeat="turno in (turnos | filter: $select.search) track by turno._id">
+          <span ng-bind-html="turno.descricao"></span>
+        </ui-select-choices>
+      </ui-select>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="sub-header"><strong style="color: #334db7;">Informações Extras</strong></h4>
+
+</form>
+<button type="submit" class="btn btn-primary" ng-click="save(funcionario)">Salvar</button>

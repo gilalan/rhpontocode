@@ -1,0 +1,65 @@
+<div class="horizontal-scroll">
+  <div class="form-group select-page-size-wrap ">
+    <label>Linhas por página
+      <select class="form-control selectpicker show-tick" title="Linhas por página" selectpicker
+              ng-model="smartTablePageSize" ng-options="i for i in [5,10,15,20,25]">
+      </select>
+    </label>
+  </div>
+ 
+  <table class="table" st-table="funcionarios">
+    <thead>
+    <tr class="sortable ">
+      <th class="table-id" st-sort="id" st-sort-default="true">#</th>
+      <th st-sort="nome">Nome</th>
+      <th st-sort="dataNascimento">Data de Nascimento</th>
+      <th st-sort="PIS">PIS</th>
+      <th st-sort="cargo">Cargo</th>
+      <th>Ações</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th><input st-search="nome" placeholder="Buscar Nome" class="input-sm form-control search-input"
+                 type="search"/></th>      
+      <th><input st-search="dataNascimento" placeholder="Buscar Data de Nascimento" class="input-sm form-control search-input"
+                 type="search"/></th>
+      <th><input st-search="PIS" placeholder="Buscar PIS" class="input-sm form-control search-input"
+                 type="search"/></th>
+      <th><input st-search="cargo" placeholder="Buscar Cargo" class="input-sm form-control search-input"
+                 type="search"/></th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="funcionario in funcionarios track by $index">
+        <td>{{$index}}</td>
+        <td>{{funcionario.nome}}</td>
+        <td>{{funcionario.dataNascimento | date: 'dd/MM/yyyy'}}</td>
+        <td>{{funcionario.PIS}}</td>
+        <td>
+          {{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
+        </td>
+        <td>
+          <div class="btn-group" role="group" aria-label="acoes">            
+            <button title="Editar" type="button" class="btn btn-default" ui-sref="employees.edit({id: funcionario._id})">
+              <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>  
+            </button>
+            <button title="Excluir" type="button" class="btn btn-danger" ng-click="delete(funcionario._id, $index)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>  
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+      <td colspan="6" class="text-center">
+        <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
+      </td>
+    </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div class="add-row-editable-table">
+  <button class="btn btn-primary" ui-sref="employees.new()">Novo Funcionário</button>
+</div>

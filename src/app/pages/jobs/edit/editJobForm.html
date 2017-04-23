@@ -1,0 +1,19 @@
+<form>
+  <div class="form-group">
+    <label for="inputEspecificacao">Especificação</label>
+    <input type="text" class="form-control" id="inputEspecificacao" placeholder="Nome do cargo" ng-model="cargo.especificacao">
+  </div>
+  <div class="form-group">
+    <label for="inputNomeF">Nome Feminino</label>
+    <input type="text" class="form-control" id="inputNomeF" placeholder="Nome Feminino do cargo (se houver)" ng-model="cargo.nomeFeminino">
+  </div>
+  <div class="form-group">
+    <label for="textareaDescricao">Descrição</label>
+    <textarea placeholder="Descrição do cargo" class="form-control" id="textareaDescricao" ng-model="cargo.descricao"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="inputCodigoCBO">Código CBO</label>
+    <input type="text" class="form-control" id="inputCodigoCBO" placeholder="Código CBO" ng-model="cargo.cbo">
+  </div>
+</form>
+<button type="submit" class="btn btn-primary" ng-click="save(cargo)">Salvar</button>

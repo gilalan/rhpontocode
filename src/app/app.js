@@ -44,6 +44,13 @@ angular.module('BlurAdmin', [
     console.log('#toParams ', toParams);
     console.log('#fromState ', fromState);
     console.log('#fromParams ', fromParams);
+
+    // redirectTo
+    if (toState.redirectTo) {
+      e.preventDefault();
+      $state.go(toState.redirectTo, toParams);
+    }
+
     //$location.path("/login");
     //$window.location.href = "/auth.html";
     // if (current){

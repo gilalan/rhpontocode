@@ -22,17 +22,17 @@
 
   /** @ngInject */
   function routeConfig($stateProvider) {
-    $stateProvider
-        .state('ui', {
-          url: '/ui',
-          template : '<ui-view  autoscroll="true" autoscroll-body-top></ui-view>',
-          abstract: true,
-          title: 'UI Features',
-          sidebarMeta: {
-            icon: 'ion-android-laptop',
-            order: 200,
-          },
-        });
+    // $stateProvider
+    //     .state('ui', {
+    //       url: '/ui',
+    //       template : '<ui-view  autoscroll="true" autoscroll-body-top></ui-view>',
+    //       abstract: true,
+    //       title: 'UI Features',
+    //       sidebarMeta: {
+    //         icon: 'ion-android-laptop',
+    //         order: 200,
+    //       },
+    //     });
   }
 
 })();

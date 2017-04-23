@@ -1,0 +1,42 @@
+<form>
+  
+  <div class="form-group">
+    <label for="selectSetor">Setor</label> 
+    <ui-select ng-model="selected.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="false"
+               append-to-body="true"
+               search-enabled="false">
+      <ui-select-match placeholder="Selecione um Setor">
+        <span> {{$select.selected.nome}}</span>
+      </ui-select-match>
+      <ui-select-choices repeat="setor in (setores | filter: $select.search) track by setor._id">
+        <span ng-bind-html="setor.nome"></span>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+  
+  <div class="form-group">
+    <label for="selectGestor">Gestor</label>
+    <ui-select ng-model="selectedG.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="false"
+               append-to-body="true"
+               search-enabled="false">
+      <ui-select-match placeholder="Selecione um Gestor">
+        <span> {{$select.selected.nome}}</span>
+      </ui-select-match>
+      <ui-select-choices repeat="gestor in (gestores | filter: $select.search) track by gestor._id">
+        <span ng-bind-html="gestor.nome"></span>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+
+  <div class="form-group">
+    <label for="inputNome">Equipe</label>
+    <input type="text" class="form-control" id="inputNome" placeholder="Nome da Equipe" ng-model="equipe.nome">
+  </div>
+  
+  
+</form>
+<button type="submit" class="btn btn-primary" ng-click="save(equipe)">Salvar</button>

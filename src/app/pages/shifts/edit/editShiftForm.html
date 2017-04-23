@@ -1,0 +1,170 @@
+<form name="turnoForm">
+  <div class="row">
+    <div class="col-sm-12">
+    
+      <div ng-show="successMsg" class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Feito!</strong> {{successMsg}}
+      </div>
+
+      <div ng-show="errorMsg" class="alert bg-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Ops!</strong> {{errorMsg}}
+      </div>
+    </div>
+  </div>
+  <h4 class="sub-header"><strong style="color: #334db7;">Dados do Turno</strong></h4>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputCodigo">Código</label>
+        <input type="text" class="form-control" id="inputNome" placeholder="Código" ng-model="turno.codigo" ng-required="true">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputDescricao">Descrição</label>
+        <input type="text" class="form-control" id="inputDescricao" placeholder="Descrição" ng-model="turno.descricao" ng-required="true">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <label class="checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox" id="checkboxFlexivel" ng-model="turno.isFlexivel">
+        <span>É Flexível?</span>
+      </label>
+    </div>
+    <div class="col-sm-4">
+      <label class="checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox" id="checkboxIntervaloFlexivel" ng-model="turno.intervaloFlexivel">
+        <span>Intervalo Flexível?</span>
+      </label>
+    </div>
+    <div class="col-sm-4">
+      <div class="form-group">
+        <label for="inputTolerancia">Tolerância (intervalos rígidos)</label>
+        <input type="text" class="form-control" id="inputTolerancia" placeholder="Tolerância" ng-model="turno.tolerancia">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="escalasGroup">Escala*</label>
+        <div class="btn-group btn-group" role="group" aria-label="escalasGroup" ng-repeat="escala in escalas">
+          <button type="button" class="btn btn-default" ng-class="{'btn-primary': escala.selecionada}" ng-click="checkUncheckEscala(escala)" ng-disabled="preencherEscala.flag">
+            {{escala.nome}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <label class="checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox" id="checkboxIgnoraFeriados" ng-model="turno.ignoraFeriados">
+        <span>Ignorar os Feriados?(aplicável comumente à turnos 12/36h)</span>
+      </label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" ng-if="!preencherEscala.flag" ng-click="save(turno)" ng-disabled="turnoForm.$invalid">Salvar</button>
+
+  <div class="row" ng-if="preencherEscala.flag && preencherEscala.tipoSemanal">
+    <h4 class="sub-header"><strong style="color: #334db7;">Dados da Escala Semanal/Horários</strong></h4>
+    <div class="col-sm-12">
+      <div class="horizontal-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>1ª Entd.</th>
+              <th>1ª Saída</th>
+              <th>2ª Entd.</th>
+              <th>2ª Saída</th>
+              <th>Virada do Turno</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="preencher.ent1" ui-mask="99:99"></td>
+              <td><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="preencher.sai1" ui-mask="99:99"></td>
+              <td><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="preencher.ent2" ui-mask="99:99"></td>
+              <td><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="preencher.sai2" ui-mask="99:99"></td>
+              <td><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="preencher.viradaTurno" ui-mask="99:99"></td>
+              <td><button type="submit" class="btn btn-primary" ng-click="goPreencher(preencher)">Preencher Semana</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>    
+  </div>
+
+  <div class="row" ng-if="preencherEscala.flag && preencherEscala.tipoSemanal">
+    <div class="col-sm-12">
+      <div class="horizontal-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Dia da Semana</th>
+              <th>1ª Entd.</th>
+              <th>1ª Saída</th>
+              <th>2ª Entd.</th>
+              <th>2ª Saída</th>
+              <th>Intervalo Principal</th>
+              <th>Virada do Turno</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="horarioDia in rowHorarioDias track by $index">
+              <td class="col-md-3">{{horarioDia.dia}}</td>
+              <td class="col-md-1"><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].ent1" ui-mask="99:99"></td>
+              <td class="col-md-1"><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].sai1" ui-mask="99:99"></td>
+              <td class="col-md-1"><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].ent2" ui-mask="99:99"></td>
+              <td class="col-md-1"><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].sai2" ui-mask="99:99"></td>
+              <td class="col-md-3">{{rowHorarioDias[$index].intervalo}}</td>
+              <td class="col-md-1"><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].viradaTurno" ui-mask="99:99"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-if="preencherEscala.flag && preencherEscala.tipoSemanal">
+    <button type="submit" class="btn btn-primary" ng-click="saveAll(turno)">Salvar</button>    
+  </div>
+
+  <div class="row" ng-if="preencherEscala.flag && preencherEscala.tipoRevezamento">
+    <h4 class="sub-header"><strong style="color: #334db7;">Dados da Escala 12x36h/Horários</strong></h4>
+    <div class="col-sm-12">
+      <div class="horizontal-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>1ª Entd.</th>
+              <th>1ª Saída</th>
+              <th>2ª Entd.</th>
+              <th>2ª Saída</th>
+              <th>Intervalo Principal</th>
+              <th>Virada do Turno</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="horarioDia in rowHorarioDias track by $index">
+              <tr ng-repeat="horarioDia in rowHorarioDias track by $index">
+              <td ><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].ent1" ui-mask="99:99"></td>
+              <td ><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].sai1" ui-mask="99:99"></td>
+              <td ><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].ent2" ui-mask="99:99"></td>
+              <td ><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].sai2" ui-mask="99:99"></td>
+              <td >{{rowHorarioDias[$index].intervalo}}</td>
+              <td ><input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="rowHorarioDias[$index].viradaTurno" ui-mask="99:99"></td>
+            </tr>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-if="preencherEscala.flag && preencherEscala.tipoRevezamento">
+    <button type="submit" class="btn btn-primary" ng-click="saveAll(turno)">Salvar</button>    
+  </div>
+
+</form>

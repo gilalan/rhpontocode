@@ -23,7 +23,7 @@
         title: 'Entidades',
         sidebarMeta: {
           icon: 'ion-android-home',
-          order: 125,
+          order: 10,
         },
       });
   }
