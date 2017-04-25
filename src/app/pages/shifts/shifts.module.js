@@ -20,6 +20,7 @@
           icon: 'ion-ios-clock',
           order: 50,
         },
+        accessLevel: 3
       })
       .state('shifts.list', {
         url: '/list',

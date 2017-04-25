@@ -1,57 +1,70 @@
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputNome">Nome</label>
-      <input type="text" class="form-control" id="inputNome" placeholder="Nome" ng-model="instituicao.nome">
+<form name="instituicaoForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
     </div>
   </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputSigla">Sigla</label>
-      <input type="text" class="form-control" id="inputSigla" placeholder="Sigla" ng-model="instituicao.sigla">
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputNome">Nome</label>
+        <input type="text" class="form-control" id="inputNome" placeholder="Nome" ng-model="instituicao.nome" ng-required="true">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputSigla">Sigla</label>
+        <input type="text" class="form-control" id="inputSigla" placeholder="Sigla" ng-model="instituicao.sigla">
+      </div>
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoLogradouro">Logradouro</label>
-      <input type="text" class="form-control" id="inputEnderecoLogradouro" placeholder="Logradouro" ng-model="instituicao.endereco.logradouro">
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoLogradouro">Logradouro</label>
+        <input type="text" class="form-control" id="inputEnderecoLogradouro" placeholder="Logradouro" ng-model="instituicao.endereco.logradouro">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoNumero">Número</label>
+        <input type="text" class="form-control" id="inputEnderecoNumero" placeholder="Nº" ng-model="instituicao.endereco.numero">
+      </div>
     </div>
   </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoNumero">Número</label>
-      <input type="text" class="form-control" id="inputEnderecoNumero" placeholder="Nº" ng-model="instituicao.endereco.numero">
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoBairro">Bairro</label>
+        <input type="text" class="form-control" id="inputEnderecoBairro" placeholder="Bairro" ng-model="instituicao.endereco.bairro">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoCEP">CEP</label>
+        <input type="text" class="form-control" id="inputEnderecoCEP" placeholder="CEP" ng-model="instituicao.endereco.CEP">
+      </div>
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoBairro">Bairro</label>
-      <input type="text" class="form-control" id="inputEnderecoBairro" placeholder="Bairro" ng-model="instituicao.endereco.bairro">
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoCidade">Cidade</label>
+        <input type="text" class="form-control" id="inputEnderecoCidade" placeholder="Cidade" ng-model="instituicao.endereco.cidade">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoUF">UF</label>
+        <input type="text" class="form-control" id="inputEnderecoUF" placeholder="UF" ng-model="instituicao.endereco.UF">
+      </div>
     </div>
   </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoCEP">CEP</label>
-      <input type="text" class="form-control" id="inputEnderecoCEP" placeholder="CEP" ng-model="instituicao.endereco.CEP">
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoCidade">Cidade</label>
-      <input type="text" class="form-control" id="inputEnderecoCidade" placeholder="Cidade" ng-model="instituicao.endereco.cidade">
-    </div>
-  </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoUF">UF</label>
-      <input type="text" class="form-control" id="inputEnderecoUF" placeholder="UF" ng-model="instituicao.endereco.UF">
-    </div>
-  </div>
-</div>
-<button type="submit" class="btn btn-primary" ng-click="save(instituicao)">Salvar</button>
+</form>
+<button type="submit" class="btn btn-primary" ng-disabled="instituicaoForm.$invalid" ng-click="save(instituicao)">Salvar</button>

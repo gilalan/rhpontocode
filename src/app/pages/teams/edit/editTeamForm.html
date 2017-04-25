@@ -1,12 +1,23 @@
-<form>
-  
+<form name="teamForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
   <div class="form-group">
     <label for="selectSetor">Setor</label> 
     <ui-select ng-model="selected.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
                append-to-body="true"
-               search-enabled="false">
+               search-enabled="false" 
+               ng-required="true">
       <ui-select-match placeholder="Selecione um Setor">
         <span> {{$select.selected.nome}}</span>
       </ui-select-match>
@@ -22,7 +33,8 @@
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
                append-to-body="true"
-               search-enabled="false">
+               search-enabled="false" 
+               ng-required="true">
       <ui-select-match placeholder="Selecione um Gestor">
         <span> {{$select.selected.nome}}</span>
       </ui-select-match>
@@ -34,9 +46,9 @@
 
   <div class="form-group">
     <label for="inputNome">Equipe</label>
-    <input type="text" class="form-control" id="inputNome" placeholder="Nome da Equipe" ng-model="equipe.nome">
+    <input type="text" class="form-control" id="inputNome" placeholder="Nome da Equipe" ng-model="equipe.nome" ng-required="true">
   </div>
   
   
 </form>
-<button type="submit" class="btn btn-primary" ng-click="save(equipe)">Salvar</button>
+<button type="submit" class="btn btn-primary" ng-disabled="teamForm.$invalid" ng-click="save(equipe)">Salvar</button>

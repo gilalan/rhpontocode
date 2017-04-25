@@ -21,6 +21,7 @@
           icon: 'ion-ios-briefcase',
           order: 200,
         },
+        accessLevel: 3
       })
       .state('entities.sectors.list', {
         url: '/list',

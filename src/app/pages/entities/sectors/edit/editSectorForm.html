@@ -1,10 +1,22 @@
-<form>
+<form name="sectorForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
   <div class="form-group">
     <ui-select ng-model="selected.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
                append-to-body="true"
-               search-enabled="false">
+               search-enabled="false" 
+               ng-required="true">
       <ui-select-match placeholder="Selecione um Câmpus">
         <span> {{$select.selected.nome}}</span>
       </ui-select-match>
@@ -15,7 +27,7 @@
   </div>
   <div class="form-group">
     <label for="inputNome">Setor</label>
-    <input type="text" class="form-control" id="inputNome" placeholder="Nome do setor" ng-model="setor.nome">
+    <input type="text" class="form-control" id="inputNome" placeholder="Nome do setor" ng-model="setor.nome" ng-required="true">
   </div>
   <div class="form-group">
     <label for="textareaDescricao">Descrição</label>
@@ -24,4 +36,4 @@
 
   
 </form>
-<button type="submit" class="btn btn-primary" ng-click="save(setor)">Salvar</button>
+<button type="submit" class="btn btn-primary" ng-disabled="sectorForm.$invalid" ng-click="save(setor)">Salvar</button>

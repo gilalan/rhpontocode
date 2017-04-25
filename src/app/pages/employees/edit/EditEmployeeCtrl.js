@@ -9,7 +9,7 @@
       .controller('EditEmployeeCtrl', EditEmployeeCtrl);
 
   /** @ngInject */
-  function EditEmployeeCtrl($scope, $filter, $state, funcionario, employeeAPI, cargos, turnos, instituicoes) {
+  function EditEmployeeCtrl($scope, $filter, $state, $window, funcionario, employeeAPI, cargos, turnos, instituicoes, util) {
 
     console.log("dentro do EditEmployeeCtrl! Lista de cargos: ", cargos);
     console.log("dentro do EditEmployeeCtrl! Lista de turnos: ", turnos);
@@ -23,6 +23,9 @@
     $scope.cargos = cargos.data;
     $scope.turnos = turnos.data;
     $scope.instituicoes = instituicoes.data;
+
+    $scope.isInitDateRequired = false;
+    $window.scrollTo(0, 0);
 
     function checkCargo(cargo) {
 
@@ -60,11 +63,18 @@
       funcionario.alocacao.cargo = $scope.selectedCargo.item;
       funcionario.alocacao.turno = $scope.selectedTurno.item;
       funcionario.alocacao.instituicao = $scope.selectedInst.item;
-      funcionario.dataNascimento = fixDateFormat(funcionario.dataNascimento);        
-      funcionario.alocacao.dataAdmissao = fixDateFormat(funcionario.alocacao.dataAdmissao);
+      funcionario.dataNascimento = util.fixDateFormat(funcionario.dataNascimento);        
+      funcionario.alocacao.dataAdmissao = util.fixDateFormat(funcionario.alocacao.dataAdmissao);
+      
       if (!funcionario.sexoMasculino)
         funcionario.sexoMasculino = false;
-      funcionario.rhponto = true;
+
+      if (!funcionario.rhponto)
+        funcionario.rhponto = false;
+
+      if (!funcionario.alocacao.gestor)
+        funcionario.alocacao.gestor = false;
+
       console.log('funcionario enviada: ', funcionario);
 
       employeeAPI.update(funcionario).then(function sucessCallback(response){
@@ -79,23 +89,16 @@
         
         $scope.errorMsg = response.data.message;
         console.log('Erro de registro: ' + response.data.message);
-        
-      });   
+        $window.scrollTo(0, 0);   
+      });
     }
 
-    function fixDateFormat (data) {
-                
-        var regex = /[0-9]{2}\/[0-9]{2}\/[0-9]{4}/;
-
-        if (regex.test(data)){
-            if(data.length === 10) {
-                var dateArray = data.split("/");
-                return new Date(dateArray[2], dateArray[1]-1, dateArray[0]).getTime();
-            }
-        } 
-
-        return data;
+    $scope.checkEscala = function (turno) {
+      //se for da escala 12x36
+      $scope.isInitDateRequired = (turno.escala.codigo == 2) ? true : false;
     }
+
+    $scope.checkEscala($scope.funcionario.alocacao.turno);
   }
 
 })();

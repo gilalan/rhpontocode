@@ -20,6 +20,7 @@
           icon: 'ion-person',
           order: 30,
         },
+        accessLevel: 3
       })
       .state('employees.list', {
         url: '/list',

@@ -1,16 +1,26 @@
-{{funcionario}}
 <form name="funcionarioForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
   <h4 class="sub-header"><strong style="color: #334db7;">Dados</strong></h4>
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputNome">Nome</label>
+        <label for="inputNome">Nome*</label>
         <input type="text" class="form-control" id="inputNome" placeholder="Nome" ng-model="funcionario.nome" ng-required="true">
       </div>
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputSobrenome">Sobrenome</label>
+        <label for="inputSobrenome">Sobrenome*</label>
         <input type="text" class="form-control" id="inputSobrenome" placeholder="Sobrenome" ng-model="funcionario.sobrenome" ng-required="true">
       </div>
     </div>
@@ -18,13 +28,13 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputPIS">PIS</label>
+        <label for="inputPIS">PIS*</label>
         <input type="text" class="form-control" id="inputPIS" placeholder="PIS" ng-model="funcionario.PIS" ng-required="true">
       </div>
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputCPF">CPF</label>
+        <label for="inputCPF">CPF*</label>
         <input type="text" class="form-control" id="inputCPF" placeholder="CPF" ng-model="funcionario.CPF" ng-required="true">
       </div>
     </div>
@@ -55,12 +65,13 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputInstituicao">Instituição</label>
+        <label for="inputInstituicao">Instituição*</label>
          <ui-select ng-model="selectedInst.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
                append-to-body="true"
-               search-enabled="false">
+               search-enabled="false"
+               ng-required="true">
           <ui-select-match placeholder="Selecione uma Instituição">
             <span> {{$select.selected.sigla}}</span>
           </ui-select-match>
@@ -72,12 +83,13 @@
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputCargo">Cargo</label>
+        <label for="inputCargo">Cargo*</label>
          <ui-select ng-model="selectedCargo.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
                append-to-body="true"
-               search-enabled="false">
+               search-enabled="false"
+               ng-required="true">
         <ui-select-match placeholder="Selecione um Cargo">
           <span> {{$select.selected.especificacao}}</span>
         </ui-select-match>
@@ -91,8 +103,8 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputDataAdmissao">Data de Admissão</label>
-        <input type="text" class="form-control" id="inputDataAdmissao" placeholder="ex.: 4-30-2000" ng-model="funcionario.alocacao.dataAdmissao" ui-date>
+        <label for="inputDataAdmissao">Data de Admissão*</label>
+        <input type="text" class="form-control" id="inputDataAdmissao" placeholder="ex.: 10/05/2016" ng-model="funcionario.alocacao.dataAdmissao" ng-required="true" ui-date>
       </div>
     </div>
     <div class="col-sm-6">
@@ -101,8 +113,10 @@
          <ui-select ng-model="selectedTurno.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
+               ng-change="checkEscala(selectedTurno.item)"
                append-to-body="true"
-               search-enabled="false">
+               search-enabled="false"
+               ng-required="true">
         <ui-select-match placeholder="Selecione um Turno">
           <span> {{$select.selected.descricao}}</span>
         </ui-select-match>
@@ -115,6 +129,34 @@
   </div>
 
   <h4 class="sub-header"><strong style="color: #334db7;">Informações Extras</strong></h4>
-
+  <div class="row">
+    <div class="col-sm-3">
+      <br/>
+      <label class="checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox" id="checkboxSexo" ng-model="funcionario.sexoMasculino" ng-required=true>
+        <span>Sexo Masculino?*</span>
+      </label>
+    </div>
+    <div class="col-sm-3">
+      <br/>
+      <label class="checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox" id="checkboxRHPonto" ng-model="funcionario.rhponto" ng-required=true>
+        <span>Utiliza RHPonto?*</span>
+      </label>
+    </div>
+    <div class="col-sm-3">
+      <br/>
+      <label class="checkbox-inline custom-checkbox nowrap">
+        <input type="checkbox" id="checkboxGestor" ng-model="funcionario.alocacao.gestor">
+        <span>É um GESTOR?</span>
+      </label>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="inputDataInicioEfetivo">Data de Início Efetivo*</label>
+        <input type="text" class="form-control" id="inputDataInicioEfetivo" title="Digite a data que o funcionário de fato inicia o seu trabalho na escala 12x36h se selecionada" placeholder="ex.: 16/01/2015" ng-model="funcionario.alocacao.dataInicioEfetivo" ng-required="isInitDateRequired" ng-disabled="!isInitDateRequired" ui-date>
+      </div>
+    </div>
+  </div>
 </form>
-<button type="submit" class="btn btn-primary" ng-click="save(funcionario)">Salvar</button>
+<button type="submit" class="btn btn-primary" ng-disabled="funcionarioForm.$invalid" ng-click="save(funcionario)">Salvar</button>

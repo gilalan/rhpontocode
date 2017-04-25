@@ -30,6 +30,7 @@
 	    //  não vai fucnionar o splice nessa smartTable...
       	//$scope.equipes.splice(index, 1);
         //Tem que dar refresh!
+        $state.reload();
 
       }, function errorCallback(response){
 

@@ -38,24 +38,26 @@
       eventLimit: true, // allow "more" link when too many events
       events: [
         {
-          title: 'All Day Event',
+          title: 'Correção',
           start: '2016-03-01',
           color: dashboardColors.silverTree
         },
         {
-          title: 'Long Event',
+          title: 'Folga (horas adicionais)',
           start: '2016-03-07',
           end: '2016-03-10',
           color: dashboardColors.blueStone
         },
         {
-          title: 'Dinner',
-          start: '2016-03-14T20:00:00',
+          title: 'Licença médica',
+          //start: '2016-03-14T20:00:00',
+          start: '2016-03-14',
           color: dashboardColors.surfieGreen
         },
         {
-          title: 'Birthday Party',
-          start: '2016-04-01T07:00:00',
+          title: 'Ajuste',
+          //start: '2016-04-01T07:00:00',
+          start: '2016-04-01',
           color: dashboardColors.gossipDark
         }
       ]

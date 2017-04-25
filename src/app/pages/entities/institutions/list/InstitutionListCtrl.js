@@ -29,7 +29,7 @@
         //$scope.load();
 	    //  não vai fucnionar o splice nessa smartTable...
       	//$scope.instituicoes.splice(index, 1);
-
+        $state.reload();
 
       }, function errorCallback(response){
 

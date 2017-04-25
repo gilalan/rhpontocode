@@ -24,9 +24,8 @@
     if ($scope.cargos.length > 0)
       $scope.selectedCargo = { item: $scope.cargos[0] };
 
-    if ($scope.turnos.length > 0)
-      $scope.selectedTurno = { item: $scope.turnos[0] };
-
+    //turno embaixo
+    
     if ($scope.instituicoes.length > 0)
       $scope.selectedInst = { item: $scope.instituicoes[0] };
     
@@ -36,8 +35,16 @@
       funcionario.alocacao.cargo = $scope.selectedCargo.item;
       funcionario.alocacao.turno = $scope.selectedTurno.item;
       funcionario.alocacao.instituicao = $scope.selectedInst.item;
-      funcionario.sexoMasculino = true;
-      funcionario.rhponto = true;
+      
+      if (!funcionario.sexoMasculino)
+        funcionario.sexoMasculino = false;
+
+      if (!funcionario.rhponto)
+        funcionario.rhponto = false;
+
+      if (!funcionario.alocacao.gestor)
+        funcionario.alocacao.gestor = false;
+
       console.log('Funcionario enviado: ', funcionario);
 
       employeeAPI.create(funcionario).then(function sucessCallback(response){
@@ -55,6 +62,17 @@
         
       });   
     }
+
+    $scope.checkEscala = function (turno) {
+      //se for da escala 12x36
+      $scope.isInitDateRequired = (turno.escala.codigo == 2) ? true : false;
+    }
+    
+    if ($scope.turnos.length > 0) {
+      $scope.selectedTurno = { item: $scope.turnos[0] };
+      $scope.checkEscala($scope.selectedTurno.item);
+    }
+
   }
 
 })();

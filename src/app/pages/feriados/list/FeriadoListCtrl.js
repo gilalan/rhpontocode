@@ -5,30 +5,31 @@
 (function () {
   'use strict';
 
-  angular.module('BlurAdmin.pages.entities.sectors')
-    .controller('SectorListCtrl', SectorListCtrl);
+  angular.module('BlurAdmin.pages.feriados')
+    .controller('FeriadoListCtrl', FeriadoListCtrl);
 
   /** @ngInject */
-  function SectorListCtrl($scope, $state, $stateParams, sectorAPI, setores) {
+  function FeriadoListCtrl($scope, $state, $stateParams, feriadoAPI, feriados) {
     //var vm = this;
     //vm.messages = mailMessages.getMessagesByLabel($stateParams.label);
-    //vm.label = $stateParams.label;
-
-    console.log('setores - List controller');
+    //vm.label = $stateParams.label;}
+    console.log('feriados - List controller');
     $scope.smartTablePageSize = 5;
-    console.log('Setores pelo Resolve: ', setores);
-    $scope.setores = setores.data;
+    //var feriados = [];
+    console.log('feriados pelo Resolve: ', feriados);
+    $scope.feriados = feriados.data;
 
     $scope.delete = function (id, index) {
 
-      sectorAPI.delete(id).then(function sucessCallback(response){
+      feriadoAPI.delete(id).then(function sucessCallback(response){
 
         console.log('deletou?', response.data);
         $scope.successMsg = response.data.message;
         console.log('msg: ', $scope.successMsg);
         //$scope.load();
 	    //  não vai fucnionar o splice nessa smartTable...
-      	//$scope.setores.splice(index, 1);
+      	//$scope.equipes.splice(index, 1);
+        //Tem que dar refresh!
         $state.reload();
 
       }, function errorCallback(response){
@@ -38,15 +39,6 @@
       });
     }
 
-    $scope.edit = function(instituicaoId) {
-
-       // $location.path("/editInstituicao/"+instituicaoId);
-    }
-
-    $scope.new = function() {
-
-      $state.go('entities.campus');
-    }
   }
 
 })();

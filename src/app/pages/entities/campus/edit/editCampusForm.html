@@ -1,76 +1,90 @@
-<div class="row">
-  <div class="col-sm-12">
-    <div class="form-group">
-      <ui-select ng-model="selected.item"
-               class="btn-group bootstrap-select form-control"
-               ng-disabled="false"
-               append-to-body="true"
-               search-enabled="false">
-        <ui-select-match placeholder="Selecione uma Instituição">
-          <span> {{$select.selected.sigla}}</span>
-        </ui-select-match>
-        <ui-select-choices repeat="instituicao in (instituicoes | filter: $select.search) track by instituicao._id">
-          <span ng-bind-html="instituicao.sigla"></span>
-        </ui-select-choices>
-      </ui-select>
+<form name="campusForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
     </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputNome">Câmpus</label>
-      <input type="text" class="form-control" id="inputNome" placeholder="Nome do Câmpus" ng-model="campus.nome">
-    </div>
-  </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputArea">Área</label>
-      <input type="text" class="form-control" id="inputArea" placeholder="Área total do Câmpus" ng-model="campus.area">
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoLogradouro">Logradouro</label>
-      <input type="text" class="form-control" id="inputEnderecoLogradouro" placeholder="Logradouro" ng-model="campus.endereco.logradouro">
-    </div>
-  </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoNumero">Número</label>
-      <input type="text" class="form-control" id="inputEnderecoNumero" placeholder="Nº" ng-model="campus.endereco.numero">
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoBairro">Bairro</label>
-      <input type="text" class="form-control" id="inputEnderecoBairro" placeholder="Bairro" ng-model="campus.endereco.bairro">
-    </div>
-  </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoCEP">CEP</label>
-      <input type="text" class="form-control" id="inputEnderecoCEP" placeholder="CEP" ng-model="campus.endereco.CEP">
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoCidade">Cidade</label>
-      <input type="text" class="form-control" id="inputEnderecoCidade" placeholder="Cidade" ng-model="campus.endereco.cidade">
-    </div>
-  </div>
-  <div class="col-sm-6">
-    <div class="form-group">
-      <label for="inputEnderecoUF">UF</label>
-      <input type="text" class="form-control" id="inputEnderecoUF" placeholder="UF" ng-model="campus.endereco.UF">
-    </div>
-  </div>
-</div>
 
-<button type="submit" class="btn btn-primary" ng-click="save(campus)">Salvar</button>
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="form-group">
+        <ui-select ng-model="selected.item"
+                 class="btn-group bootstrap-select form-control"
+                 ng-disabled="false"
+                 append-to-body="true"
+                 search-enabled="false" 
+                 ng-required="true">
+          <ui-select-match placeholder="Selecione uma Instituição">
+            <span> {{$select.selected.sigla}}</span>
+          </ui-select-match>
+          <ui-select-choices repeat="instituicao in (instituicoes | filter: $select.search) track by instituicao._id">
+            <span ng-bind-html="instituicao.sigla"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputNome">Câmpus</label>
+        <input type="text" class="form-control" id="inputNome" placeholder="Nome do Câmpus" ng-model="campus.nome" ng-required="true">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputArea">Área</label>
+        <input type="text" class="form-control" id="inputArea" placeholder="Área total do Câmpus" ng-model="campus.area">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoLogradouro">Logradouro</label>
+        <input type="text" class="form-control" id="inputEnderecoLogradouro" placeholder="Logradouro" ng-model="campus.endereco.logradouro">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoNumero">Número</label>
+        <input type="text" class="form-control" id="inputEnderecoNumero" placeholder="Nº" ng-model="campus.endereco.numero">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoBairro">Bairro</label>
+        <input type="text" class="form-control" id="inputEnderecoBairro" placeholder="Bairro" ng-model="campus.endereco.bairro">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoCEP">CEP</label>
+        <input type="text" class="form-control" id="inputEnderecoCEP" placeholder="CEP" ng-model="campus.endereco.CEP">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoCidade">Cidade</label>
+        <input type="text" class="form-control" id="inputEnderecoCidade" placeholder="Cidade" ng-model="campus.endereco.cidade">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEnderecoUF">UF</label>
+        <input type="text" class="form-control" id="inputEnderecoUF" placeholder="UF" ng-model="campus.endereco.UF">
+      </div>
+    </div>
+  </div>
+</form>
+
+<button type="submit" class="btn btn-primary" ng-disabled="campusForm.$invalid" ng-click="save(campus)">Salvar</button>

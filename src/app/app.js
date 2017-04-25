@@ -6,6 +6,7 @@ angular.module('BlurAdmin', [
   'ui.sortable',
   'ui.router',
   'ngTouch',
+  'ngSanitize',
   'toastr',
   'smart-table',
   "xeditable",
@@ -27,16 +28,16 @@ angular.module('BlurAdmin', [
 })
 .run(['$rootScope', '$location', '$window', '$state', 'Auth', function($rootScope, $location, $window, $state, Auth){
   
-  console.log('1. Opa, dentro de rootScope do BLUR ADMIN!!!');
-  console.log('tentando pegar a factory Auth', Auth);
-  
-  if ($state.current.url === '^') {
-    console.log('está vindo para o endereço principal, agora é o auth');
-    //$window.location.href = "/auth.html";
-  }
+  /*accessLevel => 
+   *{
+     0: public,
+     1: colaborador,
+     2: fiscal,
+     3: gestor,
+     4: admin 
+   *}
+   */
 
-  console.log('$state url ', $state.current.url);
-  console.log('$state name ', $state.current.name);
   $rootScope.$on("$stateChangeStart", function(e, toState, toParams, fromState, fromParams){
     //current é de "onde veio", só aparece esse objeto se NÃO for o primeiro acesso
     console.log('#event ', e);
@@ -45,22 +46,56 @@ angular.module('BlurAdmin', [
     console.log('#fromState ', fromState);
     console.log('#fromParams ', fromParams);
 
-    // redirectTo
-    if (toState.redirectTo) {
-      e.preventDefault();
-      $state.go(toState.redirectTo, toParams);
+    //Precisa estar logado e com algum nível de autorização
+    if (toState && toState.accessLevel > 0) {
+      
+      var allowed = false;
+      console.log('Entrando em uma rota com nível de acesso > 0');
+      if (Auth.getToken()) {
+        console.log('Usuário está logado...');
+        $rootScope.$broadcast('logged', true);//emite comunicado que está logado
+
+        if (Auth.authorize(toState.accessLevel)){//veremos se o user tem o nivel de acesso permitido
+          console.log('Usuário tem nível de acesso para ver a página!');
+          allowed = true;
+          $rootScope.$broadcast('authorized', true);//Emite comunicado que está autorizado para ver
+          // redirectTo
+          if (toState.redirectTo) {
+            console.log('foi autorizado e passou no redirecionamento redirectTo', toState.redirectTo);
+            e.preventDefault();
+            $state.go(toState.redirectTo, toParams);
+          }
+
+        } else {//não está autorizado
+          console.log('vc não é autorizado a ver essa rota');
+          $rootScope.$broadcast('authorized', false);
+          $window.location.href = "/404.html";
+        }
+      } else {
+        //não está logado
+        $window.location.href = "/index.html";
+      }
+    } 
+
+    //está indo para uma rota pública...
+    else {
+      //indo para a página inicial (login) mas já está logado
+      if (toState.url == "^" && Auth.getToken()){
+        console.log('Indo para a página inicial com login já realizado, deve ser redirecionado para dashboard');
+        $state.go('dashboard');
+      }
     }
 
-    //$location.path("/login");
-    //$window.location.href = "/auth.html";
-    // if (current){
-    //   console.log('2. current.originalPath: ', current.originalPath);
-    //   console.log('2.1 current.access: ', current.access);
-    //   if (current.originalPath == "/"){
-    //     //var regex = /registro_ponto/;
-    //     if (regex.test(next.originalPath)){
-    //       console.log("3. opa, veio do login para o registro_ponto");
-    //       //Auth.setBatidaDireta(true);
+    // //current/fromState é de "onde veio", só aparece esse objeto se NÃO for o primeiro acesso
+    // if (fromState){
+    //   console.log('2. fromState.access: ', fromState.access);
+    //   console.log('2. fromState.accessLevel: ', fromState.accessLevel);
+    //   console.log('2. fromState.originalPath ', fromState.originalPath);
+    //   if (fromState.originalPath == "/"){
+    //     var regex = /registro_ponto/;
+    //     if (regex.test(toState.originalPath)){
+    //       console.log("opa, veio do login para o registro_ponto");
+    //       Auth.setBatidaDireta(true);
     //       //current.resolve["batidaDireta"] = true;
     //     }
           
@@ -68,5 +103,48 @@ angular.module('BlurAdmin', [
     //   //console.log("2.0 current path", current.originalPath);
     //   //console.log("2.1 next path: ", next.originalPath);
     // }
+
+    // //next.access pega essa variável definida na rota, que indica o nível de acesso a ela.
+    // //a gnt passa isso para um authorize(local) e verifica se ele pode entrar nessa rota.
+    // if(toState){
+    //   console.log('toState.access: ', toState.access);
+    //   console.log('toState.accessLevel: ', toState.accessLevel);
+    //   console.log('toState.originalPath: ', toState.originalPath);
+
+    //   if (toState.originalPath == "/" && Auth.getToken()){ //se estiver acessando a app na tela inicial mas tiver um token de log guardado, manda para a página principal
+    //     console.log("página de login com o usuário já logado... encaminha para o dashboard");
+    //     return $state.go('dashboard');//$location.path("/dashboard");
+    //   }
+
+    //   if (toState.accessLevel > 0) {
+
+    //     if(!Auth.getToken()){
+    //       console.log('usuário não logado e página necessita de nível de acesso: ', toState.accessLevel);
+    //       $rootScope.$broadcast('authorized', false);
+    //       $rootScope.$broadcast('logged', true);
+    //       //$location.path('/');
+    //       $state.go('^');
+    //     }
+
+    //     else {
+    //       $rootScope.$broadcast('logged', true);
+    //       console.log("rota exigida: "+toState.accessLevel+" e usuário logado, checar seu nível");
+    //       if (Auth.authorize(toState.accessLevel)){//veremos se o user tem o nivel de acesso permitido
+    //         console.log('opa fui autorizado');
+    //         console.log('deverá seguir o fluxo normal... controller e depois view');
+    //         $rootScope.$broadcast('authorized', true);
+    //       } else {
+    //         console.log('vc não é autorizado a ver essa rota');
+    //         $rootScope.$broadcast('authorized', false);
+    //         //$location.path('/unauthorized');
+    //         //$state.go('')
+    //         $window.location.href = "/404.html";
+    //       }
+    //     }
+    //   } 
+    // }
+
+    
+    
   });
 }]);

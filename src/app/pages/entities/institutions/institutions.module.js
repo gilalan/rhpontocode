@@ -19,7 +19,8 @@
           title: 'Instituições',
           sidebarMeta: {
             order: 0,
-            },
+          },
+          accessLevel: 4
         })
         .state('entities.institutions.list', {
           url: '/list',
@@ -31,14 +32,14 @@
               return institutionAPI.get();
             }
           },
-          accessLevel: 3
+          accessLevel: 4
         })
         .state('entities.institutions.new', {
           url: '/new',
           templateUrl: 'app/pages/entities/institutions/edit/edit.html',
           controller: 'NewInstitutionCtrl',
           title: 'Instituições',
-          accessLevel: 3
+          accessLevel: 4
         })
         .state('entities.institutions.edit', {
           url: '/edit/:id',
@@ -50,7 +51,7 @@
               return institutionAPI.getInstituicao($stateParams.id);
             }
           },
-          accessLevel: 3
+          accessLevel: 4
         });
 
         $urlRouterProvider.when('/entities/institutions','/entities/institutions/list');

@@ -9,7 +9,7 @@
       .controller('ApplicationController', AppCtrl);
 
   /** @ngInject */
-  function AppCtrl($scope, $rootScope, Auth) {
+  function AppCtrl($scope, $rootScope, $state, Auth) {
 
     console.log("Passa no APPLICATION controller!");
 	$scope.logged = false;
@@ -46,6 +46,27 @@
 		$scope.logged = (isLogged) ? true : false;
 		
 	});
+
+	function init() {
+		console.log('inicializar o APP controller');
+		if (Auth.getToken()){
+			console.log('APPCtrl - está logado');
+			$scope.logged = true;
+			var levelUser = Auth.getUserLevel();
+			if (levelUser > 0) {
+				$scope.authorized = true;
+				console.log('autorizado, nivel de acesso: ', levelUser);
+			  	if (levelUser ==1)
+		        	$state.go('main-path-colaborador'); //alterar o caminho da primeira página de acordo com o nível de acesso
+		      	else if (levelUser == 2)
+		        	$state.go('main-path-fiscal');
+		      	else if (levelUser >= 3)
+		        	$state.go('dashboard');
+			}
+		}
+	}
+
+	init();
 
   }
 

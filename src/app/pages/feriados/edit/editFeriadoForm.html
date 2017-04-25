@@ -1,0 +1,28 @@
+<form name="feriadoForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputNome">Nome</label>
+    <input type="text" class="form-control" id="inputNome" placeholder="Nome do feriado" ng-model="feriado.nome" ng-required="true">
+  </div>
+  <div class="form-group">
+    <label for="inputData">Data</label>
+    <input type="text" class="form-control" id="inputData" placeholder="Data do feriado" ng-model="feriado.data" ng-required="true" ui-date>
+  </div>
+  <div class="form-group">
+    <label class="checkbox-inline custom-checkbox nowrap">
+      <input type="checkbox" id="checkboxFixo" ng-model="feriado.fixo">
+      <span>É Fixo? (ele se repete todo ano?)</span>
+    </label>
+  </div>
+</form>
+<button type="submit" class="btn btn-primary" ng-disabled="feriadoForm.$invalid" ng-click="save(feriado)">Salvar</button>

@@ -21,6 +21,7 @@
           icon: 'ion-ios-people',
           order: 20,
         },
+        accessLevel: 3
       })
       .state('teams.list', {
         url: '/list',

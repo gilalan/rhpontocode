@@ -48,6 +48,10 @@
       getBatidaDireta: function() {
         return batidaDireta;
       },
+      getUserLevel: function() {
+        var user = jwtHelper.decodeToken($localStorage.token);        
+        return user.acLvl;
+      },
       logout: function(){
         this.setBatidaDireta(false);
         delete $localStorage.token;

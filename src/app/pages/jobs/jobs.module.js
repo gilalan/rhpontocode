@@ -20,6 +20,7 @@
           icon: 'ion-ios-briefcase',
           order: 40,
         },
+        accessLevel: 3
       })
       .state('jobs.list', {
         url: '/list',

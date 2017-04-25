@@ -43,7 +43,7 @@
       { date: new Date(2015, 0), value: 54800, value0: 13000},
       { date: new Date(2015, 1), value: 49800, value0: 13000}
     ];
-
+    console.log('AmCharts from LineChartCtrl: ', AmCharts);
     var chart = AmCharts.makeChart('amchart', {
       type: 'serial',
       theme: 'blur',
@@ -113,14 +113,14 @@
       pathToImages: layoutPaths.images.amChart
     });
 
-    function zoomChart() {
-      chart.zoomToDates(new Date(2013, 3), new Date(2014, 0));
-    }
+    // function zoomChart() {
+    //   chart.zoomToDates(new Date(2013, 3), new Date(2014, 0));
+    // }
 
-    chart.addListener('rendered', zoomChart);
-    zoomChart();
-    if (chart.zoomChart) {
-      chart.zoomChart();
-    }
+    // chart.addListener('rendered', zoomChart);
+    // zoomChart();
+    // if (chart.zoomChart) {
+    //   chart.zoomChart();
+    // }
   }
 })();
