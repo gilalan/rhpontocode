@@ -22,6 +22,7 @@
     'BlurAdmin.pages.jobs',
     'BlurAdmin.pages.shifts',
     'BlurAdmin.pages.feriados',
+    'BlurAdmin.pages.regponto',
   ])
       .config(routeConfig);
 

@@ -23,15 +23,10 @@
         //return getUsuario(response.data.idUsuario);
         //return redirectHome();
         $scope.$emit('login', response.data.token);
-        //var pathTo = "/dashboard";
-        var pathTo = "dashboard";
-
-        if (baterPonto)
-           pathTo = "/registro_ponto/"+response.data.idUsuario;
-
-        console.log("path? ", pathTo);
+        //var pathTo = "/dashboard";        
         //$location.path(pathTo);
-        $state.go(pathTo);
+
+        baterPonto ? $state.go('regponto', {userId: response.data.idUsuario}) : $state.go('dashboard');
 
       }, function errorCallback (response) {
         

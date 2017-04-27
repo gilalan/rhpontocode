@@ -1,0 +1,55 @@
+<div ba-panel ba-panel-title="Bater Ponto" ba-panel-class="with-scroll">
+
+    <!-- <div class="row">
+      <div class="col-sm-3">
+      </div>
+      <div class="col-sm-6">
+        <div class="img-area"><img class="photo-msg-item" ng-src="{{::( 'app/todo/user-basic1.png' | appImage )}}" alt=""/></div>
+        <div>	
+        	<p>{{::funcionario.nome}}</p>
+        </div>
+      </div>
+      <div class="col-sm-3">
+      </div>
+    </div> -->
+    
+    <div class="row">    
+    	
+		<div class="col-md-6 col-md-offset-3">
+			<div class="col-md-6">
+				<div class="img-area"><img class="photo-msg-item" ng-src="{{::( 'app/todo/user-basic1.png' | appImage )}}" alt=""/></div>
+		        <div>	
+		        	<p>{{::funcionario.nome}} {{::funcionario.sobrenome}}</p>
+		        	<p class="muted"> {{::funcionario.email}} </p>
+		        </div>
+			</div>
+			<div class="col-md-6">
+				<time datetime="{{currentDateFtd}}" class="date-as-calendar position-em size1_25x">
+					<span class="weekday">{{currentDate | date: 'EEE'}}</span>
+					<span class="day">{{currentDate | date: 'd'}}</span>
+					<span class="month">{{currentDate | date: 'LLLL'}}</span>
+					<span class="year">{{currentDate | date: 'yyyy'}}</span>
+				</time>
+				<table class="tabBlock" cellspacing="0" cellpadding="0" border="0">
+		            <tr>
+
+		            	<td class="clock" id="dc">{{clock | date: 'HH:mm'}}</td>  <!-- THE DIGITAL CLOCK. -->
+		                <td>
+		                    <table cellpadding="0" cellspacing="0" border="0">		                   		                      
+		                        <!-- SHOWING SECONDS. -->
+		                        <tr><td class="clocklg" id="dc_second">{{clock | date: 'ss'}}</td></tr>
+		                    </table>
+		                </td>
+		            </tr>
+		        </table>
+		    </div>
+		</div>
+	    
+    </div>
+    <div class="separator"></div>
+    <div class="row">
+    	<div class="col-md-6 col-md-offset-3" style="text-align: center;">
+    		<button class="btn btn-primary" ui-sref="registro()">Bater Ponto!</button>
+    	</div>
+    </div>
+</div>

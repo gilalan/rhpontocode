@@ -38,6 +38,7 @@
         //console.log()
       },
       getCurrentUser: function() {
+        console.log('## Get Current User?!');
         var user = jwtHelper.decodeToken($localStorage.token);
         return user;
       },
