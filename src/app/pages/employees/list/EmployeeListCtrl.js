@@ -15,9 +15,12 @@
     //vm.label = $stateParams.label;}
 
     console.log('funcionarios - List controller');
-    $scope.smartTablePageSize = 5;
+    $scope.smartTablePageSize = 10;
     console.log('funcionarios pelo Resolve: ', funcionarios);
-    $scope.funcionarios = funcionarios.data;
+    if (!funcionarios)
+      alert('Houve um problema de captura das informações no banco de dados');
+    else
+      $scope.funcionarios = funcionarios.data;
 
     $scope.delete = function (id, index) {
 

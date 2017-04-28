@@ -1,17 +1,16 @@
 <div ba-panel ba-panel-title="Bater Ponto" ba-panel-class="with-scroll">
 
-    <!-- <div class="row">
-      <div class="col-sm-3">
-      </div>
-      <div class="col-sm-6">
-        <div class="img-area"><img class="photo-msg-item" ng-src="{{::( 'app/todo/user-basic1.png' | appImage )}}" alt=""/></div>
-        <div>	
-        	<p>{{::funcionario.nome}}</p>
-        </div>
-      </div>
-      <div class="col-sm-3">
-      </div>
-    </div> -->
+    <div class="row">
+	   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+	      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <strong>Feito!</strong> {{successMsg}}
+	    </div>
+
+	    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+	      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <strong>Ops!</strong> {{errorMsg}}
+	    </div>
+	</div>
     
     <div class="row">    
     	
@@ -49,7 +48,7 @@
     <div class="separator"></div>
     <div class="row">
     	<div class="col-md-6 col-md-offset-3" style="text-align: center;">
-    		<button class="btn btn-primary" ui-sref="registro()">Bater Ponto!</button>
+    		<button type="button" class="btn btn-primary" data-toggle="modal" ng-click="open()">Bater Ponto!</button>
     	</div>
     </div>
 </div>

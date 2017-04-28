@@ -1,0 +1,79 @@
+.dadosIdent {
+	margin-left: 5px;
+}
+
+.needSpace {
+	margin-bottom: 10px;
+}
+
+.centerColSpan{
+	text-align: center;
+}
+
+.rightColSpan{
+	text-align: right;
+}
+.tabledash th { 
+	/*border-top: none !important;*/
+    border-bottom: 1px solid #dcdcdc !important;  
+ }
+
+.first {
+
+    border-left: 1px solid #dcdcdc !important;   
+ }
+
+.last {
+	border-right: 2px solid #dcdcdc !important;	
+}
+
+.lastVertical {
+	border-bottom: 1px solid #dcdcdc !important;
+}
+
+.tabledash td {
+ 	border-left: 1px solid #dcdcdc !important;
+}
+
+tabledash tbody tr {
+    cursor: pointer;
+}
+
+.marcacoesDestak {
+	font-family: Montserrat;
+    color: #436cbd;
+    font-size: 13px;
+}
+
+.dateDestak {
+ 	margin-top: 15px;
+    font-size: 14px;
+    color: #12198e;
+    font-family: Montserrat;
+ }
+
+ .graphBGColor {
+ 	background-color: rgba(217, 237, 247, 0.6);
+ }
+
+ .titleGraph {
+ 	margin-top: 10px;
+    font-family: monospace;
+    font-size: 13px;
+    border: 1px solid #a79f9f;
+    border-radius: 5px;
+    padding: 10px;
+ }
+
+ .titleGraphSmall {
+ 	float: left;
+	margin-right: 2px;
+ }
+
+ .bh-positivo {
+    color: #009c58;
+ }
+
+ .bh-negativo {
+    color: #da4d39;
+ }

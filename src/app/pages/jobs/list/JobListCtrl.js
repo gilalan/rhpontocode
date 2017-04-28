@@ -15,9 +15,12 @@
     //vm.label = $stateParams.label;}
 
     console.log('cargos - List controller');
-    $scope.smartTablePageSize = 5;
+    $scope.smartTablePageSize = 10;
     console.log('cargos pelo Resolve: ', cargos);
-    $scope.cargos = cargos.data;
+    if(!cargos)
+      alert('Houve um problema de captura das informações no banco de dados');
+    else
+      $scope.cargos = cargos.data;
 
     $scope.delete = function (id, index) {
 

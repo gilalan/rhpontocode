@@ -6,10 +6,11 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.regponto')
-      .controller('RegPontoCtrl', RegPontoCtrl);
+      .controller('RegPontoCtrl', RegPontoCtrl)
+      .controller('ModalRegisterCtrl', ModalRegisterCtrl);
 
   /** @ngInject */
-  function RegPontoCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, Auth, usuario, currentDate, batidaDireta) {
+  function RegPontoCtrl($scope, $filter, $location, $state, $interval, $uibModal, appointmentAPI, employeeAPI, Auth, usuario, currentDate, batidaDireta) {
 
     console.log("dentro do RegPontoCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
@@ -23,6 +24,8 @@
     var secsControl = 0;
     var apontamento = null;
     var marcacao = null;
+    var pagePath = 'app/pages/reg_ponto/modals/registroModal.html';
+    var defaultSize = 'md';
     var tick = function() {
       //$scope.clock = Date.now();//atualiza os segundos manualmente
       var clock = new Date($scope.currentDate);
@@ -31,9 +34,15 @@
       secsControl++;
     };
 
-    $scope.registro = function(ev) {
+    $scope.open = function () {
+
+      registro(pagePath, defaultSize);
+
+    };
+
+    function registro (page, size) {
       
-      apontamentosAPI.getCurrentDate().then(function sucessCallback(response){
+      appointmentAPI.getCurrentDate().then(function sucessCallback(response){
 
         var newDate = new Date(response.data.date);
         var gId = (apontamento) ? getId(apontamento.marcacoes) : 1;
@@ -48,11 +57,16 @@
           gerada: {}
         };
 
+        console.log('newDate, marcacao', newDate);
+        console.log('newDate, marcacao', marcacao);
+        console.log('apontamento: ', apontamento);
+
         if (apontamento) {
           
           apontamento.marcacoes.push(marcacao);
+          console.log('vai dar push nas marcações');
           setStatus(apontamento);
-          update(apontamento._id, apontamento, ev);
+          update(page, size, apontamento._id, apontamento);
 
         } else {
 
@@ -63,7 +77,8 @@
             marcacoes: [marcacao],
             justificativa: ''
           };
-          create(apontamento, ev);
+          console.log('vai criar o apontamento');
+          create(page, size, apontamento);
         }
 
       }, function errorCallback(response) {
@@ -98,6 +113,14 @@
       
     }
 
+    function getOnlyDate (date) {
+      console.log("date antes: ", date);
+      var data = angular.copy(date);
+      data.setHours(0,0,0,0); //essa data é importante zerar os segundos para que não tenha inconsistência na base
+      console.log("date depois: ", data);
+      return data;
+    } 
+
     function setStatus(apontamento) {
 
       var size = apontamento.marcacoes.length;
@@ -114,16 +137,18 @@
       }
     }
 
-    function create (apontamento, ev) {
+    function create (page, size, apontamento) {
 
-      apontamentosAPI.create(apontamento).then(function sucessCallback(response){
+      appointmentAPI.create(apontamento).then(function sucessCallback(response){
 
         console.log("dados recebidos: ", response.data);
         var dateStr = $filter('date')(response.data.obj.date, "dd/MM/yyyy");
         var hora = $filter('zpad')(marcacao.hora);
         var minuto = $filter('zpad')(marcacao.minuto);
         $scope.successMsg = response.data.obj.message + dateStr + ", às " + hora + ":" + minuto;
-        confirmDialogRegister(ev, dateStr, hora, minuto);
+        console.log('dados a serem enviados para o dialog: HORA: ', hora);
+        console.log('dados a serem enviados para o dialog: MIN: ', minuto);
+        confirmDialogRegister(page, size, dateStr, hora, minuto);
 
       }, function errorCallback(response){
         
@@ -133,16 +158,16 @@
       }); 
     }
 
-    function update (id, apontamento, ev) {
+    function update (page, size, id, apontamento) {
 
-      apontamentosAPI.update(id, apontamento).then(function sucessCallback(response){
+      appointmentAPI.update(id, apontamento).then(function sucessCallback(response){
 
         console.log("dados recebidos: ", response.data);
         var dateStr = $filter('date')(response.data.obj.date, "dd/MM/yyyy");
         var hora = $filter('number')(marcacao.hora);
         var minuto = $filter('number')(marcacao.minuto);
         $scope.successMsg = response.data.obj.message + dateStr + ", às " + hora + ":" + minuto;
-        confirmDialogRegister(ev, dateStr, hora, minuto);
+        confirmDialogRegister(page, size, dateStr, hora, minuto);
 
       }, function errorCallback(response){
         
@@ -152,49 +177,38 @@
       }); 
     }
 
-    function confirmDialogRegister (ev, date, hora, minuto) {
+    function confirmDialogRegister (page, size, date, hora, minuto) {
 
       var objectDlg = {
         funcionario: $scope.funcionario,
-        successMsg: $scope.successMsg,
         date: date,
         hora: hora,
         minuto: minuto,
         batidaDireta: batidaDireta
       }
 
-      $mdDialog.show({
-          controller: DialogController,
-          templateUrl: 'view/dialog/batidaPonto.tmpl.html', //se passar caminho errado, ele buga dizendo que tentou carregar o angular mais de uma vez
-          locals: {
-            objectDlg: objectDlg
-          },
-          parent: angular.element(document.body),
-          //parent: angular.element(document.querySelector('#popupContainer')),
-          targetEvent: ev,
-          clickOutsideToClose:true,
-          fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
-        })
-        .then(function(answer) {
-          $scope.status = 'You said the information was "' + answer + '".';
-          console.log("$scope.status: ", $scope.status);
-          if(answer.toLowerCase() == "Sair".toLowerCase()){
-            if (batidaDireta){
-              console.log("sair da app pois veio de uma batida direta, era só logar e bater o ponto");
-              $scope.$emit('logout');
-          $location.path("/");
-            }
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: page,
+        size: size,
+        controller: 'ModalRegisterCtrl',
+        resolve: {
+          objApontamento: function () {
+            return objectDlg;
           }
-        }, function() {
-          $scope.status = 'You cancelled the dialog.';
-          console.log("$scope.status: ", $scope.status);
-          if (batidaDireta){
-            console.log("sair da app pois veio de uma batida direta, era só logar e bater o ponto");
-            $scope.$emit('logout');
-        $location.path("/");
-            }
-        });
-    }    
+        }
+      });
+
+      modalInstance.result.then(function (){
+        
+      }, function () {
+        console.log('modal is dismissed or close.');
+        if (batidaDireta){
+          console.log("sair da app pois veio de uma batida direta, era só logar e bater o ponto");
+          $scope.$emit('logout');
+        }
+      });
+    };
     
     function getApontamentoDiarioFromFuncionario() {
     
@@ -207,31 +221,55 @@
           apontamento = response.data[0];
 
         if (batidaDireta)
-          $scope.registro();
+          registro(pagePath, defaultSize);
 
       }, function errorCallback(response){
 
         $scope.errorMsg = response.data.message;
         console.log("Erro na obtenção do apontamento diário: " + response.data.message);
-
       });
     }
 
     function init() {
       
-    // if ($scope.funcionario)
-    //   getApontamentoDiarioFromFuncionario();
-    // else
-    //   $scope.usuario = usuario.data;    
-  
-    tick();
-    $interval(tick, 1000);
-    console.log('secsControl', secsControl);
+      if ($scope.funcionario)
+        getApontamentoDiarioFromFuncionario();
+      else
+        alert('Erro ao recuperar o funcionário cadastrado do Ponto');
+    
+      tick();
+      $interval(tick, 1000);
     }
 
     //INICIALIZA O CONTROLLER COM ALGUMAS VARIÁVEIS
     init();
     
+  }
+
+  function ModalRegisterCtrl($uibModalInstance, $scope, objApontamento){
+    
+    console.log('test: ', objApontamento);
+    $scope.batidaInfo = objApontamento;
+
+    $scope.save = function() {
+
+      console.log('Salvar Comprovante!');
+      // download the PDF
+      var docDefinition = {
+        content: [
+          'COMPROVANTE DE REGISTRO DE PONTO DO TRABALHADOR',
+          'SISTEMA ALTERNATIVO DE BATIDA DE PONTO: RHPONTO',
+          'CNPJ: '+'00.000.000/0000-00',
+          'LOCAL: '+'UNIVASF',
+          'NOME: ' + $scope.batidaInfo.funcionario.nome + ' ' + $scope.batidaInfo.funcionario.sobrenome, 
+          'PIS: ' + $scope.batidaInfo.funcionario.PIS,
+          'DATA: ' + $scope.batidaInfo.date + ',    HORA: ' + $scope.batidaInfo.hora+':'+$scope.batidaInfo.minuto,
+          'NSR: '+'0000000044'
+        ]
+      };
+      pdfMake.createPdf(docDefinition).download('comprovante_ponto.pdf');
+    }
+
   }
 
 })();

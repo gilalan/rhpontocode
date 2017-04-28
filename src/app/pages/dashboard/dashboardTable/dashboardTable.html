@@ -1,23 +1,43 @@
 <div class="horizontal-scroll">
-  <table class="table table-condensed">
+  <table class="table table-condensed"><!--tirei a tableDash style-->
     <thead>
     <tr>
-      <th class="table-id">#</th>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Status</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th colspan="4" style="text-align: center;">Marcações</th>
+      <th></th>
+    </tr>
+    <tr>
+      <th class="col-xs-1 first">Status</th>
+      <th class="col-xs-1 first">Nome</th>
+      <th class="col-xs-1 first">Cargo</th>
+      <th class="col-xs-1 centerColSpan first">E1</th>
+      <th class="col-xs-1 centerColSpan first">S1</th>
+      <th class="col-xs-1 centerColSpan first">E2</th>
+      <th class="col-xs-1 centerColSpan first">S2</th>
+      <th class="col-xs-1 centerColSpan first">Banco Hrs.</th>
+      <th class="col-xs-1 centerColSpan first">Escala</th>
+      <th class="col-xs-1 centerColSpan first">Horário</th>
+      <th class="col-xs-2 centerColSpan first last">Observações</th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="item in peopleTableData">
-      <td class="table-id">{{item.id}}</td>
-      <td>{{item.firstName}}</td>
-      <td>{{item.lastName}}</td>
-      <td>{{item.username}}</td>
-      <td><a class="email-link" ng-href="mailto:{{item.email}}">{{item.email}}</a></td>
-      <td><button class="status-button btn btn-xs btn-{{item.status}}">{{item.status}}</button></td>
+    <tr ng-repeat="funcionario in equipe.componentes" ng-click="setSelected(funcionario)">
+      <td>teste</td>
+      <td>{{funcionario.nome}}</td>
+      <td>{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
+      </td>
+      <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent1}}</td>
+      <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai1}}</td>
+      <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent2}}</td>
+      <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai2}}</td>
+      <td class="centerColSpan marcacoesDestak" ng-class="{'bh-positivo': funcionario.apontamentoDiario.objBHDiario.horasPosit, 'bh-negativo': funcionario.apontamentoDiario.objBHDiario.horasNegat}">{{funcionario.apontamentoDiario.objBHDiario.horasFtd}}</td>
+      <td class="centerColSpan">{{funcionario.alocacao.turno.escala.nome}}</td>
+      <td class="centerColSpan">{{funcionario.alocacao.turno.escala.codigo == 1?  funcionario.alocacao.turno.jornada.array[currentDate.getDay()].horarioFtd : funcionario.alocacao.turno.jornada.array[0].horarioFtd}}</td>
+      <td class="centerColSpan last"> 
+        {{funcionario.apontamento.observacoes}}
+      </td>
     </tr>
     </tbody>
   </table>

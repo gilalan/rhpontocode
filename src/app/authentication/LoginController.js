@@ -35,6 +35,12 @@
       });
     };
 
+    $scope.logout = function() {
+    
+      $scope.$emit('logout');
+      //$state.go("");
+    }
+
   }
 
 })();

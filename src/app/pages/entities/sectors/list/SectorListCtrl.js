@@ -15,9 +15,12 @@
     //vm.label = $stateParams.label;
 
     console.log('setores - List controller');
-    $scope.smartTablePageSize = 5;
+    $scope.smartTablePageSize = 10;
     console.log('Setores pelo Resolve: ', setores);
-    $scope.setores = setores.data;
+    if(!setores)
+      alert('Houve um problema de captura das informações no banco de dados');
+    else
+      $scope.setores = setores.data;
 
     $scope.delete = function (id, index) {
 

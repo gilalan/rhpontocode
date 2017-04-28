@@ -1,3 +1,39 @@
+<div class="row">
+  <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Feito!</strong> {{successMsg}}
+  </div>
+
+  <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Ops!</strong> {{errorMsg}}
+  </div>
+</div>
+
+<div class="row" ng-if="liberado && gestor">
+  <div class="col-sm-12">
+    <div class="dadosIdent"> <strong>Gestor(a)</strong>: {{gestor.nome}} {{gestor.sobrenome}} </div>
+  </div>
+</div>
+
+<div class="row" ng-if="liberado">
+  <p ng-if="!equipes"><strong>Sem equipes para gerir!</strong></p> 
+  <div class="col-sm-12" ng-if="equipes">
+    <div class="form-group">
+      <div class="btn-toolbar-example">
+        <label class="control-label dadosIdent" for="Equipes"><strong>Equipes Geridas:</strong></label>
+        <div class="btn-toolbar" role="toolbar" aria-label="Equipes do Gestor">
+          <div class="btn-group" role="group" aria-label="First group" ng-repeat="equipe in equipes">
+            <button type="button" class="btn btn-default btn-sm" ng-class="{'btn-primary': equipe.selecionada}" ng-click="checkUncheckEquipe(equipe)">
+            {{::equipe.nome}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <dashboard-pie-chart></dashboard-pie-chart>
 
 <div class="row">
@@ -5,7 +41,54 @@
     <div ba-panel 
          ba-panel-title="Registros Diários" 
          ba-panel-class="medium-panel with-scroll table-panel">
-      <dashboard-table></dashboard-table>
+      <!-- <dashboard-table setores="setores" usuario="usuario" feriados="feriados" currdate="currdate" equipes="equipes" equipeSelected="equipeSelected"></dashboard-table> -->
+      <div class="horizontal-scroll">
+        <table class="table table-condensed"><!--tirei a tableDash style-->
+          <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th colspan="4" style="text-align: center;">Marcações</th>
+            <th></th>
+          </tr>
+          <tr>
+            <th class="col-xs-1 first">Status</th>
+            <th class="col-xs-1 first">Nome</th>
+            <th class="col-xs-1 first">Cargo</th>
+            <th class="col-xs-1 centerColSpan first">E1</th>
+            <th class="col-xs-1 centerColSpan first">S1</th>
+            <th class="col-xs-1 centerColSpan first">E2</th>
+            <th class="col-xs-1 centerColSpan first">S2</th>
+            <th class="col-xs-1 centerColSpan first">Banco Hrs.</th>
+            <th class="col-xs-1 centerColSpan first">Escala</th>
+            <th class="col-xs-1 centerColSpan first">Horário</th>
+            <th class="col-xs-2 centerColSpan first last">Observações</th>
+          </tr>
+          </thead>
+          <tbody>
+          <!-- {{::( 'app/todo/user-basic1.png' | appImage )}}
+          {{::funcionario.apontamentoDiario.statusImgUrl}} 
+          {{::('app/todo/'+funcionario.apontamentoDiario.statusImgUrl | appImage)}}-->
+          <tr ng-repeat="funcionario in equipe.componentes" ng-click="setSelected(funcionario)">
+            <td><img class="img-responsive" ng-src="{{::funcionario.apontamentoDiario.statusImgUrl}}" alt="{{funcionario.apontamentoDiario.statusString}}" title="{{funcionario.apontamentoDiario.statusString}}"></td>
+            <td>{{funcionario.nome}}</td>
+            <td>{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
+            </td>
+            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent1}}</td>
+            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai1}}</td>
+            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent2}}</td>
+            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai2}}</td>
+            <td class="centerColSpan marcacoesDestak" ng-class="{'bh-positivo': funcionario.apontamentoDiario.objBHDiario.horasPosit, 'bh-negativo': funcionario.apontamentoDiario.objBHDiario.horasNegat}">{{funcionario.apontamentoDiario.objBHDiario.horasFtd}}</td>
+            <td class="centerColSpan">{{funcionario.alocacao.turno.escala.nome}}</td>
+            <td class="centerColSpan">{{funcionario.alocacao.turno.escala.codigo == 1?  funcionario.alocacao.turno.jornada.array[currentDate.getDay()].horarioFtd : funcionario.alocacao.turno.jornada.array[0].horarioFtd}}</td>
+            <td class="centerColSpan last"> 
+              {{funcionario.apontamento.observacoes}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

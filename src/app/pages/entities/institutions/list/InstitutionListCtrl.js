@@ -15,9 +15,12 @@
     //vm.label = $stateParams.label;
 
     console.log('List controller');
-    $scope.smartTablePageSize = 5;
+    $scope.smartTablePageSize = 10;
     console.log('Instituicoes pelo Resolve: ', instituicoes);
-    $scope.instituicoes = instituicoes.data;
+    if (!instituicoes)
+      alert('Houve um problema de captura das informações no banco de dados');
+    else
+      $scope.instituicoes = instituicoes.data;
 
     $scope.delete = function (id, index) {
 

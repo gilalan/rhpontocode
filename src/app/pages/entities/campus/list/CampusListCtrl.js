@@ -15,9 +15,12 @@
     //vm.label = $stateParams.label;
 
     console.log('campi - List controller');
-    $scope.smartTablePageSize = 5;
+    $scope.smartTablePageSize = 10;
     console.log('Campi pelo Resolve: ', campi);
-    $scope.campi = campi.data;
+    if (!campi)
+      alert('Houve um problema de captura das informações no banco de dados');
+    else
+      $scope.campi = campi.data;
 
     $scope.delete = function (id, index) {
 

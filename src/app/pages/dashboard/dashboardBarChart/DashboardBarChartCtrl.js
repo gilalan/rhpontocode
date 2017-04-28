@@ -17,84 +17,85 @@
     var chartData = [
       {
         country: 'USA',
-        visits: 3025,
+        visits: 50,
         color: layoutColors.primary
       },
       {
         country: 'China',
-        visits: 1882,
+        visits: 31,
         color: layoutColors.danger
 
       },
       {
         country: 'Japan',
-        visits: 1809,
+        visits: 18,
         color: layoutColors.info
       },
       {
         country: 'Germany',
-        visits: 1322,
+        visits: -5,
         color: layoutColors.success
       },
       {
         country: 'UK',
-        visits: 1122,
+        visits: -11,
         color: layoutColors.warning
       },
       {
         country: 'France',
-        visits: 1114,
+        visits: 0,
         color: layoutColors.primaryLight
       }
     ];
 
     console.log('AmCharts from BarChartCtrl: ', AmCharts);
 
-    var chart = AmCharts.makeChart('amBarChart', {
+    var chart = AmCharts.makeChart('barChart', 
+    {
       type: 'serial',
-      theme: 'blur',
-      color: layoutColors.defaultText,
       dataProvider: chartData,
+      categoryField: 'country',
+      //theme: 'blur',
+      //color: layoutColors.defaultText,
       valueAxes: [
         {
           axisAlpha: 0,
           position: 'left',
-          title: 'Visitors from country',
+          title: 'Horas trabalhadas',
           gridAlpha: 0.5,
           gridColor: layoutColors.border,
         }
       ],
-      startDuration: 1,
-      graphs: [
-        {
-          balloonText: '<b>[[category]]: [[value]]</b>',
-          fillColorsField: 'color',
-          fillAlphas: 0.7,
-          lineAlpha: 0.2,
-          type: 'column',
-          valueField: 'visits'
-        }
-      ],
-      chartCursor: {
-        categoryBalloonEnabled: false,
-        cursorAlpha: 0,
-        zoomable: false
-      },
-      categoryField: 'country',
       categoryAxis: {
         gridPosition: 'start',
         labelRotation: 45,
         gridAlpha: 0.5,
         gridColor: layoutColors.border,
       },
+      startDuration: 1,
+      chartCursor: {
+        categoryBalloonEnabled: false,
+        cursorAlpha: 0,
+        zoomable: false
+      },
+      graphs: [
+        {
+          valueField: 'visits',
+          type: 'column',
+          balloonText: '<b>[[category]]: [[value]]</b>',
+          fillColorsField: 'color',
+          fillAlphas: 0.7,
+          lineAlpha: 0.2
+        }
+      ],        
       export: {
         enabled: true
       },
       creditsPosition: 'top-right',
       pathToImages: layoutPaths.images.amChart
-    });
+    }
 
-    console.log('chart from Bar: ', chart);
+    );
 
     // function zoomChart() {
     //   chart.zoomToDates(new Date(2013, 3), new Date(2014, 0));

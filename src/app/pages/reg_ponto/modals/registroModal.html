@@ -1,0 +1,26 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">Comprovante do Trabalhador</h4>
+  </div>
+  <div class="modal-body">
+    <div class="papelComprovante">
+      <p>
+        COMPROVANTE DE REGISTRO DE PONTO DO TRABALHADOR<br>
+        SISTEMA ALTERNATIVO DE BATIDA DE PONTO: RHPONTO <br>
+        CNPJ: 00.000.000/0000-00<br>
+        LOCAL: UNIVASF <br>
+        NOME: {{batidaInfo.funcionario.nome}} {{batidaInfo.funcionario.sobrenome}}<br>
+        PIS: {{batidaInfo.funcionario.PIS}}<br>
+        DATA: {{batidaInfo.date}}, &nbsp; &nbsp; &nbsp; &nbsp; HORA: {{batidaInfo.hora}}:{{batidaInfo.minuto}}<br>
+        NSR: 0000000044
+      </p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-click="save()">Salvar</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

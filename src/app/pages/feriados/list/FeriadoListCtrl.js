@@ -14,10 +14,13 @@
     //vm.messages = mailMessages.getMessagesByLabel($stateParams.label);
     //vm.label = $stateParams.label;}
     console.log('feriados - List controller');
-    $scope.smartTablePageSize = 5;
+    $scope.smartTablePageSize = 10;
     //var feriados = [];
     console.log('feriados pelo Resolve: ', feriados);
-    $scope.feriados = feriados.data;
+    if (!feriados)
+      alert('Houve um problema de captura das informações no banco de dados');
+    else 
+      $scope.feriados = feriados.data;
 
     $scope.delete = function (id, index) {
 

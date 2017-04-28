@@ -12,7 +12,11 @@
   ]).
 
   factory('Auth', function($localStorage, $q, jwtHelper){
+    
     console.log('Auth factory');
+
+    var batidaDireta = false;
+
     return {
       authorize: function(routerAccessLevel){
 

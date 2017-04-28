@@ -15,9 +15,12 @@
     //vm.label = $stateParams.label;
 
     console.log('equipes - List controller');
-    $scope.smartTablePageSize = 5;
+    $scope.smartTablePageSize = 10;
     console.log('Equipes pelo Resolve: ', equipes);
-    $scope.equipes = equipes.data;
+    if(!equipes)
+      alert('Houve um problema de captura das informações no banco de dados');
+    else
+      $scope.equipes = equipes.data;
 
     $scope.delete = function (id, index) {
 

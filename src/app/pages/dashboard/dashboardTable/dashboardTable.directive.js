@@ -13,6 +13,14 @@
     return {
       restrict: 'E',
       controller: 'DashboardTableCtrl',
+      scope: {
+        setores: '=',
+        usuario: '=',
+        currdate: '=',
+        feriados: '=',
+        equipes: '=',
+        equipeSelected: '='
+      },
       templateUrl: 'app/pages/dashboard/dashboardTable/dashboardTable.html'
     };
   }

@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  angular.module('BlurAdmin.pages.regponto', [])
+  angular.module('BlurAdmin.pages.regponto', ['ui.bootstrap'])
       .config(routeConfig);
 
   /** @ngInject */
