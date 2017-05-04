@@ -9,7 +9,7 @@
       .controller('DashboardCtrl', DashboardCtrl);
 
   /** @ngInject */
-  function DashboardCtrl($scope, $filter, setores, usuario, feriados, currentDate, teamAPI, appointmentAPI, baConfig, dashboardDataFactory) {
+  function DashboardCtrl($scope, $filter, setores, usuario, feriados, currentDate, util, teamAPI, appointmentAPI, baConfig, dashboardDataFactory) {
     
     console.log('setore resolve: ', setores);
     console.log('dashboardFactory from controller', dashboardDataFactory);
@@ -57,8 +57,7 @@
     $scope.usuario = usuario.data;
     $scope.feriados = feriados.data;
     console.log('USUÁRIO: ', $scope.usuario);
-    $scope.currdate = currentDate.data;//passado pelo atributo html
-    $scope.currentDate = new Date(currentDate.data.date);//usado aqui - fica variando a medida que o usuario navega
+    $scope.currentDate = util.createNewDate(currentDate.data.date);//usado aqui - fica variando a medida que o usuario navega
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
     $scope.gestor = $scope.usuario.funcionario;
     console.log('GESTOR: ', $scope.gestor);
@@ -70,7 +69,7 @@
 
     var weekDays = ["Dom","Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     var objMapDataLabel = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6};
-    var dataHoje = new Date(currentDate.data.date);//data de hoje mesmo para comparações com as datas que ele vai navegando
+    var dataHoje = util.createNewDate(currentDate.data.date);//data de hoje mesmo para comparações com as datas que ele vai navegando
     var firstRun = true;
     
     /*
@@ -96,11 +95,21 @@
       getApontamentosByDateRangeAndEquipe(addOrSubtractDays($scope.currentDate, 0), 1, $scope.equipe.componentes, true);//pegando o diário
     }
 
+    $scope.barChartDias = function (diasG) {
+
+      console.log('Direto do barChart: ', diasG);
+    };
+
+    $scope.lineChartDias = function (diasG) {
+      
+      console.log('Direto do lineChart: ', diasG);
+    };
+
     $scope.subtractOneWeek = function () {
       
-      var currentBegin = new Date($scope.currentWeek.begin);
-      var novoBegin = new Date(addOrSubtractDays(currentBegin, -7));
-      var novoEnd = new Date(addOrSubtractDays(currentBegin, -1));
+      var currentBegin = util.createNewDate($scope.currentWeek.begin);
+      var novoBegin = util.createNewDate(addOrSubtractDays(currentBegin, -7));
+      var novoEnd = util.createNewDate(addOrSubtractDays(currentBegin, -1));
       //////console.log("currentBegin? ", currentBegin);
       //////console.log("Novo Begin? ", novoBegin);
       //////console.log("Novo End? ", novoEnd);
@@ -120,9 +129,9 @@
 
     $scope.addOneWeek = function () {
       
-      var currentEnd = new Date($scope.currentWeek.end);
-      var novoBegin = new Date(addOrSubtractDays(currentEnd, 1));
-      var novoEnd = new Date(addOrSubtractDays(currentEnd, 7));
+      var currentEnd = util.createNewDate($scope.currentWeek.end);
+      var novoBegin = util.createNewDate(addOrSubtractDays(currentEnd, 1));
+      var novoEnd = util.createNewDate(addOrSubtractDays(currentEnd, 7));
       //////console.log("currentEnd? ", currentEnd);
       //////console.log("Novo Begin? ", novoBegin);
       //////console.log("Novo End? ", novoEnd);
@@ -391,7 +400,7 @@
         apontamento.statusCodeString = expedienteObj.code;
         apontamento.statusString = expedienteObj.string;
         apontamento.statusImgUrl = expedienteObj.imgUrl;
-        
+        console.log('expedienteObj returned: ', expedienteObj);
         if (expedienteObj.code == "FRD"){
           saldoFlag = true;
           sinalFlag = '';
@@ -420,80 +429,6 @@
           horasNegat: !saldoFlag
         };
       }
-
-      //   //pode não ter expediente iniciado, estar atrasado ou faltante mesmo
-      //   if (apontamento.marcacoes.length == 0){
-
-          
-      //     expedienteObj = checkExpediente(funcionarioAlocacao, false, false);
-      //     apontamento.statusCodeString = expedienteObj.code;
-      //     apontamento.statusString = expedienteObj.string;
-      //     apontamento.statusImgUrl = expedienteObj.imgUrl;
-
-      //     //se o func estiver ausente
-      //     if (expedienteObj.code == "AUS") {
-
-      //     }
-
-      //   } //aqui podemos contabilizar o saldo de BH tb           
-      //   else if (apontamento.marcacoes.length > 0){
-          
-      //     apontamento.marcacoesStringObj = createStringMarcacoes(apontamento);
-      //     //checar a primeira batida -> ent1
-      //     var _ent1ObjMarcacao = apontamento.marcacoes[0];
-      //     var minutosTotaisMarcacao = converteParaMinutosTotais(_ent1ObjMarcacao.hora, 
-      //       _ent1ObjMarcacao.minuto);
-      //     //apontamento.statusString = "Em andamento";
-      //     //Verificar a falta de flexibilidade, pois utiliza a tolerancia
-      //     if(!funcionario.alocacao.turno.isFlexivel){
-
-      //       expedienteObj = checkExpediente(funcionarioAlocacao, minutosTotaisMarcacao, funcionarioAlocacao.turno.tolerancia);
-      //       apontamento.statusCodeString = expedienteObj.code;
-      //       apontamento.statusString = expedienteObj.string;
-      //       apontamento.statusImgUrl = expedienteObj.imgUrl;
-
-      //       //É Dia de Folga e o cara tá trabalhando
-      //       if (expedienteObj.code == "DSR") {
-      //         apontamento.observacoes = "Funcionário trabalhando em dia de folga";
-      //       }
-
-      //     }
-      //     else {
-      //       //////console.log("horário flexível, não dá pra dizer se há atraso");
-      //       apontamento.statusCodeString = "FLE";
-      //       apontamento.statusString = "Horário Flexível";
-      //       apontamento.statusImgUrl = "assets/img/app/todo/bullet-black.png";
-      //     }               
-          
-      //     //salvar no apontamento de cada funcionario
-      //     totalBHDia = calcularBancoHorasDia(funcionarioAlocacao.turno.escala.codigo, 
-      //       funcionarioAlocacao, apontamento);        
-
-      //     //console.log("********* MapBancoHoras: ", totalBHDia);
-      //   }
-       
-      // }
-      // //se não tiver apontamento ou marcações -> 
-      // else {
-      //   expedienteObj = checkExpediente(funcionarioAlocacao, false, false);
-      //   apontamento.statusCodeString = expedienteObj.code;
-      //   apontamento.statusString = expedienteObj.string;
-      //   apontamento.statusImgUrl = expedienteObj.imgUrl;
-
-      //   //se o func estiver ausente
-      //   if (expedienteObj.code == "AUS") {
-
-      //   }
-      // }
-
-      // //inclui uma property para o total calculado de banco horas do dia (registro em minutos)
-      // if (totalBHDia != null){
-      //   apontamento.bancoHorasDia = totalBHDia;
-      //   apontamento.objBHDiario = getBancoHorasDiarioFtd(totalBHDia);
-      // }
-      // else {
-        
-      // } 
 
       //Atualiza o funcionario.apontamento.
       funcionario.apontamentoDiario = apontamento;
@@ -661,7 +596,7 @@
 
       var objDay = getDayInArrayJornadaSemanal(today, jornadaArray);
       
-      if (objDay.minutosTrabalho <= 0) { //Caso 4 - DSR
+      if (!objDay || !objDay.minutosTrabalho || objDay.minutosTrabalho <= 0) { //Caso 4 - DSR
         
         return {code: "DSR", string: "Descanso Semanal Remunerado", imgUrl: "assets/img/app/todo/bullet-grey.png"};
 
@@ -710,7 +645,7 @@
       var jornadaArray = funcionarioAlocacao.turno.jornada.array;
 
       var trabalha = isWorkingDay($scope.currentDate, 
-        new Date(funcionarioAlocacao.dataInicioEfetivo));
+        util.createNewDate(funcionarioAlocacao.dataInicioEfetivo));
       
       if (trabalha && jornadaArray.length > 0) { //ele deveria ter trabalhado, ou é ENI ou AUSENCIA
 
@@ -840,7 +775,7 @@
 
             //////console.log("ObjDay ", objDay);
             objDay = getDayInJornadaDiferenciada($scope.currentDate, 
-              new Date(funcionarioAlocacao.dataInicioEfetivo));
+              util.createNewDate(funcionarioAlocacao.dataInicioEfetivo));
             
 
             if (objDay.isWorkingDay && jornadaArray.length > 0) {
@@ -1043,12 +978,12 @@
       //semanal
       if (codigoEscala == 1) {
 
-        horasDesejadas = getDayInArrayJornadaSemanal((new Date(apontamento.data)).getDay(), funcionarioAlocacao.turno.jornada.array).minutosTrabalho;
+        horasDesejadas = getDayInArrayJornadaSemanal((util.createNewDate(apontamento.data)).getDay(), funcionarioAlocacao.turno.jornada.array).minutosTrabalho;
 
       } else if (codigoEscala == 2) {
 
-        if (isWorkingDay(new Date(apontamento.data), 
-            new Date(funcionarioAlocacao.dataInicioEfetivo))){
+        if (isWorkingDay(util.createNewDate(apontamento.data), 
+            util.createNewDate(funcionarioAlocacao.dataInicioEfetivo))){
           
           horasDesejadas = funcionarioAlocacao.turno.jornada.minutosTrabalho;
         }
@@ -1396,7 +1331,7 @@
 
         } else if (codigoEscala == 2) {
 
-          objDay = getDayInJornadaDiferenciada(currentDateNav, new Date(componente.alocacao.dataInicioEfetivo));
+          objDay = getDayInJornadaDiferenciada(currentDateNav, util.createNewDate(componente.alocacao.dataInicioEfetivo));
           ////console.log("escala 12x36h");
           if (objDay.isWorkingDay && componente.alocacao.turno.jornada.array.length > 0) { //realmente faltou
 

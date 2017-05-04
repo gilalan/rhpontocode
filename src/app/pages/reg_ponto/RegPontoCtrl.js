@@ -10,7 +10,7 @@
       .controller('ModalRegisterCtrl', ModalRegisterCtrl);
 
   /** @ngInject */
-  function RegPontoCtrl($scope, $filter, $location, $state, $interval, $uibModal, appointmentAPI, employeeAPI, Auth, usuario, currentDate, feriados, batidaDireta) {
+  function RegPontoCtrl($scope, $filter, $location, $state, $interval, $uibModal, appointmentAPI, employeeAPI, Auth, usuario, currentDate, feriados, batidaDireta, util) {
 
     console.log("dentro do RegPontoCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
@@ -18,20 +18,23 @@
     $scope.currentDate = currentDate.data.date;
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'dd/MM/yyyy');
 
+    console.log('currentDate: ', $scope.currentDate);
+    console.log('new Date (currentDate): ', new Date($scope.currentDate));
+
     console.log('Batida Direta?!??', batidaDireta);
     var batidaDireta = batidaDireta;
     var feriados = feriados.data;
-    var secsControl = 0;
+    var secsControl = 1;
     var apontamento = null;
     var marcacao = null;
     var pagePath = 'app/pages/reg_ponto/modals/registroModal.html';
     var defaultSize = 'md';
+    var clock = util.createNewDate($scope.currentDate);//new Date($scope.currentDate);
     var tick = function() {
       //$scope.clock = Date.now();//atualiza os segundos manualmente
-      var clock = new Date($scope.currentDate);
       clock.setSeconds(clock.getSeconds() + secsControl);
       $scope.clock = clock;
-      secsControl++;
+      //secsControl++;
     };
 
     $scope.open = function () {
@@ -47,7 +50,9 @@
       
       appointmentAPI.getCurrentDate().then(function sucessCallback(response){
 
-        var newDate = new Date(response.data.date);
+        var newDate = util.createNewDate(response.data.date);
+        console.log('newDate in client from server', newDate);
+
         var gId = (apontamento) ? getId(apontamento.marcacoes) : 1;
         var descricao = (apontamento) ? getDescricao(apontamento.marcacoes) : "ent1";
 
@@ -188,7 +193,8 @@
         } else if (escala.codigo == 2) { //escala 12x36
 
           //dia de trabalho
-          if (isWorkingDayRotationScale(date, new Date($scope.funcionario.alocacao.dataInicioEfetivo)) && !flagFeriado){
+          console.log('new date from isWorkingDayRotationScale: ', util.createNewDate($scope.funcionario.alocacao.dataInicioEfetivo));
+          if (isWorkingDayRotationScale(date, util.createNewDate($scope.funcionario.alocacao.dataInicioEfetivo)) && !flagFeriado){
             
             infoTrabalho.trabalha = true; 
             infoTrabalho.aTrabalhar = turno.jornada.minutosTrabalho;
@@ -350,6 +356,7 @@
       feriados.forEach(function(feriado){
         
         tempDate = new Date(feriado.data);
+        console.log('new date from feriado: ', new Date(feriado.data));
         if (feriado.fixo){
           
           if (tempDate.getMonth() === month && tempDate.getDate() === day){
@@ -489,6 +496,17 @@
         $scope.errorMsg = response.data.message;
         console.log("Erro na obtenção do apontamento diário: " + response.data.message);
       });
+    }
+
+    function addOrSubtractDays(date, value) {
+      
+      console.log('#addOrSubtractDays: ', new Date(date));    
+      date = angular.copy(date);
+      date.setHours(0,0,0,0);
+      console.log('new date from addOrSubtractDays: ', new Date(date.getTime()));
+      console.log('somado ao valor pedido: ', value);
+      console.log('resultado final: ', new Date(date.getTime() + (value*864e5)));
+      return new Date(date.getTime() + (value*864e5));
     }
 
     function init() {
