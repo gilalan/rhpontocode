@@ -1,3 +1,7 @@
+#table-dash-rh table tbody tr td{
+  line-height: 20px;
+}
+
 .table {
   margin-bottom: 0px;
   & > thead {
@@ -20,8 +24,9 @@
         padding-top: 1px;
       }
       & > td {
-        padding: 0px 8px;
-        line-height: 35px;
+        padding: 4px 8px;
+        line-height: 30px;
+        vertical-align: middle;
         border-top: 1px solid $border-light;
         &:first-child {
           text-align: center;

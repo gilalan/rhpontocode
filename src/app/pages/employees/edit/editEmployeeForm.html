@@ -109,7 +109,7 @@
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputTurno">Turno</label>
+        <label for="inputTurno">Turno*</label>
          <ui-select ng-model="selectedTurno.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
@@ -133,14 +133,14 @@
     <div class="col-sm-3">
       <br/>
       <label class="checkbox-inline custom-checkbox nowrap">
-        <input type="checkbox" id="checkboxSexo" ng-model="funcionario.sexoMasculino" ng-required=true>
+        <input type="checkbox" id="checkboxSexo" ng-model="funcionario.sexoMasculino">
         <span>Sexo Masculino?*</span>
       </label>
     </div>
     <div class="col-sm-3">
       <br/>
       <label class="checkbox-inline custom-checkbox nowrap">
-        <input type="checkbox" id="checkboxRHPonto" ng-model="funcionario.rhponto" ng-required=true>
+        <input type="checkbox" id="checkboxRHPonto" ng-model="funcionario.rhponto">
         <span>Utiliza RHPonto?*</span>
       </label>
     </div>

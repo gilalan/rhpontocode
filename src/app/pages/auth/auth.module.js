@@ -42,8 +42,8 @@
         //console.log()
       },
       getCurrentUser: function() {
-        console.log('## Get Current User?!');
         var user = jwtHelper.decodeToken($localStorage.token);
+        console.log('## Get Current User?!', user);
         return user;
       },
       setBatidaDireta: function(flag) {

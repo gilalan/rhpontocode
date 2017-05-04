@@ -1,0 +1,109 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">Configurar Funcionário para Acesso ao Sistema</h4>
+  </div>
+  <div class="modal-body">
+          
+        <div class="row">
+         <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Feito!</strong> {{successMsg}}
+          </div>
+
+          <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Ops!</strong> {{errorMsg}}
+          </div>
+        </div>
+        <h4 class="sub-header"><strong style="color: #334db7;">Dados</strong></h4>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label class="modal-label modal-label-associate"><strong>Nome: </strong></label>
+              <label class="modal-label modal-label-value">{{funcionario.nome}} {{funcionario.sobrenome}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label class="modal-label modal-label-associate"><strong>Cargo: </strong></label>
+              <label class="modal-label modal-label-value">{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label class="modal-label modal-label-associate"><strong>Data de Admissão: </strong></label>
+              <label class="modal-label modal-label-value">{{funcionario.alocacao.dataAdmissao | date:'dd/MM/yyyy'}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label class="modal-label modal-label-associate"><strong>E-mail: </strong></label>
+              <label class="modal-label modal-label-value">{{funcionario.email}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <label class="modal-label" ng-if="!isAssociated"> *Funcionário ainda não configurado para acesso*</label>
+            <label class="modal-label" ng-if="isAssociated"> *Funcionário já possui acesso com o e-mail: <strong>{{usuario.email}}</strong> </label>
+          </div>
+        </div>
+      <h4 class="sub-header"><strong style="color: #334db7;">Informações de acesso ao RHPonto*</strong></h4>
+      <form name="userForm">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="inputNome">E-mail*</label>
+            <input type="text" class="form-control" id="inputNome" placeholder="E-mail" ng-model="user.email" ng-required="true">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="selectRole">Papel no sistema/nível de acesso*</label>
+            <ui-select ng-model="selectedNivel.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="true"
+               append-to-body="true"
+               search-enabled="false"
+               ng-required="true">
+            <ui-select-match placeholder="Selecione um Papel/Nível">
+              <span> {{$select.selected.nome}}</span>
+            </ui-select-match>
+            <ui-select-choices repeat="perfil in (perfis | filter: $select.search) track by perfil._id">
+              <span ng-bind-html="perfil.nome"></span>
+            </ui-select-choices>
+          </ui-select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="inputPassword">Senha*</label>
+            <input type="password" class="form-control" id="inputPassword" placeholder="Senha" ng-model="user.senha" ng-required="true" ng-minlength='8'>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="inputConfirmaSenha">Confirmação da Senha*</label>
+            <input type="password" class="form-control" id="inputConfirmaSenha" placeholder="Confirme a senha" ng-model="user.confirmaSenha" ng-required="true" ng-minlength='8' compare-to="user.senha">
+          </div>
+        </div>
+      </div>
+    </form>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-disabled="userForm.$invalid" ng-click="associar(user)">Associar</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

@@ -28,6 +28,7 @@ angular.module('BlurAdmin', [
 })
 .run(['$rootScope', '$location', '$window', '$state', 'Auth', function($rootScope, $location, $window, $state, Auth){
   
+  console.log('## - Dentro do RUN: State?!', $state);
   /*accessLevel => 
    *{
      0: public,

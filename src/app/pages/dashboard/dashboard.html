@@ -1,3 +1,9 @@
+<div id="loaderDiv" loader>
+  <p class="ajax-loader title-loader"> Carregando... </p>
+  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+</div>
+
 <div class="row">
   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
     <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -37,75 +43,104 @@
 <dashboard-pie-chart></dashboard-pie-chart>
 
 <div class="row">
-  <div class="col-lg-12 col-md-12">
-    <div ba-panel 
-         ba-panel-title="Registros Diários" 
-         ba-panel-class="medium-panel with-scroll table-panel">
-      <!-- <dashboard-table setores="setores" usuario="usuario" feriados="feriados" currdate="currdate" equipes="equipes" equipeSelected="equipeSelected"></dashboard-table> -->
-      <div class="horizontal-scroll">
-        <table class="table table-condensed"><!--tirei a tableDash style-->
-          <thead>
-          <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th colspan="4" style="text-align: center;">Marcações</th>
-            <th></th>
-          </tr>
-          <tr>
-            <th class="col-xs-1 first">Status</th>
-            <th class="col-xs-1 first">Nome</th>
-            <th class="col-xs-1 first">Cargo</th>
-            <th class="col-xs-1 centerColSpan first">E1</th>
-            <th class="col-xs-1 centerColSpan first">S1</th>
-            <th class="col-xs-1 centerColSpan first">E2</th>
-            <th class="col-xs-1 centerColSpan first">S2</th>
-            <th class="col-xs-1 centerColSpan first">Banco Hrs.</th>
-            <th class="col-xs-1 centerColSpan first">Escala</th>
-            <th class="col-xs-1 centerColSpan first">Horário</th>
-            <th class="col-xs-2 centerColSpan first last">Observações</th>
-          </tr>
-          </thead>
-          <tbody>
-          <!-- {{::( 'app/todo/user-basic1.png' | appImage )}}
-          {{::funcionario.apontamentoDiario.statusImgUrl}} 
-          {{::('app/todo/'+funcionario.apontamentoDiario.statusImgUrl | appImage)}}-->
-          <tr ng-repeat="funcionario in equipe.componentes" ng-click="setSelected(funcionario)">
-            <td><img class="img-responsive" ng-src="{{::funcionario.apontamentoDiario.statusImgUrl}}" alt="{{funcionario.apontamentoDiario.statusString}}" title="{{funcionario.apontamentoDiario.statusString}}"></td>
-            <td>{{funcionario.nome}}</td>
-            <td>{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
-            </td>
-            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent1}}</td>
-            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai1}}</td>
-            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent2}}</td>
-            <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai2}}</td>
-            <td class="centerColSpan marcacoesDestak" ng-class="{'bh-positivo': funcionario.apontamentoDiario.objBHDiario.horasPosit, 'bh-negativo': funcionario.apontamentoDiario.objBHDiario.horasNegat}">{{funcionario.apontamentoDiario.objBHDiario.horasFtd}}</td>
-            <td class="centerColSpan">{{funcionario.alocacao.turno.escala.nome}}</td>
-            <td class="centerColSpan">{{funcionario.alocacao.turno.escala.codigo == 1?  funcionario.alocacao.turno.jornada.array[currentDate.getDay()].horarioFtd : funcionario.alocacao.turno.jornada.array[0].horarioFtd}}</td>
-            <td class="centerColSpan last"> 
-              {{funcionario.apontamento.observacoes}}
-            </td>
-          </tr>
-          </tbody>
-        </table>
+  <div class="row">
+    <div class="col-sm-12 dadosIdent dateDestak needSpace"> 
+        <button type="button" class="btn btn-sm btn-default" ng-click="subtractOneDay()">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        </button>
+        {{currentDateFtd}} 
+        <button type="button" class="btn btn-sm btn-default" ng-click="addOneDay()">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div ba-panel 
+           ba-panel-title="Registros Diários" 
+           ba-panel-class="medium-panel with-scroll table-panel">
+        <!-- <dashboard-table setores="setores" usuario="usuario" feriados="feriados" currdate="currdate" equipes="equipes" equipeSelected="equipeSelected"></dashboard-table> -->
+        <div class="horizontal-scroll">
+          <table id="table-dash-rh" class="table table-condensed table-hover"><!--tirei a tableDash style-->
+            <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th colspan="4" style="text-align: center;">Marcações</th>
+              <th></th>
+            </tr>
+            <tr>
+              <th class="col-xs-1 first">Status</th>
+              <th class="col-xs-1 first">Nome</th>
+              <th class="col-xs-1 first">Cargo</th>
+              <th class="col-xs-1 centerColSpan first">E1</th>
+              <th class="col-xs-1 centerColSpan first">S1</th>
+              <th class="col-xs-1 centerColSpan first">E2</th>
+              <th class="col-xs-1 centerColSpan first">S2</th>
+              <th class="col-xs-1 centerColSpan first">Saldo</th>
+              <th class="col-xs-1 centerColSpan first">Escala</th>
+              <th class="col-xs-1 centerColSpan first">Horário</th>
+              <th class="col-xs-2 centerColSpan first last">Observações</th>
+            </tr>
+            </thead>
+            <tbody class="vertAlignMid">
+            <tr ng-repeat="funcionario in equipe.componentes" ng-click="setSelected(funcionario)">
+              <td><img class="img-responsive" ng-src="{{funcionario.apontamentoDiario.statusImgUrl}}" alt="{{funcionario.apontamentoDiario.statusString}}" title="{{funcionario.apontamentoDiario.statusString}}"></td>
+              <td>{{funcionario.nome}}</td>
+              <td>{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
+              </td>
+              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent1}}</td>
+              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai1}}</td>
+              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent2}}</td>
+              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai2}}</td>
+              <td class="centerColSpan marcacoesDestak" ng-class="{'bh-positivo': funcionario.apontamentoDiario.objBHDiario.horasPosit, 'bh-negativo': funcionario.apontamentoDiario.objBHDiario.horasNegat}">{{funcionario.apontamentoDiario.objBHDiario.horasFtd}}</td>
+              <td class="centerColSpan">{{funcionario.alocacao.turno.escala.nome}}</td>
+              <td class="centerColSpan">{{funcionario.alocacao.turno.escala.codigo == 1?  funcionario.alocacao.turno.jornada.array[currentDate.getDay()].horarioFtd : funcionario.alocacao.turno.jornada.array[0].horarioFtd}}</td>
+              <td class="centerColSpan last"> 
+                {{funcionario.apontamento.observacoes}}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- <dashboard-bar-chart></dashboard-bar-chart> -->    
+<!-- <div ng-include="'app/pages/dashboard/dashboardBarChart/barChart.html'"></div> -->
 <div class="row">
-  <div class="col-lg-6 col-md-6 col-sm-12"
-       ba-panel
-       ba-panel-title="Banco de Horas"
-       ba-panel-class="medium-panel">
-    <dashboard-bar-chart></dashboard-bar-chart>
+  <div class="col-lg-6 col-md-6 col-sm-12">
+    <div class="row">
+      <div class="btn-group" role="group" aria-label="Banco de Horas">
+        <button type="button" class="btn btn-info" title="últimos 7 dias">7d</button>
+        <button type="button" class="btn btn-info" title="último 30 dias">30d</button>
+        <button type="button" class="btn btn-info" title="últimos 90 dias">90d</button>
+      </div>
+      <div  ba-panel
+            ba-panel-title="Banco de Horas"
+            ba-panel-class="medium-panel">
+        <div id="barChart" class="admin-chart" ng-controller="DashboardBarChartCtrl"></div>
+      </div>
+    </div>       
   </div>
-  <div class="col-lg-6 col-md-6 col-sm-12"
-       ba-panel
-       ba-panel-title="Absenteísmo"
-       ba-panel-class="medium-panel">
-    <dashboard-line-chart></dashboard-line-chart>
-  </div>
+  
+  <div class="col-lg-6 col-md-6 col-sm-12">
+    <div class="row">
+      <div class="btn-group" role="group" aria-label="Banco de Horas">
+        <button type="button" class="btn btn-info" title="últimos 7 dias">7d</button>
+        <button type="button" class="btn btn-info" title="últimos 30 dias">30d</button>
+        <button type="button" class="btn btn-info" title="últimos 90 dias">90d</button>
+      </div>
+      <div
+           ba-panel
+           ba-panel-title="Absenteísmo"
+           ba-panel-class="medium-panel">
+        <dashboard-line-chart></dashboard-line-chart>
+      </div>
+    </div>
 </div>
 
 <div class="row">

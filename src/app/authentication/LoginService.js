@@ -1,5 +1,6 @@
 angular.module('BlurAdmin').service("usersAPI", function($http, config){
 
+	console.log('users service');
 	var _urlBaseUsuarios = config.baseUrl + '/api/usuarios';
 	var svc = this;	
 
@@ -20,15 +21,9 @@ angular.module('BlurAdmin').service("usersAPI", function($http, config){
 
 			return response;
 		});
-			
 	};
 
 	svc.register = function (usuario) {
 		return $http.post(_urlBaseUsuarios, usuario);
 	};	
-	
-	svc.getUsuario = function(id) {
-		return $http.get(_urlBaseUsuarios + "/" + id);
-	};
-
 });

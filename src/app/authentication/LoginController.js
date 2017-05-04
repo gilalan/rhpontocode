@@ -9,24 +9,17 @@
       .controller('LoginController', LoginCtrl);
 
   /** @ngInject */
-  function LoginCtrl($scope, $filter, $location, $state, usersAPI) {
+  function LoginCtrl($scope, $state, usersAPI) {
 
     console.log("dentro do LoginCtrl");
-    $scope.teste = 10;
 
     $scope.login = function(user, baterPonto) {
       
       usersAPI.signIn(user).then(function sucessCallback(response){             
-            
-        console.log('Auth.setToken', response.data.token);
-        //window.location.href = "/main.html";
-        //return getUsuario(response.data.idUsuario);
-        //return redirectHome();
-        $scope.$emit('login', response.data.token);
-        //var pathTo = "/dashboard";        
-        //$location.path(pathTo);
-
-        baterPonto ? $state.go('regponto', {userId: response.data.idUsuario}) : $state.go('dashboard');
+                    
+        //baterPonto ? $state.go('regponto', {userId: response.data.idUsuario}) : $state.go('dashboard');
+        $scope.$emit('login', response.data.token, baterPonto);
+        console.log('depois volta para o success do login... segue o jogo!');
 
       }, function errorCallback (response) {
         

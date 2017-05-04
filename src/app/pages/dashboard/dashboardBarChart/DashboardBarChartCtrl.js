@@ -9,44 +9,48 @@
       .controller('DashboardBarChartCtrl', DashboardBarChartCtrl);
 
   /** @ngInject */
-  function DashboardBarChartCtrl(baConfig, layoutPaths, baUtil) {
+  function DashboardBarChartCtrl(baConfig, layoutPaths, baUtil, dashboardDataFactory) {
     
     var layoutColors = baConfig.colors;
     var graphColor = baConfig.theme.blur ? '#000000' : layoutColors.primary;
     
-    var chartData = [
-      {
-        country: 'USA',
-        visits: 50,
-        color: layoutColors.primary
-      },
-      {
-        country: 'China',
-        visits: 31,
-        color: layoutColors.danger
+    var chartData = dashboardDataFactory.getData();
 
-      },
-      {
-        country: 'Japan',
-        visits: 18,
-        color: layoutColors.info
-      },
-      {
-        country: 'Germany',
-        visits: -5,
-        color: layoutColors.success
-      },
-      {
-        country: 'UK',
-        visits: -11,
-        color: layoutColors.warning
-      },
-      {
-        country: 'France',
-        visits: 0,
-        color: layoutColors.primaryLight
-      }
-    ];
+    console.log('chartData: ', chartData);
+
+    // var chartData = [
+    //   {
+    //     country: 'USA',
+    //     visits: 50,
+    //     color: layoutColors.primary
+    //   },
+    //   {
+    //     country: 'China',
+    //     visits: 31,
+    //     color: layoutColors.danger
+
+    //   },
+    //   {
+    //     country: 'Japan',
+    //     visits: 18,
+    //     color: layoutColors.info
+    //   },
+    //   {
+    //     country: 'Germany',
+    //     visits: -5,
+    //     color: layoutColors.success
+    //   },
+    //   {
+    //     country: 'UK',
+    //     visits: -11,
+    //     color: layoutColors.warning
+    //   },
+    //   {
+    //     country: 'France',
+    //     visits: 0,
+    //     color: layoutColors.primaryLight
+    //   }
+    // ];
 
     console.log('AmCharts from BarChartCtrl: ', AmCharts);
 

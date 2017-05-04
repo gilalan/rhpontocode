@@ -1,0 +1,96 @@
+<div class="widgets">
+  <div class="row">
+	  <button ui-sref="teams.list()" type="button" class="back-button btn btn-default btn-with-icon"><i
+	    class="ion-chevron-left"></i>Back
+	  </button>
+  </div>
+  <div class="row">
+    <div class="col-md-12"
+         ba-panel
+         ba-panel-title="Associar/Desassociar Colaboradores a uma Equipe"
+         ba-panel-class="with-scroll">
+        <div>
+          <div class="row">
+            <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+              <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <strong>Feito!</strong> {{successMsg}}
+            </div>
+
+            <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+              <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <strong>Ops!</strong> {{errorMsg}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label class="modal-label modal-label-associate"><strong>Equipe: </strong></label>
+                <label class="modal-label modal-label-value">{{equipe.nome}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label class="modal-label modal-label-associate"><strong>Gestor(a): </strong></label>
+                <label class="modal-label modal-label-value">{{equipe.gestor.nome}} {{equipe.gestor.sobrenome}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="horizontal-scroll">
+                <div class="form-group select-page-size-wrap ">
+                  <label>Linhas por página
+                    <select class="form-control selectpicker show-tick" title="Linhas por página" selectpicker
+                            ng-model="smartTablePageSize" ng-options="i for i in [5,10,15,20,25]">
+                    </select>
+                  </label>
+                </div>
+               
+                <table class="table" st-table="funcionarios">
+                  <thead>
+                  <tr class="sortable ">
+                    <th class="table-id">Associado?</th>
+                    <th st-sort="nome">Nome</th>
+                    <th st-sort="email">E-mail</th>
+                    <th st-sort="cargo">Cargo</th>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <th><input st-search="nome" placeholder="Buscar Nome" class="input-sm form-control search-input"
+                               type="search"/></th>      
+                    <th><input st-search="email" placeholder="Buscar E-mail" class="input-sm form-control search-input"
+                               type="search"/></th>
+                    <th><input st-search="cargo" placeholder="Buscar Cargo" class="input-sm form-control search-input"
+                               type="search"/></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="pointer-class" ng-repeat="componente in funcionarios track by $index" ng-click="setSelected(componente)" ng-class="{'selected-func': componente.selected}">
+                      <td>{{componente.selected ? "Sim" : "Não"}}</td>
+                      <td>{{componente.nome}} {{componente.sobrenome}}</td>
+                      <td>{{componente.email}}</td>
+                      <td>
+                        {{componente.sexoMasculino ? componente.alocacao.cargo.especificacao : componente.alocacao.cargo.nomeFeminino}}
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <td colspan="6" class="text-center">
+                      <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
+                    </td>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="add-row-editable-table">
+    <button class="btn btn-primary" ng-click="associar()">Salvar</button>
+  </div>
+</div>

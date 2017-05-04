@@ -6,16 +6,18 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.feriados')
-    .controller('FeriadoListCtrl', FeriadoListCtrl);
+    .controller('FeriadoListCtrl', FeriadoListCtrl)
+    .controller('ModalDeleteFeriadoCtrl', ModalDeleteFeriadoCtrl);
 
   /** @ngInject */
-  function FeriadoListCtrl($scope, $state, $stateParams, feriadoAPI, feriados) {
-    //var vm = this;
-    //vm.messages = mailMessages.getMessagesByLabel($stateParams.label);
-    //vm.label = $stateParams.label;}
+  function FeriadoListCtrl($scope, $state, $stateParams, $uibModal, feriadoAPI, feriados) {
+    
     console.log('feriados - List controller');
     $scope.smartTablePageSize = 10;
+    var defaultSize = 'md';
+    var pageDeletePath = 'app/pages/feriados/list/deleteModal.html';
     //var feriados = [];
+
     console.log('feriados pelo Resolve: ', feriados);
     if (!feriados)
       alert('Houve um problema de captura das informações no banco de dados');
@@ -24,16 +26,44 @@
 
     $scope.delete = function (id, index) {
 
-      feriadoAPI.delete(id).then(function sucessCallback(response){
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: pageDeletePath,
+        size: defaultSize,
+        controller: 'ModalDeleteFeriadoCtrl',
+        resolve: {
+          feriado: function (feriadoAPI) {
+            return feriadoAPI.getFeriado(id);
+          }
+        }
+      });
+
+      modalInstance.result.then(function (confirmation) {
+        console.log('confirmação: ', confirmation);
+        if (confirmation){
+          $state.reload();
+        }
+      }, function () {
+        console.log('modal-component dismissed at: ' + new Date());
+      });
+    }
+  };
+
+  function ModalDeleteFeriadoCtrl ($uibModalInstance, $scope, feriado, feriadoAPI) {
+    
+    $scope.feriado = feriado.data;
+    console.log('$scope.feriado ', $scope.feriado);
+    var $ctrl = this;
+    $ctrl.confirmation = true;
+
+    $scope.delete = function(){
+      
+      feriadoAPI.delete($scope.feriado._id).then(function sucessCallback(response){
 
         console.log('deletou?', response.data);
         $scope.successMsg = response.data.message;
         console.log('msg: ', $scope.successMsg);
-        //$scope.load();
-	    //  não vai fucnionar o splice nessa smartTable...
-      	//$scope.equipes.splice(index, 1);
-        //Tem que dar refresh!
-        $state.reload();
+        $uibModalInstance.close($ctrl.confirmation);
 
       }, function errorCallback(response){
 
@@ -41,7 +71,6 @@
         $scope.errorMsg = response.data.message;
       });
     }
-
-  }
+  };
 
 })();

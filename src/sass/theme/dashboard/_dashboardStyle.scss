@@ -35,14 +35,14 @@
  	border-left: 1px solid #dcdcdc !important;
 }
 
-tabledash tbody tr {
+.tabledash tbody tr {
     cursor: pointer;
 }
 
 .marcacoesDestak {
 	font-family: Montserrat;
     color: #436cbd;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .dateDestak {
@@ -76,4 +76,8 @@ tabledash tbody tr {
 
  .bh-negativo {
     color: #da4d39;
+ }
+
+ .vertAlignMid td {
+    vertical-align: middle;
  }

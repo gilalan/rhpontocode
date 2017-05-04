@@ -116,16 +116,21 @@
     function buildJornadaSemanalObject () {
 
         var arrayHorarios = [];
+        var objHorarioMinutosTrab = {};
 
         $scope.rowHorarioDias.forEach(function(rowHorarioDia){
-
-            arrayHorarios.push(
-            {
-                dia: rowHorarioDia.nDia,
-                diaAbrev: rowHorarioDia.dia.substring(0, 3),
-                horarios: getHorarios(rowHorarioDia),
-                viradaTurno: getTotalMinutosHorario(rowHorarioDia.viradaTurno)
-            });
+          
+          objHorarioMinutosTrab = getHorarios(rowHorarioDia);
+          
+          arrayHorarios.push(
+          {
+            dia: rowHorarioDia.nDia,
+            diaAbrev: rowHorarioDia.dia.substring(0, 3),
+            horarios: objHorarioMinutosTrab.horarios,
+            horarioFtd: getHorarioFtd(rowHorarioDia),
+            minutosTrabalho: objHorarioMinutosTrab.minutosTrabalho,
+            viradaTurno: getTotalMinutosHorario(rowHorarioDia.viradaTurno)
+          });
         });
 
         var jornada = {
@@ -150,17 +155,20 @@
 
         //console.log("mesBaseSelected: ", mesBaseSelected);
         ////console.log("$scope ano base", $scope.obj.anoBase);
+        var objHorarioMinutosTrab = getHorarios(rowHorarioDia);
         arrayBase.push(
         {
-            horarios: getHorarios(rowHorarioDia),
-            diaBase: $scope.diaBase.dia,
-            mesBase: mesBaseSelected[0].mes,//mesBaseSelected,//mesBaseSelected[0].mes,
-            anoBase: varAnoBase,
-            viradaTurno: getTotalMinutosHorario(rowHorarioDia.viradaTurno)
+          horarios: objHorarioMinutosTrab.horarios,
+          //diaBase: $scope.diaBase.dia,
+          // mesBase: mesBaseSelected[0].mes,//mesBaseSelected,//mesBaseSelected[0].mes,
+          // anoBase: varAnoBase,
+          horarioFtd: getHorarioFtd(rowHorarioDia),
+          viradaTurno: getTotalMinutosHorario(rowHorarioDia.viradaTurno)
         });
         //console.log("VAI RETORNAR A JORNADA!", arrayBase);
         var jornada = {
             array: arrayBase,
+            minutosTrabalho: objHorarioMinutosTrab.minutosTrabalho,
             minutosIntervalo: $scope.minutosIntervaloPrincipal
         };
 
@@ -168,38 +176,77 @@
     };
 
     function getHorarios (rowHorarioDia) {
+      
+      var objRetorno = {};
 
-        //console.log("ENTRANDO NO GET HORARIOS?!");
-        if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
-            rowHorarioDia.ent2 && rowHorarioDia.sai2) {
+      //console.log("ENTRANDO NO GET HORARIOS?!");
+      if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
+          rowHorarioDia.ent2 && rowHorarioDia.sai2) {
 
-            //Atualizar o total de miunutos do intervalo, não achei outro local melhor para esse cálculo
-            if (!$scope.minutosIntervaloPrincipal) {
-                $scope.minutosIntervaloPrincipal = getTotalMinutosHorario(rowHorarioDia.ent2);
-                $scope.minutosIntervaloPrincipal -= getTotalMinutosHorario(rowHorarioDia.sai1);
-                //console.log("$scope.minutosIntervaloPrincipal ", $scope.minutosIntervaloPrincipal);
-            }
-
-            return {
-                ent1: getTotalMinutosHorario(rowHorarioDia.ent1),
-                sai1: getTotalMinutosHorario(rowHorarioDia.sai1),
-                ent2: getTotalMinutosHorario(rowHorarioDia.ent2),
-                sai2: getTotalMinutosHorario(rowHorarioDia.sai2)
-            };
-        } 
-
-        if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
-            !rowHorarioDia.ent2 && !rowHorarioDia.sai2) {
-
-            return {
-                ent1: getTotalMinutosHorario(rowHorarioDia.ent1),
-                sai1: getTotalMinutosHorario(rowHorarioDia.sai1)                
-            };
-
+        //Atualizar o total de miunutos do intervalo, não achei outro local melhor para esse cálculo
+        if (!$scope.minutosIntervaloPrincipal) {
+            $scope.minutosIntervaloPrincipal = getTotalMinutosHorario(rowHorarioDia.ent2);
+            $scope.minutosIntervaloPrincipal -= getTotalMinutosHorario(rowHorarioDia.sai1);
+            //console.log("$scope.minutosIntervaloPrincipal ", $scope.minutosIntervaloPrincipal);
         }
 
-        return {};
+        objRetorno.horarios = {
+          ent1: getTotalMinutosHorario(rowHorarioDia.ent1),
+          sai1: getTotalMinutosHorario(rowHorarioDia.sai1),
+          ent2: getTotalMinutosHorario(rowHorarioDia.ent2),
+          sai2: getTotalMinutosHorario(rowHorarioDia.sai2)
+        };
+
+        objRetorno.minutosTrabalho = (objRetorno.horarios.sai1 - objRetorno.horarios.ent1) + (objRetorno.horarios.sai2 - objRetorno.horarios.ent2);
+        return objRetorno;
+      } 
+
+      if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
+          !rowHorarioDia.ent2 && !rowHorarioDia.sai2) {
+
+        objRetorno.horarios = {
+          ent1: getTotalMinutosHorario(rowHorarioDia.ent1),
+          sai1: getTotalMinutosHorario(rowHorarioDia.sai1)                
+        };
+
+        objRetorno.minutosTrabalho = (objRetorno.horarios.sai1 - objRetorno.horarios.ent1);
+        return objRetorno;
+      }
+
+      return {};
         
+    };
+
+    String.prototype.splice = function(idx, rem, str) {
+      
+      return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+    };
+    
+    function getHorarioFtd (rowHorarioDia) {
+
+      console.log("obtendo horário formatado");
+
+      if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
+          rowHorarioDia.ent2 && rowHorarioDia.sai2) {
+
+          var strResultE1 = rowHorarioDia.ent1.splice(2,0,":");
+          var strResultS1 = rowHorarioDia.sai1.splice(2,0,":");
+          var strResultE2 = rowHorarioDia.ent2.splice(2,0,":");
+          var strResultS2 = rowHorarioDia.sai2.splice(2,0,":");
+
+          return strResultE1+"/"+strResultS1+"; "+
+                  strResultE2+"/"+strResultS2;
+      } 
+
+      if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
+          !rowHorarioDia.ent2 && !rowHorarioDia.sai2) {
+
+          var strResultE1 = rowHorarioDia.ent1.splice(2,0,":");
+          var strResultS1 = rowHorarioDia.sai1.splice(2,0,":");
+
+          return strResultE1+"/"+strResultS1;
+
+      }
     };
 
     function getTotalMinutosHorario (strHorario) {

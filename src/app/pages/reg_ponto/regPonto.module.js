@@ -18,7 +18,7 @@
           title: 'Registro de Ponto',
           sidebarMeta: {
              icon: 'ion-thumbsup',
-             order: 70,
+             order: 0,
           },
           accessLevel: 1,
           resolve: {
@@ -34,6 +34,9 @@
             },
             currentDate: function(appointmentAPI) {
               return appointmentAPI.getCurrentDate();
+            },
+            feriados: function(feriadoAPI) {
+              return feriadoAPI.get();
             },
             batidaDireta: function($stateParams) {
               return ($stateParams.userId) ? true : false;

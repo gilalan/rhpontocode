@@ -6,17 +6,18 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.teams')
-    .controller('TeamListCtrl', TeamListCtrl);
+    .controller('TeamListCtrl', TeamListCtrl)
+    .controller('ModalDeleteTeamCtrl', ModalDeleteTeamCtrl);
 
   /** @ngInject */
-  function TeamListCtrl($scope, $state, $stateParams, teamAPI, equipes) {
-    //var vm = this;
-    //vm.messages = mailMessages.getMessagesByLabel($stateParams.label);
-    //vm.label = $stateParams.label;
+  function TeamListCtrl($scope, $state, $stateParams, $uibModal, teamAPI, equipes) {
 
     console.log('equipes - List controller');
     $scope.smartTablePageSize = 10;
     console.log('Equipes pelo Resolve: ', equipes);
+    var pageDeletePath = 'app/pages/teams/list/deleteModal.html';
+    var defaultSize = 'md';
+
     if(!equipes)
       alert('Houve um problema de captura das informações no banco de dados');
     else
@@ -24,24 +25,50 @@
 
     $scope.delete = function (id, index) {
 
-      teamAPI.delete(id).then(function sucessCallback(response){
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: pageDeletePath,
+        size: defaultSize,
+        controller: 'ModalDeleteTeamCtrl',
+        resolve: {
+          equipe: function (teamAPI) {
+            return teamAPI.getEquipe(id);
+          }
+        }
+      });
+
+      modalInstance.result.then(function (confirmation) {
+        console.log('confirmação: ', confirmation);
+        if (confirmation){
+          $state.reload();
+        }
+      }, function () {
+        console.log('modal-component dismissed at: ' + new Date());
+      });
+    }
+  };
+
+  function ModalDeleteTeamCtrl ($uibModalInstance, $scope, equipe, teamAPI) {
+    
+    $scope.equipe = equipe.data;
+    var $ctrl = this;
+    $ctrl.confirmation = true;
+
+    $scope.delete = function(){
+      
+      teamAPI.delete($scope.equipe._id).then(function sucessCallback(response){
 
         console.log('deletou?', response.data);
         $scope.successMsg = response.data.message;
         console.log('msg: ', $scope.successMsg);
-        //$scope.load();
-	    //  não vai fucnionar o splice nessa smartTable...
-      	//$scope.equipes.splice(index, 1);
-        //Tem que dar refresh!
-        $state.reload();
-        
+        $uibModalInstance.close($ctrl.confirmation);
+
       }, function errorCallback(response){
 
         console.log('erro ao deletar ', response.data.message);
         $scope.errorMsg = response.data.message;
       });
     }
-
-  }
+  };
 
 })();

@@ -67,6 +67,21 @@
           }
         },
         accessLevel: 3
+      })
+      .state('teams.associate', {
+        url: '/associate/:id',
+        templateUrl: 'app/pages/teams/associate/associate.html',
+        controller: 'AssociateTeamCtrl',
+        title: 'Equipes',
+        resolve: {
+          equipe: function(teamAPI, $stateParams){
+            return teamAPI.getEquipe($stateParams.id);
+          },
+          funcionarios: function(employeeAPI){
+            return employeeAPI.get();
+          }
+        },
+        accessLevel: 3
       });
 
       $urlRouterProvider.when('/teams','/teams/list');

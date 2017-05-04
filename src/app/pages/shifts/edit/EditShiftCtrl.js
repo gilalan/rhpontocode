@@ -288,19 +288,18 @@
     function buildJornadaSemanalObject () {
 
         var arrayHorarios = [];
-        var horariosEmMinutos;
+        var objHorarioMinutosTrabalho;
 
         $scope.rowHorarioDias.forEach(function(rowHorarioDia){
 
-            horariosEmMinutos = getHorarios(rowHorarioDia);
-            //console.log("total min trabalho: ", getTotalMinutosTrabalho(horariosEmMinutos));
+            objHorarioMinutosTrabalho = getHorarios(rowHorarioDia);
             arrayHorarios.push(
             {
                 dia: rowHorarioDia.nDia,
                 diaAbrev: rowHorarioDia.dia.substring(0, 3),
-                horarios: horariosEmMinutos,
+                horarios: objHorarioMinutosTrabalho.horarios,
                 horarioFtd: getHorarioFtd(rowHorarioDia),
-                minutosTrabalho: getTotalMinutosTrabalho(horariosEmMinutos),
+                minutosTrabalho: objHorarioMinutosTrabalho.minutosTrabalho,
                 viradaTurno: getTotalMinutosHorario(rowHorarioDia.viradaTurno)
             });
             console.log("horarioFtd: ", getHorarioFtd(rowHorarioDia));
@@ -324,11 +323,11 @@
         var rowHorarioDia = $scope.rowHorarioDias[0];
         //var mesBaseSelected = $scope.meses.filter(function(mes){return mes.selecionado});
         //console.log("mesBaseSelected: ", mesBaseSelected);
-        var horariosEmMinutos = getHorarios(rowHorarioDia);
+        var objHorarioMinutosTrabalho = getHorarios(rowHorarioDia);
 
         arrayBase.push(
         {
-            horarios: horariosEmMinutos,
+            horarios: objHorarioMinutosTrabalho.horarios,
             horarioFtd: getHorarioFtd(rowHorarioDia),
             //diaBase: $scope.diaBase.dia,
             //mesBase: mesBaseSelected[0].mes,
@@ -340,7 +339,7 @@
         var jornada = {
             array: arrayBase,
             minutosIntervalo: $scope.minutosIntervaloPrincipal,
-            minutosTrabalho: getTotalMinutosTrabalho(horariosEmMinutos)
+            minutosTrabalho: objHorarioMinutosTrabalho.minutosTrabalho
         };
         return jornada;
     };
@@ -379,6 +378,9 @@
 
     function getHorarios (rowHorarioDia) {
 
+        var objRetorno = {};
+
+        //console.log("ENTRANDO NO GET HORARIOS?!");
         if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
             rowHorarioDia.ent2 && rowHorarioDia.sai2) {
 
@@ -389,22 +391,27 @@
                 //console.log("$scope.minutosIntervaloPrincipal ", $scope.minutosIntervaloPrincipal);
             }
 
-            return {
+            objRetorno.horarios = {
                 ent1: getTotalMinutosHorario(rowHorarioDia.ent1),
                 sai1: getTotalMinutosHorario(rowHorarioDia.sai1),
                 ent2: getTotalMinutosHorario(rowHorarioDia.ent2),
                 sai2: getTotalMinutosHorario(rowHorarioDia.sai2)
             };
-        } 
 
-        if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
+            objRetorno.minutosTrabalho = (objRetorno.horarios.sai1 - objRetorno.horarios.ent1) + (objRetorno.horarios.sai2 - objRetorno.horarios.ent2);
+                return objRetorno;
+            } 
+
+       if (rowHorarioDia.ent1 && rowHorarioDia.sai1 && 
             !rowHorarioDia.ent2 && !rowHorarioDia.sai2) {
 
-            return {
-                ent1: getTotalMinutosHorario(rowHorarioDia.ent1),
-                sai1: getTotalMinutosHorario(rowHorarioDia.sai1)                
+            objRetorno.horarios = {
+              ent1: getTotalMinutosHorario(rowHorarioDia.ent1),
+              sai1: getTotalMinutosHorario(rowHorarioDia.sai1)                
             };
 
+            objRetorno.minutosTrabalho = (objRetorno.horarios.sai1 - objRetorno.horarios.ent1);
+            return objRetorno;
         }
 
         return {};

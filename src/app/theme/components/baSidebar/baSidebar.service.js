@@ -7,7 +7,7 @@
   /** @ngInject */
   function baSidebarServiceProvider() {
     var staticMenuItems = [];
-
+    
     this.addStaticItem = function() {
       staticMenuItems.push.apply(staticMenuItems, arguments);
     };
@@ -19,13 +19,16 @@
       function _factory() {
         var isMenuCollapsed = shouldMenuBeCollapsed();
 
-        this.getMenuItems = function() {
-          var states = defineMenuItemStates();
+        this.getMenuItems = function(user) {
+          //console.log('user passado', user);
+          var states = defineMenuItemStates(user);
+          //console.log('states retornados ? ', states);
           var menuItems = states.filter(function(item) {
             return item.level == 0;
           });
 
           menuItems.forEach(function(item) {
+            //console.log('##### item: ', item);
             var children = states.filter(function(child) {
               return child.level == 1 && child.name.indexOf(item.name) === 0;
             });
@@ -51,6 +54,7 @@
         };
 
         this.getAllStateRefsRecursive = function(item) {
+
           var result = [];
           _iterateSubItems(item);
           return result;
@@ -63,21 +67,25 @@
           }
         };
 
-        function defineMenuItemStates() {
+        function defineMenuItemStates(user) {
+          //console.log('$state.get()', $state.get());
           return $state.get()
-              .filter(function(s) {
+              .filter(function(s) { //retorna apenas os States com o atributo 'sidebarMeta'
                 return s.sidebarMeta;
               })
-              .map(function(s) {
+              .map(function(s) { //map aplica a função abaixo para retornar os elementos do array filtrado dos states
                 var meta = s.sidebarMeta;
+                //incluí o attr 'visible' para retornar apenas os itens que possuem acesso permitido de acordo com o nível do usuário
                 return {
                   name: s.name,
                   title: s.title,
+                  visible: user.acLvl >= s.accessLevel,
                   level: (s.name.match(/\./g) || []).length,
                   order: meta.order,
                   icon: meta.icon,
                   stateRef: s.name,
                 };
+                
               })
               .sort(function(a, b) {
                 return (a.level - b.level) * 100 + a.order - b.order;
