@@ -4,34 +4,58 @@
 <main class="auth-main">
     <div class="auth-block" ng-controller="LoginController">
     <h1>Acesse o RHPonto</h1>
-
-    <form class="form-horizontal" name="userForm">
-      <div class="form-group">
+    <div class="row">
+      <div ng-show="errorMsg" class="alert bg-danger" role="alert">        
+        <strong>Ops!</strong> {{errorMsg}}
+      </div>
+    </div>
+    <form class="form-horizontal" name="userForm" novalidate>
+      <div class="form-group has-feedback" ng-class="{'has-error': userForm.email.$invalid && (userForm.email.$dirty || userForm.email.$submitted)}">
         <label for="inputEmail3" class="col-sm-2 control-label">E-mail</label>
 
         <div class="col-sm-10">
-          <input type="email" class="form-control" id="inputEmail3" placeholder="E-mail" ng-model="user.email">
+          <input type="email" class="form-control" id="inputEmail3" placeholder="E-mail" name="email" ng-model="user.email" required="">
+          <div ng-show="userForm.$submitted || userForm.uEmail.$touched">
+            <span ng-show="userForm.uEmail.$error.required">Tell us your email.</span>
+            <span ng-show="userForm.uEmail.$error.email">This is not a valid email.</span>
+        </div>
         </div>
       </div>
       <div class="form-group">
         <label for="inputPassword3" class="col-sm-2 control-label">Senha</label>
 
         <div class="col-sm-10">
-          <input type="password" class="form-control" id="inputPassword3" placeholder="Senha" ng-model="user.senha">
+          <input type="password" class="form-control" name="senha" id="inputPassword3" placeholder="Senha" ng-model="user.senha" required="" ng-minlength='8'>
         </div>
       </div>
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-          <button type="submit" class="btn btn-default btn-auth" ng-click="login(user)">Acessar</button>
+          <button type="submit" class="btn btn-default btn-auth" ng-disabled="userForm.$invalid" ng-click="login(user)">Acessar</button>
           <a href class="forgot-pass">Esqueceu a senha?</a>
         </div>
       </div>
+      <div class="auth-sep"><span><span>ou registre seu ponto diretamente</span></span></div>
+
+      <div class="al-share-auth">
+        <button class="btn btn-warning" ng-disabled="userForm.$invalid" ng-click="login(user, true)">Bater Ponto!</button>
+      </div>
+    </div>
     </form>
 
-    <div class="auth-sep"><span><span>ou registre seu ponto diretamente</span></span></div>
-
-    <div class="al-share-auth">
-      <button class="btn btn-warning" ng-click="login(user, true)">Bater Ponto!</button>
-    </div>
-  </div>
 </main>
+
+
+<!-- <div class="form-group">
+  <label for="inputEmail3" class="col-sm-2 control-label">E-mail</label>
+
+  <div class="col-sm-10">
+    <input type="email" class="form-control" id="inputEmail3" placeholder="E-mail" ng-model="user.email">
+  </div>
+</div>
+<div class="form-group">
+  <label for="inputPassword3" class="col-sm-2 control-label">Senha</label>
+
+  <div class="col-sm-10">
+    <input type="password" class="form-control" id="inputPassword3" placeholder="Senha" ng-model="user.senha">
+  </div>
+</div> -->
