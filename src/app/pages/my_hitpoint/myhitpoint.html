@@ -1,0 +1,113 @@
+<div ba-panel ba-panel-title="Meu Ponto" ba-panel-class="with-scroll">
+    
+    <div id="loaderDiv" loader>
+	  <p class="ajax-loader title-loader"> Carregando... </p>
+	  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+	  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+	</div>
+    <div class="row">
+    	<div class="col-lg-6 col-md-6">
+    		<h4 class="sub-header"><strong style="color: #334db7;">Resumo do Funcionário</strong></h4>
+			<p><strong>Nome:</strong> {{::funcionario.nome}} {{::funcionario.sobrenome}}</p>
+			<p><strong>Admissão:</strong> {{::funcionario.alocacao.dataAdmissao | date:'abvFullDate'}} </p>
+			<p><strong>Escala:</strong> {{::funcionario.alocacao.turno.escala.nome}}</p>
+			<p><strong>Turno:</strong> {{::funcionario.alocacao.turno.descricao}}</p>
+		</div>
+		<div class="col-lg-6 col-md-6">
+			<h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
+			<p ng-repeat="itemHorario in infoHorario track by $index">
+				<strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+			</p>
+		</div>
+    </div>
+    <div class="separator"></div>
+    <div class="row"> 
+    	<form name="periodoForm">   
+			<div class="col-lg-3 col-md-3">
+				<div class="form-group">
+			        <label for="inputDataInicial">Data Inicial: </label>
+			        <input type="text" class="form-control" id="inputDataInicial" placeholder="ex.: 10/03/2016" ng-model="periodo.dataInicial" ng-required="true" ui-date>
+		      	</div>
+			</div>
+		    <div class="col-lg-3 col-md-3">
+				<div class="form-group">
+			        <label for="inputDataFinal">Data Final: </label>
+			        <input type="text" class="form-control" id="inputDataFinal" placeholder="ex.: 17/03/2016" ng-model="periodo.dataFinal" ng-required="true" ui-date>
+		      	</div>
+			</div>
+			<div class="col-lg-3 col-md-3">
+				<div class="form-group">
+					<label for="pppp">Exibir dias de descanso?</label>
+					<p>Em breve...</p>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-3">
+				<div class="form-group">
+					<div style="margin-bottom: 25px;"></div>
+					<button id="idBtnSearch" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="search(periodo)">
+						<i class="ion-search"></i> Filtrar
+					</button>
+				</div>
+			</div>
+		</form>
+    </div>
+    <div class="row">
+	    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+	      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <strong>Ops!</strong> {{errorMsg}}
+	    </div>
+	</div>
+    <div class="separator"></div>
+    
+    <div class="row" ng-if="!periodoApontamento || periodoApontamento.length==0">
+    	<div class="col-xs-12">
+	    	<div class="form-group">
+	    		<p><strong>A busca não retornou dados para este período de data.</strong></p>
+			</div>
+		</div>
+    </div>
+    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
+    	<table class="table table-striped" st-table="periodoApontamento">
+		    <thead>
+			    <tr class="sortable">
+			      <!-- <th st-sort="itemApontamento.data.order">Data</th> ta bugando , aparecem outras imgs na tabela-->
+			      <th>Data</th>
+			      <th>Ocorrência</th>
+			      <th>Ent/Saí Final</th>
+			      <th>Saldo</th>
+			      <th>Observações</th>
+			      <th>Ações</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+		      <tr ng-repeat="itemApontamento in periodoApontamento track by $index">
+		        <td style="line-height: 45px !important;">{{itemApontamento.data}}</td>
+		        <td style="line-height: 45px !important;"><img class="img-responsive" ng-src="{{itemApontamento.ocorrencia.statusImgUrl}}" alt="{{itemApontamento.ocorrencia.statusCodeString}}" title="{{itemApontamento.ocorrencia.statusString}}"></td>
+		        <td style="line-height: 45px !important;">{{itemApontamento.entradaSaidaFinal}}</td>
+		        <td style="line-height: 45px !important;" ng-class="{'bh-positivo': itemApontamento.saldo.horasPosit, 'bh-negativo': itemApontamento.saldo.horasNegat}">{{itemApontamento.saldo.horasFtd}}</td>
+		        <td style="line-height: 45px !important;">{{itemApontamento.observacao}}</td>
+		        <td style="line-height: 45px !important;">
+		          <div class="btn-group" role="group" aria-label="acoes">            
+		            <button title="Solicitação" type="button" class="btn btn-sm btn-info" ng-click="solicitar(itemApontamento)">
+		              <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>  
+		            </button>
+		            <button title="Ver batidas" type="button" class="btn btn-sm btn-default" ng-click="verBatidas(itemApontamento)">
+		              <span class="glyphicon glyphicon-list" aria-hidden="true"></span>  
+		            </button>
+		            <button title="Histórico" type="button" class="btn btn-sm btn-default" ng-click="historico(itemApontamento)">
+		              <span class="fa fa-history" aria-hidden="true"></span>  
+		            </button>
+		          </div>
+		        </td>
+		      </tr>
+		    </tbody>
+		    <tfoot>
+		    <tr>
+		      <td colspan="6" class="text-center">
+		        <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
+		      </td>
+		    </tr>
+		    </tfoot>
+		</table>
+    </div>
+</div>

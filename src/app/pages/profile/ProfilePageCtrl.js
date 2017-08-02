@@ -1,6 +1,6 @@
 /**
- * @author v.lugovsky
- * created on 16.12.2015
+ * @author Gilliard Alan
+ * created on 24/07/2017
  */
 (function () {
   'use strict';
@@ -9,8 +9,20 @@
     .controller('ProfilePageCtrl', ProfilePageCtrl);
 
   /** @ngInject */
-  function ProfilePageCtrl($scope, fileReader, $filter, $uibModal) {
-    $scope.picture = $filter('profilePicture')('Nasta');
+  function ProfilePageCtrl($scope, fileReader, $window, $state, $filter, $uibModal, usersAPI, user,  instituicoes) {
+    
+    $scope.picture = $filter('profilePicture')('Nick');
+
+    $scope.funcionario = user.data.funcionario;
+    $scope.funcionario.dataNascimento = $filter('date')($scope.funcionario.dataNascimento, "dd/MM/yyyy");
+    $scope.funcionario.alocacao.dataAdmissao = $filter('date')($scope.funcionario.alocacao.dataAdmissao, "dd/MM/yyyy");
+    $scope.funcionario.nomeCargo = getCargo();
+    $scope.instituicoes = instituicoes.data;
+
+    $scope.userForm = {
+      senha: "",
+      confSenha: ""
+    };
 
     $scope.removePicture = function () {
       $scope.picture = $filter('appImage')('theme/no-photo.png');
@@ -23,48 +35,57 @@
 
     };
 
-    $scope.socialProfiles = [
-      {
-        name: 'Facebook',
-        href: 'https://www.facebook.com/akveo/',
-        icon: 'socicon-facebook'
-      },
-      {
-        name: 'Twitter',
-        href: 'https://twitter.com/akveo_inc',
-        icon: 'socicon-twitter'
-      },
-      {
-        name: 'Google',
-        icon: 'socicon-google'
-      },
-      {
-        name: 'LinkedIn',
-        href: 'https://www.linkedin.com/company/akveo',
-        icon: 'socicon-linkedin'
-      },
-      {
-        name: 'GitHub',
-        href: 'https://github.com/akveo',
-        icon: 'socicon-github'
-      },
-      {
-        name: 'StackOverflow',
-        icon: 'socicon-stackoverflow'
-      },
-      {
-        name: 'Dribbble',
-        icon: 'socicon-dribble'
-      },
-      {
-        name: 'Behance',
-        icon: 'socicon-behace'
-      }
-    ];
+    $scope.save = function(funcionario) {
 
-    $scope.unconnect = function (item) {
-      item.href = undefined;
+      console.log('funcionario: ', funcionario);
+      if (funcionario.senha){
+        var userD = 
+        {
+          _id: user.data._id,
+          senha: funcionario.senha
+        };//user.data;
+        //userD.senha = funcionario.senha;
+        
+        usersAPI.update(userD).then(function successCallback(response){
+          
+          $scope.successMsg = response.data.message;  
+          console.log("resposta da atualizacao: ", response.data);
+          //$window.scrollTo(0, 0);  
+          $state.reload();
+
+        }, function errorCallback(response) {
+
+          $scope.errorMsg = response.data.message;
+          console.log('Erro de registro: ' + response.data.message);
+          $window.scrollTo(0, 0);  
+        });
+
+      } else {
+
+        console.log('Usuário não alterado');
+        $window.scrollTo(0, 0);
+      }
     };
+
+    function checkInst(inst) {
+
+      return $scope.funcionario.alocacao.instituicao == inst._id;
+    };
+
+    function getCargo() {
+
+      return ($scope.funcionario.sexoMasculino) ? $scope.funcionario.alocacao.cargo.especificacao : $scope.funcionario.alocacao.cargo.nomeFeminino;
+    };
+
+    function initSelects(){
+      
+      if ($scope.instituicoes.length > 0){
+
+        $scope.selectedInst = { item: $scope.instituicoes[$scope.instituicoes.findIndex(checkInst)] };
+      }
+    };
+
+    initSelects();
 
     $scope.showModal = function (item) {
       $uibModal.open({
@@ -82,8 +103,6 @@
             $scope.picture = result;
           });
     };
-
-    $scope.switches = [true, true, false, true, true, false];
   }
 
 })();

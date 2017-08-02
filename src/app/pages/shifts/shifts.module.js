@@ -17,7 +17,7 @@
         template: '<ui-view></ui-view>',
         title: 'Turnos',
         sidebarMeta: {
-          icon: 'ion-ios-clock',
+          icon: 'ion-flag',
           order: 50,
         },
         accessLevel: 3

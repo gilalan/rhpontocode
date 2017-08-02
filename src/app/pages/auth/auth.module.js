@@ -53,9 +53,15 @@
       getBatidaDireta: function() {
         return batidaDireta;
       },
+      
       getUserLevel: function() {
         var user = jwtHelper.decodeToken($localStorage.token);        
         return user.acLvl;
+      },
+      isPwdExpired: function() {
+        var user = jwtHelper.decodeToken($localStorage.token);
+        return user.firstAccess;
+        //console.log("User.firstAccess: ", user);
       },
       logout: function(){
         this.setBatidaDireta(false);

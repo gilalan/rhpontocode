@@ -1,0 +1,59 @@
+<!--Esse arquivo não será injetado pelo GULP automaticamente, teremos que colocá-lo manualmente, lembrar disso!-->
+<link href="/app/auth.css" rel="stylesheet">
+
+<main class="auth-main">
+    <div class="auth-block" ng-controller="ForgotPwdCtrl">
+    <h1>Recuperar Senha</h1>
+    <div class="row">
+      <div ng-show="errorMsg" class="alert bg-danger" role="alert">        
+        <strong>Ops!</strong> {{errorMsg}}
+      </div>
+    </div>
+    <form class="form-horizontal" name="userForm" novalidate>
+      <div class="form-group has-feedback" ng-class="{'has-error': userForm.Email.$invalid && (userForm.Email.$dirty || userForm.Email.$submitted)}">
+        <label for="inputEmail" class="col-sm-2 control-label">E-mail*</label>
+
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="inputEmail" placeholder="Digite o seu E-mail" name="Email" ng-model="user.email" required>
+          <div ng-messages="userForm.Email.$error" class="profile-messages">
+            <div ng-message="required"> O campo de E-mail é obrigatório. </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group has-feedback" ng-class="{'has-error': userForm.CPF.$invalid && (userForm.CPF.$dirty || userForm.CPF.$submitted)}">
+        <label for="inputCPF" class="col-sm-2 control-label">CPF*</label>
+
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="inputCPF" placeholder="Digite o seu CPF" name="CPF" ng-model="user.cpf" required>
+          <div ng-messages="userForm.CPF.$error" class="profile-messages">
+            <div ng-message="required"> O campo de CPF é obrigatório. </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group has-feedback" ng-class="{'has-error': userForm.PIS.$invalid && (userForm.PIS.$dirty || userForm.PIS.$submitted)}">
+        <label for="inputPIS" class="col-sm-2 control-label">PIS*</label>
+
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="inputPIS" placeholder="Digite o seu PIS (12 números)" name="PIS" ng-model="user.pis" ng-maxlength="12" required>
+          <div ng-messages="userForm.PIS.$error" class="profile-messages">
+            <div ng-message="required"> O campo de PIS é obrigatório. </div>
+            <div ng-message="maxlength"> O campo de PIS não deve ser maior que 12 números. </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group has-feedback" ng-class="{'has-error': userForm.dataNascimento.$invalid && (userForm.dataNascimento.$dirty || userForm.dataNascimento.$submitted)}">
+        <label for="inputDataNascimento" class="col-sm-2 control-label">Data de Nascimento*</label>
+
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="inputDataNascimento" placeholder="ex.: 05/10/1978" name="dataNascimento" ng-model="user.datanascimento" required ui-date>
+          <div ng-messages="userForm.dataNascimento.$error" class="profile-messages">
+            <div ng-message="required"> O campo de data de nascimento é obrigatório.</div>
+          </div>
+        </div>
+      </div>   
+      <div class="al-share-auth">
+        <button class="btn btn-primary" ng-disabled="userForm.$invalid" ng-click="recovery(user)">Recuperar</button>
+      </div>
+    </div>
+    </form>
+</main>

@@ -23,6 +23,9 @@
     'BlurAdmin.pages.shifts',
     'BlurAdmin.pages.feriados',
     'BlurAdmin.pages.regponto',
+    'BlurAdmin.pages.myhitpoint',
+    'BlurAdmin.pages.solicitations',
+    'BlurAdmin.pages.users',
   ])
       .config(routeConfig);
 

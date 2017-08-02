@@ -1,3 +1,4 @@
+
 /**
  * @author Gilliard Lopes
  * created on 12.04.2017
@@ -11,23 +12,44 @@
   /** @ngInject */
   function AppCtrl($scope, $window, $state, Auth) {
 
-    console.log("Passa no APPLICATION controller!");
+    console.log("#################Passa no APPLICATION controller!");
 	$scope.logged = false;
 	$scope.authorized = false;
-	//$scope.auth = true; //TO COLOCANDO ASSIM PARA PODER FUNCIONAR COM O LAYOUT E TALS
+	$scope.resetForgotPass = false;
+	$scope.recoveryPass = false;
 	//TENHO QUE CORRIGIR ESSA QUESTÃO DE QUEM É PERMITIDO PARA USAR O QUẼ
 
-	$scope.$on('login', function (_, token, baterPonto) {
-	  	
+	$scope.$on('login', function (_, token, firstAccess, baterPonto) {
+		
 		Auth.setToken(token);
-		var currentUser = Auth.getCurrentUser();//so testes
-		console.log("Direto do APPCtrl: user logado: ", currentUser);
-		$scope.logged = true;
-		$scope.authorized = true;
-		if (baterPonto)
-			$state.go('regponto', {userId: currentUser._id}) 
-		else
-			init(currentUser);
+		var currentUser = Auth.getCurrentUser();
+		
+		if (firstAccess) {
+
+			console.log('Entrou no firstAccess! dentro de ApplicationController');
+			$scope.recoveryPass = false;
+			$scope.resetForgotPass = true;
+			console.log("isLogged: ", $scope.logged);
+			console.log("isAuthorized: ", $scope.authorized);
+			console.log("resetForgotPass: ", $scope.resetForgotPass);
+			console.log("recoveryPass: ", $scope.recoveryPass);
+			//$state.go('users', {userId: currentUser._id});
+			//$window.location.href = "/resetForgotPass.html";
+		}
+		else {
+
+			// Auth.setToken(token);
+			// var currentUser = Auth.getCurrentUser();//so testes
+			console.log("Direto do APPCtrl: user logado: ", currentUser);
+			$scope.resetForgotPass = false;
+			$scope.recoveryPass = false;
+			$scope.logged = true;
+			$scope.authorized = true;
+			if (baterPonto)
+				$state.go('regponto', {userId: currentUser._id}); 
+			else
+				init(currentUser);
+		}
 	});
 
 	$scope.$on('logout', function (_) {
@@ -39,16 +61,32 @@
 		$window.location.href = "/index.html";
 	});
 
+	//Emite evento para atualizar as variáveis
+
+	$scope.$on('pwdExpired', function(_, isExpired) {
+		console.log("pwdExpired: ", isExpired);
+		console.log("recoveryPass: ", $scope.recoveryPass);
+		console.log("isAuthorized: ", $scope.authorized);
+		console.log("isLogged: ", $scope.logged);
+		$scope.resetForgotPass = isExpired;
+	});
+
 	$scope.$on('authorized', function(_, isAuthorized) {
 
 		$scope.authorized = (isAuthorized) ? true : false;
-
 	});
 
 	$scope.$on('logged', function(_, isLogged) {
 
 		$scope.logged = (isLogged) ? true : false;
-		
+	});
+
+	$scope.$on('recovery', function(_, isRecovery) {
+
+		$scope.logged = false;
+		$scope.authorized = false;
+		$scope.resetForgotPass = false;
+		$scope.recoveryPass = isRecovery;
 	});
 
 	function redirectState(user){
@@ -63,12 +101,23 @@
 	      	else if (user.acLvl >= 3)
 	        	$state.go('dashboard');
 		}
+
+		console.log('#redirectState!');
+		console.log("resetForgotPass: ", $scope.resetForgotPass);
+		console.log("recoveryPass: ", $scope.recoveryPass);
+		console.log("isAuthorized: ", $scope.authorized);
+		console.log("isLogged: ", $scope.logged);
 	};
 
 	function init(user) {
 		
+		//quando já tem o token registrado mas é o firstAccess fica dando pau!
 		console.log('inicializar o APP controller');
-		
+		console.log("resetForgotPass: ", $scope.resetForgotPass);
+		console.log("recoveryPass: ", $scope.recoveryPass);
+		console.log("isAuthorized: ", $scope.authorized);
+		console.log("isLogged: ", $scope.logged);	
+
 		if (user) {
 
 			redirectState(user);

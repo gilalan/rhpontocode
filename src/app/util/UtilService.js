@@ -26,9 +26,9 @@ angular.module('BlurAdmin').service("util", function(){
     svc.createNewDate = function (date) {
 
         var newDate = new Date(date);
-        console.log('newDate from Util: ', newDate);
-        newDate.setTime( newDate.getTime() + newDate.getTimezoneOffset()*60*1000 );
-        console.log('Após inc: newDate from Util: ', newDate);
+        // console.log('newDate from Util: ', newDate);
+        // newDate.setTime( newDate.getTime() + newDate.getTimezoneOffset()*60*1000 );
+        // console.log('Após inc: newDate from Util: ', newDate);
         return newDate;
     };
 });

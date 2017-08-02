@@ -31,4 +31,9 @@ angular.module('BlurAdmin.pages').service("roleAPI", function($http, config){
 
 		return $http.get(_urlBasePerfis+'/'+id);
 	};
+
+	svc.getPerfisByLevel = function(level){
+
+		return $http.get(_urlBasePerfis+'/'+level+'/level');
+	};
 });

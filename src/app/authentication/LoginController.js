@@ -18,7 +18,8 @@
       usersAPI.signIn(user).then(function sucessCallback(response){             
                     
         //baterPonto ? $state.go('regponto', {userId: response.data.idUsuario}) : $state.go('dashboard');
-        $scope.$emit('login', response.data.token, baterPonto);
+        console.log('response.data? ', response.data);
+        $scope.$emit('login', response.data.token, response.data.firstAccess, baterPonto);
         console.log('depois volta para o success do login... segue o jogo!');
 
       }, function errorCallback (response) {
@@ -33,6 +34,11 @@
       $scope.$emit('logout');
       //$state.go("");
     }
+
+    $scope.recoveryPwd = function() {
+
+      $scope.$emit('recovery', true);
+    };
 
   }
 

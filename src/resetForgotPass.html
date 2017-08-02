@@ -1,0 +1,41 @@
+<!--Esse arquivo não será injetado pelo GULP automaticamente, teremos que colocá-lo manualmente, lembrar disso!-->
+<link href="/app/auth.css" rel="stylesheet">
+
+<main class="auth-main">
+    <div class="auth-block" ng-controller="ChangePasswordCtrl">
+    <h1>Alteração de Senha</h1>
+    <div class="row">
+      <div ng-show="errorMsg" class="alert bg-danger" role="alert">        
+        <strong>Ops!</strong> {{errorMsg}}
+      </div>
+    </div>
+    <form class="form-horizontal" name="pwdForm" novalidate>
+      <div class="form-group has-feedback" ng-class="{'has-error': pwdForm.novaSenha.$invalid && (pwdForm.novaSenha.$dirty || pwdForm.novaSenha.$submitted)}">
+        <label for="inputNovaSenha" class="col-sm-2 control-label">Nova Senha</label>
+
+        <div class="col-sm-10">
+          <input type="password" class="form-control" id="inputNovaSenha" placeholder="Digite a nova senha" name="novaSenha" ng-model="user.novaSenha" ng-minlength="8" required>
+          <div ng-messages="pwdForm.novaSenha.$error" class="profile-messages">
+            <div ng-message="required"> O campo de senha é obrigatório. </div>
+            <div ng-message="minlength"> O campo de senha deve conter no mínimo 8 caracteres. </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">Confirmar Senha</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" name="confSenha" id="inputConfSenha" placeholder="Confirmar a senha anterior" ng-model="user.confSenha" ng-minlength='8' compare-to="user.novaSenha" required>
+          <div ng-messages="pwdForm.confSenha.$error" class="profile-messages">
+            <div ng-message="required"> O campo de confirmação de senha é obrigatório. </div>
+            <div ng-message="minlength"> O campo de confirmação de senha deve conter no mínimo 8 caracteres. </div>
+            <div ng-message="compareTo"> O campo de Confirmação deve ser igual à senha informada. </div>
+          </div>
+        </div>
+      </div>
+      <div class="al-share-auth">
+        <button class="btn btn-primary" ng-disabled="pwdForm.$invalid" ng-click="updateAndGo(user)">Atualizar e Acessar!</button>
+      </div>
+    </div>
+    </form>
+
+</main>

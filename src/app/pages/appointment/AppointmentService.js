@@ -47,6 +47,11 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 		return $http.post(_urlBaseApontamentos+'/intervaldate/equipe', objDateEquipe);
 	};
 
+	svc.getApontamentosByDateRangeAndFuncionario = function(objDateWorker) {
+
+		return $http.post(_urlBaseApontamentos+'/intervaldate/funcionario', objDateWorker);
+	};
+
 	svc.getCurrentDate = function(){
 		return $http.post(_urlBaseApontamentos+'/currentDate', {});
 	};

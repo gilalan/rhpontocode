@@ -9,56 +9,34 @@
       .controller('DashboardBarChartCtrl', DashboardBarChartCtrl);
 
   /** @ngInject */
-  function DashboardBarChartCtrl(baConfig, layoutPaths, baUtil, dashboardDataFactory) {
+  function DashboardBarChartCtrl($scope, baConfig, layoutPaths, baUtil, dashboardDataFactory) {
     
     var layoutColors = baConfig.colors;
     var graphColor = baConfig.theme.blur ? '#000000' : layoutColors.primary;
     
-    var chartData = dashboardDataFactory.getData();
+    $scope.chartBarData = dashboardDataFactory.getBarData();
 
-    console.log('chartData: ', chartData);
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!chartData: ',  $scope.chartBarData );
 
-    // var chartData = [
-    //   {
-    //     country: 'USA',
-    //     visits: 50,
-    //     color: layoutColors.primary
-    //   },
-    //   {
-    //     country: 'China',
-    //     visits: 31,
-    //     color: layoutColors.danger
+    $scope.$watch(function () { return dashboardDataFactory.getBarData(); }, function (newValue, oldValue) {
+      if (newValue !== oldValue) {
+        $scope.chartBarData = newValue;
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!chartData NEW VALUE TRIGGER: ',  $scope.chartBarData );
+        //Setting the new data to the graph
+        chart.dataProvider = $scope.chartBarData;
 
-    //   },
-    //   {
-    //     country: 'Japan',
-    //     visits: 18,
-    //     color: layoutColors.info
-    //   },
-    //   {
-    //     country: 'Germany',
-    //     visits: -5,
-    //     color: layoutColors.success
-    //   },
-    //   {
-    //     country: 'UK',
-    //     visits: -11,
-    //     color: layoutColors.warning
-    //   },
-    //   {
-    //     country: 'France',
-    //     visits: 0,
-    //     color: layoutColors.primaryLight
-    //   }
-    // ];
+        //Updating the graph to show the new data
+        chart.validateData();
+      }
+    }); 
 
-    console.log('AmCharts from BarChartCtrl: ', AmCharts);
+    //console.log('AmCharts from BarChartCtrl: ', AmCharts);
 
     var chart = AmCharts.makeChart('barChart', 
     {
       type: 'serial',
-      dataProvider: chartData,
-      categoryField: 'country',
+      dataProvider: $scope.chartBarData,
+      categoryField: 'axisX',
       //theme: 'blur',
       //color: layoutColors.defaultText,
       valueAxes: [
@@ -84,7 +62,7 @@
       },
       graphs: [
         {
-          valueField: 'visits',
+          valueField: 'value',
           type: 'column',
           balloonText: '<b>[[category]]: [[value]]</b>',
           fillColorsField: 'color',

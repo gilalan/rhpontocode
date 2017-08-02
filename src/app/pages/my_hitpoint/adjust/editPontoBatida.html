@@ -1,0 +1,83 @@
+<form name="ajusteForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
+
+  <h1 style="font-size: 13px;">Atenção: O Ajuste/Correção de batidas segue as diretrizes governamentais, entre elas a portaria 1510 do MTE que informa que uma batida efetuada por um colaborador jamais poderá ser editada/removida, apenas desconsiderada e devidamente registrada no histórico.</h1>  
+
+  <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">{{dataSolicitadaFtd}}</h4>
+    
+  <div class="row">
+      <div class="col-xs-12">
+        <div class="form-group" style="float: right;">
+          <ul class="btn-list clearfix">
+            <li><button type="button" class="btn btn-warning btn-with-icon" ng-click="desfazer()"><i class="ion-reply"></i>Desfazer tudo</button></li>
+            <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="adicionarAntes()"><i class="ion-plus-round"></i>Adicionar 1ª batida</button></li>
+          </ul>
+      </div>
+    </div>
+  </div>  
+
+  <div class="row" ng-if="!apontamento">
+      <div class="col-xs-12">
+        <div id="divMarcacoes" class="form-group">
+          <p><strong>Não há marcações nesse dia.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="apontamento">
+    <table class="table table-hover table-condensed" style="table-layout: fixed;">
+      <tbody>
+        <tr ng-repeat="item in arrayES track by $index" class="editable-row">
+          <td style="line-height: 40px !important; text-align: left; padding-left: 15px; overflow: hidden; width: 80%;">{{item.descricao}}:</td>
+          <td style="line-height: 40px !important; text-align: right; padding-right: 15px; overflow: hidden; width: 10%;">
+            <input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="item.horario" ui-mask="99:99">
+          </td>
+          <td style="line-height: 40px !important; text-align: left; padding-right: 15px; overflow: hidden; width: 10%;">
+            <div class="btn-group" role="group" aria-label="acoes">            
+              <button title="Adicionar Depois" type="button" class="btn btn-sm btn-primary" ng-click="addDepois($index)">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </button>
+              <button title="Remover/Desconsiderar" type="button" class="btn btn-sm btn-danger" ng-click="delete($index)">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>  
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="alert bg-danger" ng-if="batidaError"><strong>Atenção: </strong> as batidas devem ser em quantidade par.</div>
+    <div class="alert bg-danger" ng-if="numerosErro"><strong>Atenção: </strong> as horas e minutos devem ter dois dígitos no padrão 24h.</div>
+    <div class="alert bg-danger" ng-if="horaErro"><strong>Atenção: </strong> as horas devem estar entre 00 e 23.</div>
+    <div class="alert bg-danger" ng-if="minutoErro"><strong>Atenção: </strong> os minutos devem estar entre 00 e 59.</div>
+    <div class="separator2"></div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label for="textAreaMotivo">Motivo da Solicitação*</label>
+        <textarea class="form-control" id="textAreaMotivo" placeholder="Qual o motivo deste ajuste?" ng-model="ajuste.motivo" ng-required="true">
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group" style="float: right;">
+        <button type="submit" class="btn btn-primary" ng-disabled="ajusteForm.$invalid" ng-click="propor(ajuste)">Solicitar</button>
+      </div>
+    </div>
+  </div>
+
+</form>

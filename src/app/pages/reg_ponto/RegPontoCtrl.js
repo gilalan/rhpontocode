@@ -18,6 +18,7 @@
     $scope.currentDate = currentDate.data.date;
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'dd/MM/yyyy');
 
+    var dataHoje = new Date($scope.currentDate);
     console.log('currentDate: ', $scope.currentDate);
     console.log('new Date (currentDate): ', new Date($scope.currentDate));
 
@@ -29,7 +30,7 @@
     var marcacao = null;
     var pagePath = 'app/pages/reg_ponto/modals/registroModal.html';
     var defaultSize = 'md';
-    var clock = util.createNewDate($scope.currentDate);//new Date($scope.currentDate);
+    var clock = new Date($scope.currentDate);//new Date($scope.currentDate);
     var tick = function() {
       //$scope.clock = Date.now();//atualiza os segundos manualmente
       clock.setSeconds(clock.getSeconds() + secsControl);
@@ -50,7 +51,7 @@
       
       appointmentAPI.getCurrentDate().then(function sucessCallback(response){
 
-        var newDate = util.createNewDate(response.data.date);
+        var newDate = new Date(response.data.date);
         console.log('newDate in client from server', newDate);
 
         var gId = (apontamento) ? getId(apontamento.marcacoes) : 1;
@@ -62,8 +63,15 @@
           hora: newDate.getHours(),
           minuto: newDate.getMinutes(),
           segundo: newDate.getSeconds(),
+          tzOffset: newDate.getTimezoneOffset(),
+          RHWeb: true,
+          REP: false,
+          NSR: "WEB",
           gerada: {}
         };
+
+        marcacao.totalMin = (marcacao.hora * 60) + marcacao.minuto;
+        marcacao.strHorario = converteParaMarcacaoString(marcacao.hora, marcacao.minuto, ':');
 
         console.log('####### INICIO DE AVALIACAO DO METODO REGISTRO ##########');
         console.log('newDate', newDate);
@@ -96,6 +104,7 @@
             data: getOnlyDate(newDate),
             status: {id: 1, descricao: 'Incompleto'},
             funcionario: $scope.funcionario._id,
+            PIS: $scope.funcionario.PIS,
             marcacoes: [marcacao],
             justificativa: '',
             infoTrabalho: extraInfo.infoTrabalho,
@@ -193,8 +202,8 @@
         } else if (escala.codigo == 2) { //escala 12x36
 
           //dia de trabalho
-          console.log('new date from isWorkingDayRotationScale: ', util.createNewDate($scope.funcionario.alocacao.dataInicioEfetivo));
-          if (isWorkingDayRotationScale(date, util.createNewDate($scope.funcionario.alocacao.dataInicioEfetivo)) && !flagFeriado){
+          console.log('new date from isWorkingDayRotationScale: ', new Date($scope.funcionario.alocacao.dataInicioEfetivo));
+          if (isWorkingDayRotationScale(date, new Date($scope.funcionario.alocacao.dataInicioEfetivo)) && !flagFeriado){
             
             infoTrabalho.trabalha = true; 
             infoTrabalho.aTrabalhar = turno.jornada.minutosTrabalho;
@@ -387,6 +396,7 @@
       return data;
     }; 
 
+    
     function setStatus(apontamento) {
 
       var size = apontamento.marcacoes.length;
@@ -480,7 +490,15 @@
     
     function getApontamentoDiarioFromFuncionario() {
     
-      var date = {dataInicial: $scope.currentDate};
+      var date = {
+        raw: $scope.currentDate,
+        year: dataHoje.getFullYear(),
+        month: dataHoje.getMonth(),
+        day: dataHoje.getDate(),
+        hour: dataHoje.getHours(),
+        minute: dataHoje.getMinutes()
+        //dataFinal {}// => com o mesmo formato acima se quiser pegar para um range de datas...
+      };
 
       employeeAPI.getPeriodoApontamentoByFuncionario($scope.funcionario._id, date).then(function sucessCallback(response){
 
@@ -496,17 +514,6 @@
         $scope.errorMsg = response.data.message;
         console.log("Erro na obtenção do apontamento diário: " + response.data.message);
       });
-    }
-
-    function addOrSubtractDays(date, value) {
-      
-      console.log('#addOrSubtractDays: ', new Date(date));    
-      date = angular.copy(date);
-      date.setHours(0,0,0,0);
-      console.log('new date from addOrSubtractDays: ', new Date(date.getTime()));
-      console.log('somado ao valor pedido: ', value);
-      console.log('resultado final: ', new Date(date.getTime() + (value*864e5)));
-      return new Date(date.getTime() + (value*864e5));
     }
 
     function init() {

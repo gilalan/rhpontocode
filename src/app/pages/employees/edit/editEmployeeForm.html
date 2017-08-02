@@ -28,8 +28,8 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputPIS">PIS*</label>
-        <input type="text" class="form-control" id="inputPIS" placeholder="PIS" ng-model="funcionario.PIS" ng-required="true">
+        <label for="inputPIS">PIS* - 12 dígitos</label>
+        <input type="text" class="form-control" id="inputPIS" placeholder="PIS - completar com zeros no início se for menor que 12 dígitos" ng-model="funcionario.PIS" ng-minlength=12 ng-maxlength=12 ng-required="true">
       </div>
     </div>
     <div class="col-sm-6">

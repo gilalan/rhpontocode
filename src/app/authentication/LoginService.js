@@ -24,6 +24,17 @@ angular.module('BlurAdmin').service("usersAPI", function($http, config){
 	};
 
 	svc.register = function (usuario) {
+	
 		return $http.post(_urlBaseUsuarios, usuario);
-	};	
+	};
+
+	svc.update = function (user) {
+	
+		return $http.put(_urlBaseUsuarios + '/' + user._id, user);
+	};
+
+	svc.recoveryPwd = function(funcionario) {
+
+		return $http.post(config.baseUrl + '/api/recovery', funcionario);
+	};
 });

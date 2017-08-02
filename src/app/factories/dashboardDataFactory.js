@@ -10,7 +10,7 @@
     console.log('dashboardData factory');
 
     var field = 'Test';
-    var chartData = [];
+    var barChartData = [];
 
     return {
       
@@ -20,11 +20,12 @@
       setTest: function(field) {
         this.field = field;
       },
-      getData: function(){
-      	return this.chartData;
+      getBarData: function(){
+      	return this.barChartData;
       },
-      setData: function(data){
-      	this.chartData = data;
+      setBarData: function(data){
+        console.log('### DASHBOARDFACTORY:setando valor novo', data);
+      	this.barChartData = data;
       }
     }
   });

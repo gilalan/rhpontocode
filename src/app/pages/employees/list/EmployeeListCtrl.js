@@ -11,11 +11,11 @@
     .controller('ModalAssociateCtrl', ModalAssociateCtrl);
 
   /** @ngInject */
-  function EmployeeListCtrl($scope, $state, $stateParams, $uibModal, employeeAPI, roleAPI, funcionarios) {
+  function EmployeeListCtrl($scope, $state, $stateParams, $uibModal, Auth, employeeAPI, roleAPI, funcionarios) {
     //var vm = this;
     //vm.messages = mailMessages.getMessagesByLabel($stateParams.label);
     //vm.label = $stateParams.label;}
-
+    var currentUserLevel = Auth.getUserLevel();
     console.log('funcionarios - List controller');
     $scope.smartTablePageSize = 10;
     console.log('funcionarios pelo Resolve: ', funcionarios);
@@ -64,7 +64,7 @@
             return employeeAPI.getFuncionario(id);
           },
           perfis: function (roleAPI) {
-            return roleAPI.get();
+            return roleAPI.getPerfisByLevel(currentUserLevel);//substituiu o get
           },
           usuario: function (employeeAPI) {
             return employeeAPI.getUsuarioByFuncionario(id);

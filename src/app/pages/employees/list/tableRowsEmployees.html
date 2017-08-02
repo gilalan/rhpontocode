@@ -34,13 +34,14 @@
         <td>{{$index}}</td>
         <td>{{funcionario.nome}}</td>
         <td>{{funcionario.dataNascimento | date: 'dd/MM/yyyy'}}</td>
+        <!-- <td>{{funcionario.alocacao.dataAdmissao | date: 'dd/MM/yyyy'}}</td> -->
         <td>{{funcionario.PIS}}</td>
         <td>
           {{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
         </td>
         <td>
           <div class="btn-group" role="group" aria-label="acoes">            
-            <button title="Editar" type="button" class="btn btn-xs btn-default" ng-click="associate(funcionario._id)">
+            <button title="Criar Usuário para Acesso Web" type="button" class="btn btn-xs btn-default" ng-click="associate(funcionario._id)">
               <span class="glyphicon glyphicon-user" aria-hidden="true"></span>  
             </button>
             <button title="Editar" type="button" class="btn btn-xs btn-default" ui-sref="employees.edit({id: funcionario._id})">

@@ -19,7 +19,7 @@ angular.module('BlurAdmin', [
   'BlurAdmin.pages'
 ])
 .config(function($stateProvider){
-  console.log('StateProvider?!', $stateProvider);
+  //console.log('StateProvider?!', $stateProvider);
    // $stateProvider
    //   .state('MainLogin', {
    //     url: '/',
@@ -28,7 +28,7 @@ angular.module('BlurAdmin', [
 })
 .run(['$rootScope', '$location', '$window', '$state', 'Auth', function($rootScope, $location, $window, $state, Auth){
   
-  console.log('## - Dentro do RUN: State?!', $state);
+  //console.log('## - Dentro do RUN: State?!', $state);
   /*accessLevel => 
    *{
      0: public,
@@ -53,24 +53,33 @@ angular.module('BlurAdmin', [
       var allowed = false;
       console.log('Entrando em uma rota com nível de acesso > 0');
       if (Auth.getToken()) {
-        console.log('Usuário está logado...');
-        $rootScope.$broadcast('logged', true);//emite comunicado que está logado
+        
+        if (!Auth.isPwdExpired()){
+          $rootScope.$broadcast('logged', true);//emite comunicado que está logado
 
-        if (Auth.authorize(toState.accessLevel)){//veremos se o user tem o nivel de acesso permitido
-          console.log('Usuário tem nível de acesso para ver a página!');
-          allowed = true;
-          $rootScope.$broadcast('authorized', true);//Emite comunicado que está autorizado para ver
-          // redirectTo
-          if (toState.redirectTo) {
-            console.log('foi autorizado e passou no redirecionamento redirectTo', toState.redirectTo);
-            e.preventDefault();
-            $state.go(toState.redirectTo, toParams);
+          if (Auth.authorize(toState.accessLevel)){//veremos se o user tem o nivel de acesso permitido
+            console.log('Usuário tem nível de acesso para ver a página!');
+            allowed = true;
+            $rootScope.$broadcast('authorized', true);//Emite comunicado que está autorizado para ver
+            // redirectTo
+            if (toState.redirectTo) {
+              console.log('foi autorizado e passou no redirecionamento redirectTo', toState.redirectTo);
+              e.preventDefault();
+              $state.go(toState.redirectTo, toParams);
+            }
+
+          } else {//não está autorizado
+            console.log('vc não é autorizado a ver essa rota');
+            $rootScope.$broadcast('authorized', false);
+            $window.location.href = "/404.html";
           }
-
-        } else {//não está autorizado
-          console.log('vc não é autorizado a ver essa rota');
+        } else {
+          //tem que configurar nova senha
+          console.log("veio para o else do issPwdExpiredd");
+          $rootScope.$broadcast('logged', false);
           $rootScope.$broadcast('authorized', false);
-          $window.location.href = "/404.html";
+          $rootScope.$broadcast('pwdExpired', true);//emite comunicado que está com pwd expirado
+          //$window.location.href = "/index.html";
         }
       } else {
         //não está logado

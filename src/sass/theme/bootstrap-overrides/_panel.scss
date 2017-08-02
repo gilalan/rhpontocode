@@ -175,3 +175,8 @@ $panel-heading-font-size: 16px;
 .panel-group .panel {
   border-radius: 0;
 }*/
+
+.empty.ui-select-match + .select2-search-field,
+.empty.ui-select-match + .select2-search-field input{
+    width: 100% !important;
+}

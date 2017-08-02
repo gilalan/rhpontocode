@@ -30,7 +30,7 @@
         <label class="control-label dadosIdent" for="Equipes"><strong>Equipes Geridas:</strong></label>
         <div class="btn-toolbar" role="toolbar" aria-label="Equipes do Gestor">
           <div class="btn-group" role="group" aria-label="First group" ng-repeat="equipe in equipes">
-            <button type="button" class="btn btn-default btn-sm" ng-class="{'btn-primary': equipe.selecionada}" ng-click="checkUncheckEquipe(equipe)">
+            <button type="button" class="btn btn-sm" ng-class="{'btn-primary': equipe.selecionada}" ng-click="checkUncheckEquipe(equipe)">
             {{::equipe.nome}}
             </button>
           </div>
@@ -114,11 +114,10 @@
 <div class="row">
   <div class="col-lg-6 col-md-6 col-sm-12">
     <div class="row">
-      <div class="btn-group" role="group" aria-label="Banco de Horas">
-        <button type="button" class="btn btn-default" title="últimos 7 dias" ng-click="barChartDias(7)">7d</button>
-        <button type="button" class="btn btn-default" title="último 30 dias" ng-click="barChartDias(30)">30d</button>
-        <button type="button" class="btn btn-default" title="últimos 90 dias" ng-click="barChartDias(90)">90d</button>
+      <div class="btn-group" role="group" aria-label="Banco de Horas" ng-repeat="btn in btnBarChartArray">
+        <button type="button" class="btn" title="últimos {{btn.value}} dias" ng-class="{'btn-info': btn.selecionado}" ng-click="barChartDias(btn)">{{btn.value}}d</button>        
       </div>
+      <label>Data de referência: {{dataHojeFtd}} (<strong>últimos {{barButtonSelected}} dias</strong>)</label>
       <div  ba-panel
             ba-panel-title="Banco de Horas"
             ba-panel-class="medium-panel">
@@ -129,11 +128,10 @@
   
   <div class="col-lg-6 col-md-6 col-sm-12">
     <div class="row">
-      <div class="btn-group" role="group" aria-label="Absenteísmo">
-        <button type="button" class="btn btn-default" title="últimos 7 dias" ng-click="lineChartDias(7)">7d</button>
-        <button type="button" class="btn btn-default" title="últimos 30 dias" ng-click="lineChartDias(30)">30d</button>
-        <button type="button" class="btn btn-default" title="últimos 90 dias" ng-click="lineChartDias(90)">90d</button>
+      <div class="btn-group" role="group" aria-label="Absenteísmo" ng-repeat="btn in btnLineChartArray">
+        <button type="button" class="btn" title="últimos {{btn.value}} dias" ng-class="{'btn-info': btn.selecionado}" ng-click="lineChartDias(btn)">{{btn.value}}d
       </div>
+      <label>Data de referência: {{dataHojeFtd}} (<strong>últimos {{lineButtonSelected}} dias</strong>)</label>
       <div
            ba-panel
            ba-panel-title="Absenteísmo"

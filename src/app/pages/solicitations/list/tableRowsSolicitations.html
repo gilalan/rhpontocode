@@ -1,0 +1,51 @@
+<div class="horizontal-scroll">
+  <div class="form-group select-page-size-wrap ">
+    <label>Linhas por página
+      <select class="form-control selectpicker show-tick" title="Linhas por página" selectpicker
+              ng-model="smartTablePageSize" ng-options="i for i in [5,10,15,20,25]">
+      </select>
+    </label>
+  </div>
+ 
+  <table class="table" st-table="solicitacoes">
+    <thead>
+    <tr class="sortable">
+      <th><strong>Criada em</strong></th>
+      <th><strong>Funcionário</strong></th>
+      <th><strong>Tipo de Solicitação</strong></th>
+      <th><strong>Data de Referência</strong></th>
+      <th><strong>Motivo</strong></th>
+      <th><strong>Ações</strong></th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="solicitacao in solicitacoes track by $index" style="color: #666666;">
+        <td>{{solicitacao.createdAt | date: 'shortDT'}}</td>
+        <td>{{solicitacao.funcionario.nome}} {{solicitacao.funcionario.sobrenome}}</td>
+        <td>Ajuste de Ponto</td>
+        <td>{{solicitacao.data | date: 'abvFullDate'}}</td>
+        <td>{{solicitacao.motivo}}</td>
+        <td>
+          <div class="btn-group" role="group" aria-label="acoes">            
+            <button title="Ver" type="button" class="btn btn-sm btn-default" ng-click="ver(solicitacao._id)">
+              <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>  
+            </button>
+            <button title="Aprovar" type="button" class="btn btn-sm btn-success" ui-sref="solicitations.edit({id: funcionario._id})">
+              <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>  
+            </button>
+            <button title="Reprovar" type="button" class="btn btn-sm btn-danger" ng-click="delete(solicitacao._id, $index)">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>  
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+      <td colspan="6" class="text-center">
+        <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
+      </td>
+    </tr>
+    </tfoot>
+  </table>
+</div>

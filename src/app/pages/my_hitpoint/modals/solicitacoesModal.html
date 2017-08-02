@@ -1,0 +1,20 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <!-- <h4 class="modal-title" id="myModalLabel">{{objBatidasDiaria.data}}</h4> -->
+  </div>
+  <div class="modal-body">
+    <div style="text-align: center;">
+      <h1 style="font-size: 22px;">Escolha uma opção de solicitação: </h1>
+      <ul class="btn-list clearfix" style="padding: 12px 0px 0px 130px;">
+        <li><button type="button" class="btn btn-info btn-with-icon" ng-click="ajuste()"><i class="ion-clock"></i>Ajuste de Ponto</button></li>
+        <li><button type="button" class="btn btn-info btn-with-icon" ng-click="abono()"><i class="fa fa-calendar-times-o"></i>Abono</button></li>
+      </ul>
+    </div>      
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

@@ -26,8 +26,10 @@
 </head>
 <body ng-controller="ApplicationController">
 
-<div ng-include="" src="'main.html'" ng-if="logged && authorized"></div>
-<div ng-include="" src="'auth.html'" ng-if="!logged || !authorized" style="height: 100%;"></div>
+<div ng-include="" src="'main.html'" ng-if="logged && authorized && !recoveryPass && !resetForgotPass"></div>
+<div ng-include="" src="'auth.html'" ng-if="(!logged || !authorized) && !recoveryPass && !resetForgotPass" style="height: 100%;"></div>
+<div ng-include="" src="'resetForgotPass.html'" ng-if="!logged && !authorized && !recoveryPass && resetForgotPass" style="height: 100%;"></div>
+<div ng-include="" src="'forgotPass.html'" ng-if="!logged && !authorized && !resetForgotPass && recoveryPass" style="height: 100%;"></div>
 
 <div id="preloader" ng-show="!$pageFinishedLoading">
   <div></div>

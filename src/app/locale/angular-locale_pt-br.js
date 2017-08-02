@@ -83,11 +83,13 @@ $provide.value("$locale", {
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "abvFullDate": "EEE, d 'de' MMM 'de' y",
     "abvFullDate1": "EEE, dd/MM/yyyy",
+    "abvFullDate2": "EEE dd MMM",
     "longDate": "d 'de' MMMM 'de' y",
     "medium": "d 'de' MMM 'de' y HH:mm:ss",
     "mediumDate": "d 'de' MMM 'de' y",
     "mediumTime": "HH:mm:ss",
     "short": "dd/MM/yy HH:mm",
+    "shortDT": "dd/MM/yy 'às' HH:mm",
     "shortDate": "dd/MM/yy",
     "shortTime": "HH:mm"
   },
