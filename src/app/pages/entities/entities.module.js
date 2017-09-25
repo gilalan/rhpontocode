@@ -25,6 +25,7 @@
           icon: 'ion-android-home',
           order: 10,
         },
+        accessLevel: 4
       });
   }
 

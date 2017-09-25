@@ -16,6 +16,7 @@
     
     var layoutColors = baConfig.colors;
     var graphColor = baConfig.theme.blur ? '#000000' : layoutColors.primary;
+    var toleranciaInternaRH = 10; //Fixada em 10 min, permite o cálculo correto de horas extras pelo RH.
 
     $scope.setores = setores.data;
     $scope.usuario = usuario.data;
@@ -52,7 +53,7 @@
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
 
       console.log("current date: ", $scope.currentDate);
-      getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, $scope.equipe.componentes, true, false);//pegando o diário
+      getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, $scope.equipe.componentes, true, false, false);//pegando o diário
     }
 
     $scope.addOneDay = function () {
@@ -61,7 +62,7 @@
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
 
       console.log("current date: ", $scope.currentDate);
-      getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, $scope.equipe.componentes, true, false);//pegando o diário
+      getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, $scope.equipe.componentes, true, false, false);//pegando o diário
     }
 
     $scope.barChartDias = function (button) {
@@ -83,7 +84,7 @@
           
           //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
           var dataInicial = new Date(addOrSubtractDays(dataHoje, -button.value));                    
-          getApontamentosByDateRangeAndEquipe(dataInicial, {dias: button.value+1, barInterval: button.value+1}, $scope.equipe.componentes, false, true);//atualiza só o barData
+          getApontamentosByDateRangeAndEquipe(dataInicial, {dias: button.value+1, barInterval: button.value+1}, $scope.equipe.componentes, false, true, false);//atualiza só o barData
         }
         else {
 
@@ -95,7 +96,7 @@
     $scope.lineChartDias = function (button) {
 
       console.log('Direto do lineChart: ', button.value);
-      
+      var antigoSelected = $scope.lineButtonSelected;
       if (!button.selecionado) {
         $scope.lineButtonSelected = button.value;
         button.selecionado = !button.selecionado;
@@ -106,15 +107,17 @@
         });
       }
 
-      if (button.value == 7) {
+      if (antigoSelected != button.value) {
 
-
-
-      } else if (button.value == 15) {
-
-      } else if (button.value == 30) {
-
-      } else {
+        console.log('entrou no IF de buttons');
+        if (button.value == 7 || button.value == 15 || button.value == 30) {
+          //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
+          var dataInicial = new Date(addOrSubtractDays(dataHoje, -button.value));                    
+          getApontamentosByDateRangeAndEquipe(dataInicial, {dias: button.value+1, lineInterval: button.value+1}, $scope.equipe.componentes, false, false, true);//atualiza só o lineData
+        }
+      }
+       
+      else {
 
         $scope.errorMsg = "Não há essa opção disponível";
       }
@@ -193,7 +196,7 @@
         //Se quiser o do dia, basta passar 1.
         //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
         var dataInicial = new Date(addOrSubtractDays(dataHoje, -(intervaloDias.dias-1)));
-        getApontamentosByDateRangeAndEquipe(dataInicial, intervaloDias, $scope.equipe.componentes, true, true);
+        getApontamentosByDateRangeAndEquipe(dataInicial, intervaloDias, $scope.equipe.componentes, true, true, true);
       }
     };
 
@@ -202,7 +205,7 @@
      * Solicita ao servidor um objeto com os apontamentos dos componentes da equipe
      *
     **/
-    function getApontamentosByDateRangeAndEquipe(beginDate, intervaloDias, componentes, updateDiario, updateBarData) {
+    function getApontamentosByDateRangeAndEquipe(beginDate, intervaloDias, componentes, updateDiario, updateBarData, updateLineData) {
 
       console.log('beginDate? ', beginDate);
       console.log('intervaloDias? ', intervaloDias);
@@ -240,6 +243,12 @@
           dashboardDataFactory.setBarData(chartDataEx);
         }
 
+        if (updateLineData) {
+          var chartLineData = buildLineChartData(dateAux, intervaloDias.lineInterval, apontamentosResponse);
+          console.log('chart data após chamar o gŕafico: ', chartDataEx);
+          dashboardDataFactory.setLineData(chartLineData);
+        }
+
       }, function errorCallback(response){
         
         $errorMsg = response.data.message;
@@ -273,12 +282,13 @@
       var isActive = false;
       //console.log('apontamentos diários por funcionário! ', apontamentoDiariosPorFuncionario);
 
-      $scope.equipe.componentes.forEach(function(componente){//vai criar as informações para cada componentes, mesmo que ele não tenha apontamento
+      $scope.equipe.componentes.forEach(function(componente){//vai criar as informações para cada componente, mesmo que ele não tenha apontamento
         
         hasAppoint = false;
         sortArrayJornadaAsc(componente);
         //console.log('componente: ', componente.nome);
 
+        //verifica para cada apontamento diário se há um pertencente ao atual componente no laço forEach
         apontamentoDiariosPorFuncionario.forEach(function(apontamentoDiarioPorFuncionario){
           
           preencherBatidasTabela(apontamentoDiarioPorFuncionario);
@@ -325,6 +335,7 @@
       var sinalFlag = '-';
       var saldoDia = 0;//em minutos
       var saldoDiarioFormatado = {};
+      var tolerancia = 10; //10 minutos, serve para verificar o somatório das batidas e comparar com ele
 
       //console.log("apontamento de " + funcionario.nome + ": ");
       //console.log(apontamento);
@@ -336,7 +347,7 @@
         apontamento.statusCodeString = expedienteObj.code;
         apontamento.statusString = expedienteObj.string;
         apontamento.statusImgUrl = expedienteObj.imgUrl;
-        saldoDia = apontamento.infoTrabalho.trabalhados - apontamento.infoTrabalho.aTrabalhar;
+        saldoDia = calcularHorasTrabalhoRegraSoll(apontamento.infoTrabalho.trabalhados, apontamento.infoTrabalho.aTrabalhar, tolerancia);
         
         if (saldoDia >= 0){
           saldoFlag = true;
@@ -353,7 +364,6 @@
         
       } else {
 
-        //console.log('SetPretty, ELSE - Não Tem Apontamento!');
         //pode não ter expediente iniciado, ser feriado, estar atrasado, de folga ou faltante mesmo
         expedienteObj = updateAbsenceStatus(funcionarioAlocacao);
         apontamento.statusCodeString = expedienteObj.code;
@@ -391,6 +401,23 @@
 
       //Atualiza o funcionario.apontamento.
       funcionario.apontamentoDiario = apontamento;
+    };
+
+    /*
+    * A regra de tolerancia que Josias passou é a de 10 min , somando-se todos os registros
+    * saldo entre -10 e 10 não devem sem considerados
+    * se o saldo for além deste intervalo acima, então todos os minutos devem ser computados
+    */
+    function calcularHorasTrabalhoRegraSoll(trabalhadas, aTrabalhar, tolerancia) {
+
+      var saldo = trabalhadas - aTrabalhar;
+      if ( (saldo < -tolerancia) || (saldo > tolerancia) ) {
+
+        return saldo;
+
+      }
+
+      return 0;
     };
 
     /*
@@ -459,14 +486,17 @@
     /*
      *
      * O colaborador está presente, resta saber se ele chegou dentro da tolerância estabelecida
+     * Também deve-se levar em consideração que há uma tolerância interna (10 minutos) de acordo com as regras passadas pelo RH da SOLL
      * trabalha -> informa se é dia de trabalho ou não 
      *
     */
     function updatePresenceStatus (trabalha, turno, apontamento) {
 
-      var tolerancia = turno.tolerancia ? turno.tolerancia : 0;
-      var madrugou = false;
-      var atrasou = false;
+      //var tolerancia = turno.tolerancia ? turno.tolerancia : 0;
+      var tolerancia = 10; //Usando tolerancia fixada pelo RH da SOLL (tolerancia para o somatório entre todas as batidas)
+      var toleranciaBatida = 5; //Essa tolerancia é a estabelecida na CLT para as batidas isoladas.
+      var madrugou = false; //flag que indica se o funcionário chegou antes do horário + toleranciaBatida estabelecidos. Ex.: deveria bater de 8h e bateu de 7:53.
+      var atrasou = false; //similar a anterior só que indica que ele chegou depois do horário estabelecido naquele registro.
       var minutosMarcacao;
       var diaComparacao = {};
       var today = $scope.currentDate.getDay(); //dia (número) atual
@@ -494,11 +524,11 @@
           minutosComparacao = diaComparacao.horarios[marcacao.descricao];
           //console.log('minutosComparacao: ', minutosComparacao);
           //console.log('tolerancia ', tolerancia);
-          if (minutosMarcacao < (minutosComparacao - tolerancia)){
+          if (minutosMarcacao < (minutosComparacao - toleranciaBatida)){
             //chegou mto cedo
             madrugou = true;
           } 
-          if (minutosMarcacao > (minutosComparacao + tolerancia)) {
+          if (minutosMarcacao > (minutosComparacao + toleranciaBatida)) {
             atrasou = true;
           }
         }
@@ -551,6 +581,7 @@
       }
     };
 
+    //Saldo do feriado, essas horas são normalmente abonadas para o funcionário
     function getSaldoDiaFrd(funcionarioAlocacao) {
 
       var jornada = funcionarioAlocacao.turno.jornada;
@@ -703,6 +734,7 @@
       };
     };
 
+    //Método auxiliar para identificar se é dia de trabalho na escala de revezamento
     function isWorkingDay(dateToCompare, dataInicioEfetivo) {
 
       var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
@@ -946,7 +978,7 @@
     
     /*
     ** Constrói os dados do gráfico de barras em formato semanal
-    ** Categoria (eixo X): semana posterior a data de hoje (dataHoje) ex.: hoje é quarta, 20/05/2017, traz de 13 a 19 (qua até ter)
+    ** Categoria (eixo X): semana anterior a data de hoje (dataHoje) ex.: hoje é quarta, 20/05/2017, traz de 13 a 19 (qua até ter)
     ** Eixo Y é o valor de saldo de horas da equipe nesse dia
     */
     function buildWeeklyBarChartData (dataInicial, intervaloDias, apontamentosSemanais) {
@@ -993,6 +1025,19 @@
       return chartData;
     };
 
+    /*
+    ** Constrói os dados do gráfico de linhas - absenteísmo
+    ** O Absenteísmo é um indicativo referente aos atrasos, faltas e saídas antecipadas dos funcionários, 
+    ** durante seu horário de trabalho. Estas faltas podem ser justificadas, injustificadas ou justificáveis, 
+    ** demonstrando o comportamento dos funcionários e possíveis reduções na carga-horária de trabalho. 
+    ** Categoria (eixo X): são os meses do ano corrente até o mês atual
+    ** Eixo Y é o valor de horas "desperdiçadas" com ausências/faltas/atestados
+    */
+    function buildLineChartData(dataInicial, intervaloDias, apontamentosSemanais){
+
+      console.log("construir dados do gráfico de absenteísmo");
+    };
+
     function calcularSaldos(searchedElements, dataDesejada) {
       
       console.log('teste de cálculo dos saldos!');
@@ -1015,7 +1060,7 @@
 
             if (componente._id == apontamentoDiario.funcionario._id){
               console.log(' TEM APONTAMENTO!!');
-              saldoDiaTrab += apontamentoDiario.infoTrabalho.trabalhados - apontamentoDiario.infoTrabalho.aTrabalhar;
+              saldoDiaTrab += calcularHorasTrabalhoRegraSoll(apontamentoDiario.infoTrabalho.trabalhados, apontamentoDiario.infoTrabalho.aTrabalhar, 10);
               aTrabalhar += apontamentoDiario.infoTrabalho.aTrabalhar;
               hasAppoint = true;
               return hasAppoint;

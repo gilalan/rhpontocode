@@ -126,6 +126,7 @@
       
       console.log('clicou para associar', user);
       console.log('selectedNivel: ', $scope.selectedNivel);
+      user.firstAccess = true;
       user.perfil = $scope.selectedNivel.item;
       user.funcionario = $scope.funcionario._id;
 

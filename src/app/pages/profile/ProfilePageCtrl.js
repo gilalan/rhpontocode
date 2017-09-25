@@ -24,6 +24,11 @@
       confSenha: ""
     };
 
+    $scope.testData = {
+      blankDate: null,
+      realDate: new Date("September 30, 2010 15:30:00")
+    };
+
     $scope.removePicture = function () {
       $scope.picture = $filter('appImage')('theme/no-photo.png');
       $scope.noPicture = true;

@@ -89,6 +89,12 @@
 		$scope.recoveryPass = isRecovery;
 	});
 
+	$scope.$on('redirectHome', function(_, user){
+
+		var userC = user ? user : Auth.getCurrentUser();
+		redirectState(userC);
+	});
+
 	function redirectState(user){
 
 		if (user.acLvl > 0) {

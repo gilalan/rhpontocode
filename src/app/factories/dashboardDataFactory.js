@@ -11,6 +11,7 @@
 
     var field = 'Test';
     var barChartData = [];
+    var lineChartData = [];
 
     return {
       
@@ -26,6 +27,13 @@
       setBarData: function(data){
         console.log('### DASHBOARDFACTORY:setando valor novo', data);
       	this.barChartData = data;
+      },
+      getLineData: function(){
+        return this.barChartData;
+      },
+      setLineData: function(data){
+        console.log('### DASHBOARDFACTORY:setando valor novo', data);
+        this.lineChartData = data;
       }
     }
   });

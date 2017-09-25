@@ -29,11 +29,12 @@
       });
     };
 
-    $scope.logout = function() {
+    //Foi para o PageTopCtrl
+    // $scope.logout = function() {
     
-      $scope.$emit('logout');
-      //$state.go("");
-    }
+    //   $scope.$emit('logout');
+    //   //$state.go("");
+    // };
 
     $scope.recoveryPwd = function() {
 
