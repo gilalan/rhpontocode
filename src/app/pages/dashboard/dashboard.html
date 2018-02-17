@@ -112,7 +112,8 @@
 <!-- <dashboard-bar-chart></dashboard-bar-chart> -->    
 <!-- <div ng-include="'app/pages/dashboard/dashboardBarChart/barChart.html'"></div> -->
 <div class="row">
-  <div class="col-lg-6 col-md-6 col-sm-12">
+  <!-- <div class="col-lg-6 col-md-6 col-sm-12"> -->
+  <div class="col-md-offset-1 col-md-10 col-md-offset-1"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
     <div class="row">
       <div class="btn-group" role="group" aria-label="Banco de Horas" ng-repeat="btn in btnBarChartArray">
         <button type="button" class="btn" title="últimos {{btn.value}} dias" ng-class="{'btn-info': btn.selecionado}" ng-click="barChartDias(btn)">{{btn.value}}d</button>        
@@ -126,7 +127,7 @@
     </div>       
   </div>
   
-  <div class="col-lg-6 col-md-6 col-sm-12">
+  <!-- <div class="col-lg-6 col-md-6 col-sm-12">
     <div class="row">
       <div class="btn-group" role="group" aria-label="Absenteísmo" ng-repeat="btn in btnLineChartArray">
         <button type="button" class="btn" title="últimos {{btn.value}} dias" ng-class="{'btn-info': btn.selecionado}" ng-click="lineChartDias(btn)">{{btn.value}}d
@@ -138,17 +139,18 @@
            ba-panel-class="medium-panel">
         <dashboard-line-chart></dashboard-line-chart>
       </div>
-    </div>
+    </div> -->
 </div>
 
 <div class="row">
-  <div class="col-lg-6 col-md-6 col-sm-12"
+  <!-- <div class="col-lg-6 col-md-6 col-sm-12"
        ba-panel
        ba-panel-title="Horas Adicionais por Equipes"
        ba-panel-class="medium-panel traffic-panel">
     <traffic-chart></traffic-chart>
-  </div>
-  <div class="col-lg-6 col-md-6 col-xs-12"
+  </div> -->
+  <!-- <div class="col-lg-6 col-md-6 col-xs-12" -->
+  <div class="col-md-offset-1 col-md-10 col-md-offset-1"
        ba-panel
        ba-panel-title="Eventos/Solicitações"
        ba-panel-class="xmedium-panel feed-comply-panel with-scroll calendar-panel">

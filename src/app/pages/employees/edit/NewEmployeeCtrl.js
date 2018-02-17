@@ -9,7 +9,7 @@
       .controller('NewEmployeeCtrl', NewEmployeeCtrl);
 
   /** @ngInject */
-  function NewEmployeeCtrl($scope, $filter, $state, employeeAPI, cargos, turnos, instituicoes) {
+  function NewEmployeeCtrl($scope, $filter, $state, $window, employeeAPI, cargos, turnos, instituicoes) {
 
     console.log("dentro do NewEmployeeCtrl! Lista de cargos: ", cargos);
     console.log("dentro do NewEmployeeCtrl! Lista de turnos: ", turnos);
@@ -31,6 +31,13 @@
     
     $scope.save = function (funcionario) {
 
+      if (!funcionario.email || funcionario.email == ""){
+        
+        $window.scrollTo(0, 0);
+        $scope.errorMsg = 'Por favor, preencha o E-mail.';
+        return false;
+      }
+
       //acopla os dados ao funcionario
       funcionario.alocacao.cargo = $scope.selectedCargo.item;
       funcionario.alocacao.turno = $scope.selectedTurno.item;
@@ -45,21 +52,35 @@
       if (!funcionario.alocacao.gestor)
         funcionario.alocacao.gestor = false;
 
+      var funcLength = funcionario.PIS.length;
+      if (funcLength < 12){
+        var diff = 12 - funcLength;
+        while(diff > 0)
+        {
+          "0" + funcionario.PIS;
+          diff--;
+        }
+      }
+
+      if (funcionario.localTrabalho) {
+        funcionario.localTrabalho = funcionario.localTrabalho.toUpperCase();
+      }
+
       console.log('Funcionario enviado: ', funcionario);
 
       employeeAPI.create(funcionario).then(function sucessCallback(response){
 
         console.log("dados recebidos: ", response.data);
-        $scope.successMsg = response.data.message;      
+        $scope.successMsg = response.data.message;
         
         //back to list
         $state.go('employees.list');
 
       }, function errorCallback(response){
         
+        $window.scrollTo(0, 0);
         $scope.errorMsg = response.data.message;
         console.log("Erro de registro: " + response.data.message);
-        
       });   
     }
 

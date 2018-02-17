@@ -18,6 +18,7 @@
     //dados
     $scope.title = 'Editar';
     $scope.funcionario = funcionario.data;
+    console.log("$scope.funcionario: ", $scope.funcionario);
     $scope.funcionario.dataNascimento = $filter('date')($scope.funcionario.dataNascimento, "dd/MM/yyyy");
     $scope.funcionario.alocacao.dataAdmissao = $filter('date')($scope.funcionario.alocacao.dataAdmissao, "dd/MM/yyyy");
     $scope.cargos = cargos.data;
@@ -27,7 +28,7 @@
     $scope.isInitDateRequired = false;
     $window.scrollTo(0, 0);
 
-    var email = $scope.funcionario.email;
+    var _email = $scope.funcionario.email;
 
     function checkCargo(cargo) {
 
@@ -117,8 +118,8 @@
 
       if ($scope.funcionario.historico){
         if ($scope.funcionario.historico.cargos){
-          turno.id = $scope.funcionario.historico.cargos.length + 1;
-          arrayCargos = $scope.funcionario.historico.turnos;
+          cargo.id = $scope.funcionario.historico.cargos.length + 1;
+          arrayCargos = $scope.funcionario.historico.cargos;
           arrayCargos.push(cargo);
         }
       }
@@ -126,18 +127,18 @@
       return arrayCargos;
     };
 
-    function salvarHistoricoEmail(){
+    function salvarHistoricoEmail(email){
 
-      var id = 1;
+      //var id = 1;
 
       if ($scope.funcionario.historico){
         if ($scope.funcionario.historico.emails){
-          id = $scope.funcionario.historico.emails.length + 1;
-          $scope.funcionario.historico.emails.push({id: id, email: email});
+          //id = $scope.funcionario.historico.emails.length + 1;
+          $scope.funcionario.historico.emails.push(email);
           return $scope.funcionario.historico.emails;
         }
         else {
-          var arrayEmails = [{id: 1, email: email}];
+          var arrayEmails = [email];
           return arrayEmails;
         }
       }
@@ -171,13 +172,17 @@
           funcionario.historico.cargos = salvarHistoricoCargo(funcionario.alocacao.cargo, funcionario.alocacao.dataCargo);
       }
       
-      if (email != funcionario.email){
-        
-        var historicoEmail = {emails: salvarHistoricoEmail()};
+      console.log("_email anterior: ", _email);
+      console.log("funcionario.email: ", funcionario.email);
+
+      if (_email != funcionario.email){
+                
         if (!funcionario.historico)
-          funcionario.historico = historicoEmail;
+          funcionario.historico = {emails: salvarHistoricoEmail(_email)};
         else
-          funcionario.historico.emails = salvarHistoricoEmail();
+          funcionario.historico.emails = salvarHistoricoEmail(_email);
+      } else {
+        console.log("Não entrou pra salvar email");
       }
 
       if (!funcionario.sexoMasculino)
@@ -188,6 +193,10 @@
 
       if (!funcionario.alocacao.gestor)
         funcionario.alocacao.gestor = false;
+
+      if (funcionario.localTrabalho) {
+        funcionario.localTrabalho = funcionario.localTrabalho.toUpperCase();
+      }
 
       //acopla o setor aa funcionario
       funcionario.alocacao.cargo = $scope.selectedCargo.item;

@@ -53,11 +53,12 @@
         </div>
         <div class="row">
           <div class="col-sm-12">
-            <label class="modal-label" ng-if="!isAssociated"> *Funcionário ainda não configurado para acesso*</label>
-            <label class="modal-label" ng-if="isAssociated"> *Funcionário já possui acesso com o e-mail: <strong>{{usuario.email}}</strong> </label>
+            <label class="modal-label" ng-if="!isAssociated" style="color: red;"> *Funcionário ainda não configurado para acesso*</label>
+            <label class="modal-label" ng-if="isAssociated" style="color: green;"> *Funcionário já possui acesso com o e-mail: <strong>{{usuario.email}}</strong> </label>
           </div>
         </div>
-      <h4 class="sub-header"><strong style="color: #334db7;">Informações de acesso ao RHPonto*</strong></h4>
+        <br>
+      <h4 class="sub-header"><strong style="color: #334db7;">Informações de acesso ao RHPonto:</strong></h4>
       <form name="userForm">
       <div class="row">
         <div class="col-sm-6">

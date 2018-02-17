@@ -11,8 +11,8 @@
   /** @ngInject */
   function DashboardCtrl($scope, $filter, setores, usuario, feriados, currentDate, util, teamAPI, appointmentAPI, baConfig, dashboardDataFactory) {
     
-    //console.log('setore resolve: ', setores);
-    //console.log('dashboardFactory from controller', dashboardDataFactory);
+    ////console.log('setore resolve: ', setores);
+    ////console.log('dashboardFactory from controller', dashboardDataFactory);
     
     var layoutColors = baConfig.colors;
     var graphColor = baConfig.theme.blur ? '#000000' : layoutColors.primary;
@@ -21,11 +21,11 @@
     $scope.setores = setores.data;
     $scope.usuario = usuario.data;
     $scope.feriados = feriados.data;
-    //console.log('USUÁRIO: ', $scope.usuario);
+    ////console.log('USUÁRIO: ', $scope.usuario);
     $scope.currentDate = new Date(currentDate.data.date);//usado aqui - fica variando a medida que o usuario navega
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
     $scope.gestor = $scope.usuario.funcionario;
-   // console.log('GESTOR: ', $scope.gestor);
+   // //console.log('GESTOR: ', $scope.gestor);
     $scope.liberado = false;
     
     //Inicializadas no init
@@ -52,7 +52,7 @@
       $scope.currentDate.setDate($scope.currentDate.getDate() - 1);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
 
-      console.log("current date: ", $scope.currentDate);
+      ////console.log("current date: ", $scope.currentDate);
       getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, $scope.equipe.componentes, true, false, false);//pegando o diário
     }
 
@@ -61,7 +61,7 @@
       $scope.currentDate.setDate($scope.currentDate.getDate() + 1);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
 
-      console.log("current date: ", $scope.currentDate);
+      //console.log("current date: ", $scope.currentDate);
       getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, $scope.equipe.componentes, true, false, false);//pegando o diário
     }
 
@@ -72,14 +72,14 @@
         $scope.barButtonSelected = button.value;
         button.selecionado = !button.selecionado;
         $scope.btnBarChartArray.forEach(function(otherBtn){
-          //console.log('otherBtn: ', otherBtn);
+          ////console.log('otherBtn: ', otherBtn);
           if(otherBtn.value != button.value)
             otherBtn.selecionado = false;
         });
       }
 
       if (antigoSelected != button.value) {
-        console.log('entrou no IF de buttons');
+        ////console.log('entrou no IF de buttons');
         if (button.value == 7 || button.value == 15 || button.value == 30) {
           
           //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
@@ -95,13 +95,13 @@
 
     $scope.lineChartDias = function (button) {
 
-      console.log('Direto do lineChart: ', button.value);
+      //console.log('Direto do lineChart: ', button.value);
       var antigoSelected = $scope.lineButtonSelected;
       if (!button.selecionado) {
         $scope.lineButtonSelected = button.value;
         button.selecionado = !button.selecionado;
         $scope.btnLineChartArray.forEach(function(otherBtn){
-          //console.log('otherBtn: ', otherBtn);
+          ////console.log('otherBtn: ', otherBtn);
           if(otherBtn.value != button.value)
             otherBtn.selecionado = false;
         });
@@ -109,7 +109,7 @@
 
       if (antigoSelected != button.value) {
 
-        console.log('entrou no IF de buttons');
+        ////console.log('entrou no IF de buttons');
         if (button.value == 7 || button.value == 15 || button.value == 30) {
           //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
           var dataInicial = new Date(addOrSubtractDays(dataHoje, -button.value));                    
@@ -130,7 +130,7 @@
     **/
     $scope.checkUncheckEquipe = function(equipe) {
 
-      console.log("clicked equipe: ", equipe.nome);
+      ////console.log("clicked equipe: ", equipe.nome);
       //Não pode simplesmente deselecionar uma equipe, ele tem q manter 1 ativa sempre
       if (!equipe.selecionada) {
         
@@ -161,12 +161,12 @@
           } 
         } 
 
-        //console.log('Equipes do gestor: ', response.data);
+        ////console.log('Equipes do gestor: ', response.data);
 
       }, 
       function errorCallback(response){
         $errorMsg = response.data.message;
-        //////console.log("houve um erro ao carregar as equipes do gestor");
+        ////////console.log("houve um erro ao carregar as equipes do gestor");
       });
     };
 
@@ -207,8 +207,8 @@
     **/
     function getApontamentosByDateRangeAndEquipe(beginDate, intervaloDias, componentes, updateDiario, updateBarData, updateLineData) {
 
-      console.log('beginDate? ', beginDate);
-      console.log('intervaloDias? ', intervaloDias);
+      ////console.log('beginDate? ', beginDate);
+      //console.log('intervaloDias? ', intervaloDias);
       var dateAux = new Date(beginDate);
 
       var objDateEquipe = {
@@ -224,35 +224,35 @@
         equipe: componentes
       };
 
-      console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
+      ////console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
 
       appointmentAPI.getApontamentosByDateRangeAndEquipe(objDateEquipe).then(function successCallback(response){
 
         var apontamentosResponse = response.data;
-        console.log("!@# Apontamentos Semanais: ", apontamentosResponse);
+        //console.log("!@# Apontamentos Semanais: ", apontamentosResponse);
 
         if (updateDiario) {
           var apontamentosDiarios = getOnlyApontDiarios(apontamentosResponse); //serve apenas para a tabela  
           createPrettyStringResults(apontamentosDiarios);
-          console.log(" APONTAMENTOS DIARIOS ", apontamentosDiarios);
+          //console.log(" APONTAMENTOS DIARIOS ", apontamentosDiarios);
         }
 
         if (updateBarData) {
           var chartDataEx = buildWeeklyBarChartData(dateAux, intervaloDias.barInterval, apontamentosResponse);
-          console.log('chart data após chamar o gŕafico: ', chartDataEx);
+          //console.log('chart data após chamar o gŕafico: ', chartDataEx);
           dashboardDataFactory.setBarData(chartDataEx);
         }
 
         if (updateLineData) {
           var chartLineData = buildLineChartData(dateAux, intervaloDias.lineInterval, apontamentosResponse);
-          console.log('chart data após chamar o gŕafico: ', chartDataEx);
+          //console.log('chart data após chamar o gŕafico: ', chartDataEx);
           dashboardDataFactory.setLineData(chartLineData);
         }
 
       }, function errorCallback(response){
         
         $errorMsg = response.data.message;
-        //////console.log("Erro ao obter apontamentos por um range de data e equipe");
+        ////////console.log("Erro ao obter apontamentos por um range de data e equipe");
       });
     };
 
@@ -262,9 +262,9 @@
     function getOnlyApontDiarios(apontamentosSemanais) {
 
       return apontamentosSemanais.filter(function(apontamento){
-        //////console.log("apontamento.data: ", new Date(apontamento.data));
-        //////console.log("currentDate: ", $scope.currentDate);
-        //////console.log("são iguais? ", compareOnlyDates(new Date(apontamento.data), $scope.currentDate))
+        ////////console.log("apontamento.data: ", new Date(apontamento.data));
+        ////////console.log("currentDate: ", $scope.currentDate);
+        ////////console.log("são iguais? ", compareOnlyDates(new Date(apontamento.data), $scope.currentDate))
         return (compareOnlyDates(new Date(apontamento.data), //se a data for idêntica, traz ela no filter
           $scope.currentDate) === 0);
       });
@@ -280,13 +280,13 @@
 
       var hasAppoint = false;
       var isActive = false;
-      //console.log('apontamentos diários por funcionário! ', apontamentoDiariosPorFuncionario);
+      ////console.log('apontamentos diários por funcionário! ', apontamentoDiariosPorFuncionario);
 
       $scope.equipe.componentes.forEach(function(componente){//vai criar as informações para cada componente, mesmo que ele não tenha apontamento
         
         hasAppoint = false;
         sortArrayJornadaAsc(componente);
-        //console.log('componente: ', componente.nome);
+        ////console.log('componente: ', componente.nome);
 
         //verifica para cada apontamento diário se há um pertencente ao atual componente no laço forEach
         apontamentoDiariosPorFuncionario.forEach(function(apontamentoDiarioPorFuncionario){
@@ -295,7 +295,7 @@
           //if (isActiveWorker(componente)); se não for ativo, já poderia setar aqui o apontamento inválido... para não levar ele em consideração melhor dizer
 
           if (componente._id == apontamentoDiarioPorFuncionario.funcionario._id){
-            //console.log('te m apontamento!');
+            ////console.log('te m apontamento!');
             componente.apontamentoDiario = apontamentoDiarioPorFuncionario;
             //setPretty(componente);
             hasAppoint = true;
@@ -306,7 +306,7 @@
 
         if (!hasAppoint ) {
           //aí verificamos os casos possíveis (ENI, feriados, DSR, AUSENCIA)
-          //console.log(componente.nome + 'NÃO tem apontamento!');
+          ////console.log(componente.nome + 'NÃO tem apontamento!');
           componente.apontamentoDiario = {};
           preencherBatidasVazias(componente.apontamentoDiario);
         }
@@ -337,8 +337,8 @@
       var saldoDiarioFormatado = {};
       var tolerancia = 10; //10 minutos, serve para verificar o somatório das batidas e comparar com ele
 
-      //console.log("apontamento de " + funcionario.nome + ": ");
-      //console.log(apontamento);
+      ////console.log("apontamento de " + funcionario.nome + ": ");
+      ////console.log(apontamento);
 
       //se tiver marcações/infoTrabalho - funcionário está presente
       if (apontamento.marcacoes || apontamento.infoTrabalho) {          
@@ -369,7 +369,7 @@
         apontamento.statusCodeString = expedienteObj.code;
         apontamento.statusString = expedienteObj.string;
         apontamento.statusImgUrl = expedienteObj.imgUrl;
-        //console.log('expedienteObj returned: ', expedienteObj);
+        ////console.log('expedienteObj returned: ', expedienteObj);
         if (expedienteObj.code == "FRD"){
           saldoFlag = true;
           sinalFlag = '';
@@ -427,11 +427,11 @@
     function preencherBatidasTabela(apontamento) {
 
       var entSaidas = ['ent1', 'sai1', 'ent2', 'sai2'];//só mostro as 4 primeiras nessa tabela
-      //console.log('[antes] - apontamento marcacaoes ftd: ', apontamento.marcacoesFtd);
+      ////console.log('[antes] - apontamento marcacaoes ftd: ', apontamento.marcacoesFtd);
       apontamento.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
         return a > b;
       });
-      //console.log('[depois] - apontamento marcacaoes ftd: ', apontamento.marcacoesFtd);
+      ////console.log('[depois] - apontamento marcacaoes ftd: ', apontamento.marcacoesFtd);
       apontamento.marcacoesStringObj = {};
       for (var i = 0; i < apontamento.marcacoesFtd.length; i++) {
         apontamento.marcacoesStringObj[entSaidas[i]] = apontamento.marcacoesFtd[i];
@@ -510,7 +510,7 @@
             diaComparacao = jornadaArray[0];
         }
 
-        //console.log('dia comparação: ', diaComparacao);
+        ////console.log('dia comparação: ', diaComparacao);
 
         var marcacao;
         var minutosComparacao;
@@ -518,12 +518,12 @@
 
           marcacao = apontamento.marcacoes[i];
           minutosMarcacao = (marcacao.hora * 60) + marcacao.minuto;
-          //console.log('minutos marcação: ', minutosMarcacao);      
-          //console.log('marcacao.descricao: ', marcacao.descricao);
-          // console.log('dia comparacao access object: ', diaComparacao.horarios["ent1"]);
+          ////console.log('minutos marcação: ', minutosMarcacao);      
+          ////console.log('marcacao.descricao: ', marcacao.descricao);
+          // //console.log('dia comparacao access object: ', diaComparacao.horarios["ent1"]);
           minutosComparacao = diaComparacao.horarios[marcacao.descricao];
-          //console.log('minutosComparacao: ', minutosComparacao);
-          //console.log('tolerancia ', tolerancia);
+          ////console.log('minutosComparacao: ', minutosComparacao);
+          ////console.log('tolerancia ', tolerancia);
           if (minutosMarcacao < (minutosComparacao - toleranciaBatida)){
             //chegou mto cedo
             madrugou = true;
@@ -534,10 +534,10 @@
         }
 
         if(!atrasou && !madrugou){
-          //////console.log("Está dentro dos limites tolerados no horário rígido!");
+          ////////console.log("Está dentro dos limites tolerados no horário rígido!");
           return {code: "PRE", string: "Presente", imgUrl: "assets/img/app/todo/bullet-green.png"};
         } else if (atrasou){
-          //////console.log("Está fora dos limites - bateu atrasado!");
+          ////////console.log("Está fora dos limites - bateu atrasado!");
           return {code: "ATR", string: "Presente com observação (alguma batida ultrapassou o limite de tolerância estabelecida)", imgUrl: "assets/img/app/todo/bullet-green2.png"};
         } else if (madrugou) {
           return {code: "ATR", string: "Presente com observação (em alguma batida o funcionário entrou mais cedo que a tolerância estabelecida)", imgUrl: "assets/img/app/todo/bullet-green2.png"};        
@@ -568,7 +568,7 @@
 
       } else if (hasFolgaSolicitada() || hasLicenca()){ //Caso 3 - Folgas/Licenças
 
-        //console.log('Caso 3 - checar');
+        ////console.log('Caso 3 - checar');
 
       } else { //Caso 2, 4 ou 5
         
@@ -614,12 +614,12 @@
       if (dataDesejada)
         dataAtual = dataDesejada;
 
-      console.log('hasDataDesejada? ', dataDesejada);
+      //console.log('hasDataDesejada? ', dataDesejada);
 
       var jornadaArray = funcionarioAlocacao.turno.jornada.array; //para ambas as escalas
-      console.log('Dentro de Jornada Semanal: funcionarioAlocacao', funcionarioAlocacao);
+      //console.log('Dentro de Jornada Semanal: funcionarioAlocacao', funcionarioAlocacao);
       var objDay = getDayInArrayJornadaSemanal(dataAtual.getDay(), jornadaArray);
-      console.log('objDay', objDay);
+      //console.log('objDay', objDay);
       
       if (!objDay || !objDay.minutosTrabalho || objDay.minutosTrabalho <= 0) { //Caso 4 - DSR
         
@@ -630,32 +630,32 @@
         var codDate = compareOnlyDates(dataAtual, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          //////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
+          ////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
           var ENT1 = objDay.horarios.ent1;
-          //console.log("Total de minutos da hora atual: ", totalMinutesAtual);
-          //console.log("Entrada 1: ", ENT1);
+          ////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
+          ////console.log("Entrada 1: ", ENT1);
 
           if (totalMinutesAtual < ENT1) {
           
-            //////console.log("Ainda não iniciou o expediente");
+            ////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            //////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
+            ////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/bullet-red.png", saldoDia: objDay.minutosTrabalho};
           }
 
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          //////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
+          ////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/bullet-red.png", saldoDia: objDay.minutosTrabalho};
 
         } else { //Navegando em dias futuros
 
-          //////console.log("Navegando em dias futuros, expediente não iniciado!");
+          ////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
       } 
@@ -672,7 +672,7 @@
       if (dataDesejada)
         dataComparacao = dataDesejada;
 
-      console.log('dataComparacao: ', dataComparacao);
+      //console.log('dataComparacao: ', dataComparacao);
       var trabalha = isWorkingDay(dataComparacao, 
         new Date(funcionarioAlocacao.dataInicioEfetivo));
       
@@ -682,28 +682,28 @@
         var codDate = compareOnlyDates(dataComparacao, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          //////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
+          ////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
-          //////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
+          ////////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
 
           if (totalMinutesAtual < ENT1) {
           
-            //////console.log("Ainda não iniciou o expediente");
+            ////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            //////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
+            ////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/bullet-red.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
           }
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          //////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
+          ////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/bullet-red.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
         } else { //Navegando em dias futuros
 
-          //////console.log("Navegando em dias futuros, expediente não iniciado!");
+          ////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
 
@@ -722,7 +722,7 @@
           return diaRetorno;
         }
       });
-      ////console.log("DIA RETORNO NO getDayInArrayJornadaSemanal: ", diaRetorno);
+      //////console.log("DIA RETORNO NO getDayInArrayJornadaSemanal: ", diaRetorno);
       return diaRetorno;
     };
 
@@ -745,7 +745,7 @@
       d2.setHours(0,0,0,0);
 
       var diffDays = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
-      //////console.log("diffDays: ", diffDays);
+      ////////console.log("diffDays: ", diffDays);
       
       return (diffDays % 2 == 0) ? true : false;
     };
@@ -775,7 +775,7 @@
     function createStringMarcacoes(apontamento) {
 
       var marcacaoStringObj = {};
-      //console.log('craindo marcações string!');
+      ////console.log('craindo marcações string!');
 
       apontamento.marcacoes.forEach(function(objMarcacao){
         if (objMarcacao.descricao == "ent1")
@@ -787,7 +787,7 @@
         else if (objMarcacao.descricao == "sai2")
           marcacaoStringObj.sai2 = converteParaMarcacaoString(objMarcacao.hora, objMarcacao.minuto, ":");
       });
-      //console.log('retornando marcações string: ', marcacaoStringObj);
+      ////console.log('retornando marcações string: ', marcacaoStringObj);
       return marcacaoStringObj;
     };
 
@@ -835,7 +835,7 @@
 
     function getBancoHorasDiarioFtd(qtdMinutosTrabalhados) {
 
-      //console.log("###FTD - qtdMinutosTrabalhados: ", qtdMinutosTrabalhados);
+      ////console.log("###FTD - qtdMinutosTrabalhados: ", qtdMinutosTrabalhados);
 
       var flagPosit, flagNegat = false;
       
@@ -883,7 +883,7 @@
         if (feriado.fixo){
           
           if (tempDate.getMonth() === month && tempDate.getDate() === date){
-            //////console.log("É Feriado (fixo)!");
+            ////////console.log("É Feriado (fixo)!");
             flagFeriado = true;
             return feriado;
           }
@@ -891,7 +891,7 @@
         } else {//se não é fixo
 
           if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
-            //////console.log("É Feriado (variável)!");
+            ////////console.log("É Feriado (variável)!");
             flagFeriado = true;
             return feriado;
           }
@@ -929,13 +929,13 @@
       //como a passagem é por referência, devemos criar uma cópia do objeto
       var d1 = angular.copy(date1); 
       var d2 = angular.copy(date2);
-      //console.log('date1', d1);
-      //console.log('date2', d2);
+      ////console.log('date1', d1);
+      ////console.log('date2', d2);
       d1.setHours(0,0,0,0);
       d2.setHours(0,0,0,0);
 
-      //console.log('date1 time', d1.getTime());
-      //console.log('date2 time', d2.getTime());
+      ////console.log('date1 time', d1.getTime());
+      ////console.log('date2 time', d2.getTime());
 
       if (d1.getTime() < d2.getTime())
         return -1;
@@ -970,7 +970,7 @@
       // j = 0;
       //   while( apontamentosSemanais[j] && (compareOnlyDates(dataAtualLaco, new Date(apontamentosSemanais[j].data)) == 0)){//enquanto for a mesma
 
-      //     ////console.log("apontamento pego: ", apontamentosSemanais[j]); 
+      //     //////console.log("apontamento pego: ", apontamentosSemanais[j]); 
       //     j++;
       //   }
       //   //qtde 'j' indica numero de funcionários com apontamentos nessa data...
@@ -995,18 +995,18 @@
       var dataAtualLaco = dataInicial;
       var saldosCalculados = {};
       var searchedElements = [];
-      console.log('dataInicial ', dataInicial);
-      console.log('intervaloDias ', intervaloDias);
+      //console.log('dataInicial ', dataInicial);
+      //console.log('intervaloDias ', intervaloDias);
 
       for (var i=0; i<intervaloDias; i++){ //passar em cada dia do intervalo e preencher o item do gráfico
 
-        console.log('id', i);
-        console.log('data atual', dataAtualLaco);
-        console.log('dia da semana', weekDays[dataAtualLaco.getDay()]);
+        //console.log('id', i);
+        //console.log('data atual', dataAtualLaco);
+        //console.log('dia da semana', weekDays[dataAtualLaco.getDay()]);
         itemChartData.axisX = dataAtualLaco.getDate() + "(" + weekDays[dataAtualLaco.getDay()] + ")";
         //traz os apontamentos disponíveis neste dia
         searchedElements = getApontamentosFromSpecificDate(apontamentosSemanais, dataAtualLaco);
-        console.log("elementos recuperados deste dia: ", searchedElements);
+        //console.log("elementos recuperados deste dia: ", searchedElements);
         
         var saldosCalculados = calcularSaldos(searchedElements, dataAtualLaco);
         itemChartData.value = saldosCalculados.saldoTrabalhado;
@@ -1017,7 +1017,7 @@
         else
           itemChartData.color = layoutColors.danger;
 
-        console.log('objeto: ', itemChartData);
+        //console.log('objeto: ', itemChartData);
         chartData.push(itemChartData);
         dataAtualLaco = addOrSubtractDays(dataAtualLaco, 1);
         itemChartData = {};
@@ -1035,12 +1035,12 @@
     */
     function buildLineChartData(dataInicial, intervaloDias, apontamentosSemanais){
 
-      console.log("construir dados do gráfico de absenteísmo");
+      //console.log("construir dados do gráfico de absenteísmo");
     };
 
     function calcularSaldos(searchedElements, dataDesejada) {
       
-      console.log('teste de cálculo dos saldos!');
+      //console.log('teste de cálculo dos saldos!');
       var hasAppoint = false;
       var isActive = false;
       var expedienteObj = null;
@@ -1051,7 +1051,7 @@
       $scope.equipe.componentes.forEach(function (componente){
           
         sortArrayJornadaAsc(componente);
-        console.log('componente: ', componente.nome);
+        //console.log('componente: ', componente.nome);
         hasAppoint = false;
         isActive = isActiveWorker(componente, dataDesejada);
         
@@ -1059,7 +1059,7 @@
           searchedElements.forEach(function(apontamentoDiario){
 
             if (componente._id == apontamentoDiario.funcionario._id){
-              console.log(' TEM APONTAMENTO!!');
+              //console.log(' TEM APONTAMENTO!!');
               saldoDiaTrab += calcularHorasTrabalhoRegraSoll(apontamentoDiario.infoTrabalho.trabalhados, apontamentoDiario.infoTrabalho.aTrabalhar, 10);
               aTrabalhar += apontamentoDiario.infoTrabalho.aTrabalhar;
               hasAppoint = true;
@@ -1069,9 +1069,9 @@
         
 
           if (!hasAppoint) {
-            console.log(' Não Tem Apontamento!');
+            //console.log(' Não Tem Apontamento!');
             expedienteObj = calcularSaldoSemApontamento(componente.alocacao, dataDesejada);
-            console.log('objeto sem apontamento calculado: ', expedienteObj);
+            //console.log('objeto sem apontamento calculado: ', expedienteObj);
             if (expedienteObj.saldoDia) {
               if (expedienteObj.code == "FRD"){ //feriado as horas contam como trabalho
                 saldoDiaTrab += expedienteObj.saldoDia;
@@ -1084,10 +1084,10 @@
           }
         } else { //usuário não ativo...
 
-          console.log('componente ' + componente.nome + ' não estava admitido em ' + dataDesejada);
+          //console.log('componente ' + componente.nome + ' não estava admitido em ' + dataDesejada);
         }
-        console.log('Saldo ideal até o momento: ', aTrabalhar);
-        console.log('Saldo trabalhado até o momento: ', saldoDiaTrab);
+        //console.log('Saldo ideal até o momento: ', aTrabalhar);
+        //console.log('Saldo trabalhado até o momento: ', saldoDiaTrab);
       });
 
       retorno = {
@@ -1106,7 +1106,7 @@
     function calcularSaldoSemApontamento(funcionarioAlocacao, dataDesejada){
 
       var expedienteObj = updateAbsenceStatus(funcionarioAlocacao, dataDesejada);
-      //console.log('expedienteObj returned: ', expedienteObj);
+      ////console.log('expedienteObj returned: ', expedienteObj);
       
       //if (expedienteObj.code == "FRD" || expedienteObj.code == "AUS"){      
       return expedienteObj;

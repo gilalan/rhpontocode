@@ -9,8 +9,13 @@
       .controller('PageTopCtrl', PageTopCtrl);
 
   /** @ngInject */
-  function PageTopCtrl($scope, $sce) {
+  function PageTopCtrl($scope, $sce, Auth) {
       
+    var user = Auth.getCurrentUser();
+    $scope.infoUser = {};
+
+    init();
+
     $scope.logout = function() {
     
       $scope.$emit('logout');
@@ -21,5 +26,26 @@
       
       $scope.$emit('redirectHome');
     };
+
+    function init() {
+      
+      if (user.acLvl == 5) { //ADMIN
+        $scope.infoUser = {
+          text: "Perfil de Administrador (" + user.email + ")"
+        };
+      } else if (user.acLvl == 4) { //Gestor Geral
+        $scope.infoUser = {
+          text: "Perfil de Gestor Geral (" + user.email + ")",
+          login: user.email
+        };
+      } else  { //demais
+        $scope.infoUser = {
+          text: user.role + " (" + user.email + ")",
+          login: user.email
+        };
+      }
+
+    };
+
   }
 })();

@@ -5,6 +5,8 @@
 
 angular.module('BlurAdmin').value("config", {
 
-	//baseUrl: "http://52.89.212.253:8080" 
-	baseUrl: "https://localhost:8081"
+	baseUrl: "http://52.89.212.253:8080" 
+	//baseUrl: "http://rhpontum.com.br:8080" 
+	//baseUrl: "https://localhost:8081"
+	//baseUrl: "http://localhost:8080" 
 });

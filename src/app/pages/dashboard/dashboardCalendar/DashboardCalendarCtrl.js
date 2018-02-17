@@ -9,8 +9,11 @@
       .controller('DashboardCalendarCtrl', DashboardCalendarCtrl);
 
   /** @ngInject */
-  function DashboardCalendarCtrl(baConfig) {
+  function DashboardCalendarCtrl(baConfig, appointmentAPI) {
     var dashboardColors = baConfig.colors.dashboard;
+    //var dataHoje = new Date(currentDate.data.date);//data de hoje do server
+    init();
+    
     var $element = $('#calendar').fullCalendar({
       //height: 335,
       header: {
@@ -18,7 +21,11 @@
         center: 'title',
         right: 'month,agendaWeek,agendaDay'
       },
-      defaultDate: '2016-03-08',
+      //defaultDate: '2016-03-08',
+      option: {
+        lang: 'pt-BR'
+      },
+      defaultDate: '2018-02-15',
       selectable: true,
       selectHelper: true,
       select: function (start, end) {
@@ -39,28 +46,44 @@
       events: [
         {
           title: 'Correção',
-          start: '2016-03-01',
+          start: '2018-02-01',
           color: dashboardColors.silverTree
         },
         {
           title: 'Folga (horas adicionais)',
-          start: '2016-03-07',
-          end: '2016-03-10',
+          start: '2018-02-07',
+          end: '2018-02-10',
           color: dashboardColors.blueStone
         },
         {
           title: 'Licença médica',
           //start: '2016-03-14T20:00:00',
-          start: '2016-03-14',
+          start: '2018-02-14',
           color: dashboardColors.surfieGreen
         },
         {
           title: 'Ajuste',
           //start: '2016-04-01T07:00:00',
-          start: '2016-04-01',
+          start: '2018-03-01',
           color: dashboardColors.gossipDark
         }
       ]
     });
+
+    function init() {
+      
+      appointmentAPI.getCurrentDate().then(function sucessCallback(response){
+
+        var newDate = new Date(response.data.date);
+        console.log('newDate in client from server', newDate);
+
+      }, function errorCallback(response) {
+
+        $scope.errorMsg = "Erro ao obter a data do servidor, tente novamente dentro de alguns segundos";
+        console.log("Erro de registro: " + response.data.message);
+
+      });
+
+    };
   }
 })();

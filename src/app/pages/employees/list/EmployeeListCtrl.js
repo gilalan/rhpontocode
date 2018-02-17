@@ -111,14 +111,15 @@
 
   function ModalAssociateCtrl ($uibModalInstance, $scope, funcionario, usuario, perfis, usersAPI) {
 
-    console.log('funcionario, ', funcionario);
-    console.log('usuario', usuario);
+    console.log('funcionario, ', funcionario.data);
+    console.log('usuario', usuario.data);
     console.log('perfis: ', perfis.data);
     $scope.funcionario = funcionario.data;
     $scope.perfis = perfis.data;
     $scope.user = usuario.data;
     $scope.isAssociated = false;
-    $scope.selectedNivel;
+    $scope.selectedNivel;   
+
     var $ctrl = this;
     $ctrl.confirmation = true;
 
@@ -164,7 +165,10 @@
           $scope.selectedNivel = { item: $scope.perfis[$scope.perfis.findIndex(checkPerfil)] };
         } else {
 
-          $scope.selectedNivel = {item: $scope.perfis[0]};
+          $scope.selectedNivel = {item: $scope.perfis[0]};           
+          $scope.user = { //inicializa
+            email: $scope.funcionario.email
+          }    
         }
 
       } else {

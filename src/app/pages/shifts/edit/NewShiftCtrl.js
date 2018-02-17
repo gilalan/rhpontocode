@@ -9,11 +9,15 @@
       .controller('NewShiftCtrl', NewShiftCtrl);
 
   /** @ngInject */
-  function NewShiftCtrl($scope, $filter, $window, $state, shiftAPI, escalas) {
+  function NewShiftCtrl($scope, $filter, $window, $state, shiftAPI, escalas, turnos) {
 
     $scope.title = 'Novo';
     $scope.escalas = escalas.data;
-    $scope.turno = {isFlexivel: false, intervaloFlexivel: false, ignoraFeriados: false};
+    var proximoCodigo = 1;
+    if (turnos.data){
+      proximoCodigo = turnos.data.length + 1;  
+    } 
+    $scope.turno = {codigo: proximoCodigo, isFlexivel: false, intervaloFlexivel: false, ignoraFeriados: false};
     $scope.preencherEscala = {flag: false};
     $scope.rowHorarioDias = null;
     $scope.minutosIntervaloPrincipal = null;

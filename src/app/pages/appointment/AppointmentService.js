@@ -55,5 +55,10 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 	svc.getCurrentDate = function(){
 		return $http.post(_urlBaseApontamentos+'/currentDate', {});
 	};
+
+	svc.getEquipesEstatistica = function(ObjArrayEquipes) {
+
+		return $http.post(_urlBaseApontamentos+'/allequipes/estatisticas', ObjArrayEquipes);
+	};
 	
 });

@@ -43,6 +43,9 @@
         resolve: {
           escalas: function(scaleAPI) {
             return scaleAPI.get();
+          },
+          turnos: function(shiftAPI){
+            return shiftAPI.get();
           }
         },
         accessLevel: 3

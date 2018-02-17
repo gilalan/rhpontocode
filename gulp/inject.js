@@ -54,7 +54,7 @@ gulp.task('injectAuth', ['stylesAuth'], function () {
   return injectAlone({
     css: [path.join('!' + conf.paths.tmp, '/serve/app/vendor.css'), path.join(conf.paths.tmp, '/serve/app/auth.css')],//'/serve/app/auth.css'
     //scripts: [ path.join(conf.paths.src, '/assets/js/**/*.js'), path.join(conf.paths.src, '/app/**/*.module.js'), path.join(conf.paths.src, '/app/**/*.js')],
-    paths: [path.join(conf.paths.src, '/auth.html'), path.join(conf.paths.src, '/reg.html')]//'/auth.html'
+    paths: [path.join(conf.paths.src, '/auth.html'), path.join(conf.paths.src, '/reg.html'), path.join(conf.paths.src, '/forgotPass.html'), path.join(conf.paths.src, '/resetForgotPass.html')]//'/auth.html'
   })
 });
 

@@ -12,10 +12,11 @@
   /** @ngInject */
   function ShiftListCtrl($scope, $state, $uibModal, $stateParams, shiftAPI, turnos) {
     
-    console.log('turnos - List controller');
+    //console.log('turnos - List controller');
     $scope.smartTablePageSize = 5;
-    console.log('turnos pelo Resolve: ', turnos);
+    //console.log('turnos pelo Resolve: ', turnos);
     $scope.turnos = turnos.data;
+    //console.log('Turnos count: ', $scope.turnos.length);
     var defaultSize = 'md';
     var pageDeletePath = 'app/pages/shifts/list/deleteModal.html';
 

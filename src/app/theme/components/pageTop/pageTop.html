@@ -3,14 +3,16 @@
   <a href class="collapse-menu-link ion-navicon" ba-sidebar-toggle-menu></a>
 
   <div class="search">
-    <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
-    <input id="searchInput" type="text" placeholder="Search for...">
+    <!-- <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
+    <input id="searchInput" type="text" placeholder="Search for..."> -->
+    <p>{{::infoUser.text}}</p>
   </div>
 
   <div class="user-profile clearfix">
     <div class="al-user-profile" uib-dropdown>
       <a uib-dropdown-toggle class="profile-toggle-link">
-        <img ng-src="{{::( 'Nasta' | profilePicture )}}">
+        <!-- <img ng-src="{{::( 'Nasta' | profilePicture )}}"> -->
+        <img ng-src="{{::( 'User' | profilePicture )}}">
       </a>
       <ul  class="top-dropdown-menu profile-dropdown" uib-dropdown-menu>
         <li><i class="dropdown-arr"></i></li>
@@ -19,6 +21,6 @@
         <li><a href ng-click="logout()" class="signout"><i class="fa fa-power-off"></i>Sair</a></li>
       </ul>
     </div>
-    <msg-center></msg-center>
+    <!-- <msg-center></msg-center> -->
   </div>
 </div>

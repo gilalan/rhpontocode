@@ -14,13 +14,13 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputNome">Nome*</label>
+        <label for="inputNome" style="color: red;" >Nome*</label>
         <input type="text" class="form-control" id="inputNome" placeholder="Nome" ng-model="funcionario.nome" ng-required="true">
       </div>
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputSobrenome">Sobrenome*</label>
+        <label for="inputSobrenome" style="color: red;">Sobrenome*</label>
         <input type="text" class="form-control" id="inputSobrenome" placeholder="Sobrenome" ng-model="funcionario.sobrenome" ng-required="true">
       </div>
     </div>
@@ -28,13 +28,13 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputPIS">PIS* - 12 dígitos</label>
+        <label for="inputPIS" style="color: red;">PIS* - 12 dígitos</label>
         <input type="text" class="form-control" id="inputPIS" placeholder="PIS - completar com zeros no início se for menor que 12 dígitos" ng-model="funcionario.PIS" ng-minlength=12 ng-maxlength=12 ng-required="true">
       </div>
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputCPF">CPF*</label>
+        <label for="inputCPF" style="color: red;">CPF*</label>
         <input type="text" class="form-control" id="inputCPF" placeholder="CPF" ng-model="funcionario.CPF" ng-required="true">
       </div>
     </div>
@@ -60,6 +60,12 @@
         <input type="text" class="form-control" id="inputDataNascimento" placeholder="ex.: 30/04/1986" ng-model="funcionario.dataNascimento" ui-date>
       </div>
     </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputLocalTrabalho">Local de Trabalho</label>
+        <input type="text" class="form-control" id="inputLocalTrabalho" placeholder="Local de Trabalho (ou setor de trabalho)" ng-model="funcionario.localTrabalho">
+      </div>
+    </div>
   </div>
   <h4 class="sub-header"><strong style="color: #334db7;">Alocação</strong></h4>
   <div class="row">
@@ -83,7 +89,7 @@
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputCargo">Cargo*</label>
+        <label for="inputCargo" style="color: red;">Cargo*</label>
          <ui-select ng-model="selectedCargo.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
@@ -103,13 +109,13 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputDataAdmissao">Data de Admissão*</label>
+        <label for="inputDataAdmissao" style="color: red;">Data de Admissão*</label>
         <input type="text" class="form-control" id="inputDataAdmissao" placeholder="ex.: 10/05/2016" ng-model="funcionario.alocacao.dataAdmissao" ng-required="true" ui-date>
       </div>
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputTurno">Turno*</label>
+        <label for="inputTurno" style="color: red;">Turno*</label>
          <ui-select ng-model="selectedTurno.item"
                class="btn-group bootstrap-select form-control"
                ng-disabled="false"
@@ -134,14 +140,14 @@
       <br/>
       <label class="checkbox-inline custom-checkbox nowrap">
         <input type="checkbox" id="checkboxSexo" ng-model="funcionario.sexoMasculino">
-        <span>Sexo Masculino?*</span>
+        <span style="color: red;">Sexo Masculino?*</span>
       </label>
     </div>
     <div class="col-sm-3">
       <br/>
       <label class="checkbox-inline custom-checkbox nowrap">
         <input type="checkbox" id="checkboxRHPonto" ng-model="funcionario.rhponto">
-        <span>Utiliza RHPonto?*</span>
+        <span style="color: red;">Utiliza RHPonto?*</span>
       </label>
     </div>
     <div class="col-sm-3">

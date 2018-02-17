@@ -24,6 +24,7 @@
 
     console.log('Batida Direta?!??', batidaDireta);
     var batidaDireta = batidaDireta;
+    var position = {};
     var feriados = feriados.data;
     var secsControl = 1;
     var apontamento = null;
@@ -49,6 +50,17 @@
     */
     function registro (page, size) {
       
+      // var geoLocalFixo = $scope.funcionario.geoLocalFixo;
+      // //Se o usuário/funcionário tiver uma determinada flag
+      // if (geoLocalFixo){
+      //   if (geoLocalFixo.latitude && geoLocalFixo.longitude){
+      //     if (position.lat && position.lon){
+      //       //fazer o teste se a location está inserida no raio que é permitido para o usuario
+            
+      //     }
+      //   }
+      // }
+
       appointmentAPI.getCurrentDate().then(function sucessCallback(response){
 
         var newDate = new Date(response.data.date);
@@ -518,10 +530,22 @@
 
     function init() {
       
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position){
+          //$scope.$apply(function(){
+          position.lat = position.coords.latitude;
+          position.lon = position.coords.longitude;
+          console.log("LAT: ", position.lat);
+          console.log("LONG: ", position.lon);
+          //});
+        });
+      }
+
       if ($scope.funcionario)
         getApontamentoDiarioFromFuncionario();
       else
         alert('Erro ao recuperar o funcionário cadastrado do Ponto');
+            
     
       tick();
       $interval(tick, 1000);

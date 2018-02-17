@@ -18,12 +18,12 @@
     <div class="col-sm-6">
       <div class="form-group">
         <label for="inputCodigo">Código</label>
-        <input type="text" class="form-control" id="inputNome" placeholder="Código" ng-model="turno.codigo" ng-required="true">
+        <input type="text" class="form-control" id="inputNome" placeholder="Código" ng-model="turno.codigo" ng-required="true" ng-disabled="true">
       </div>
     </div>
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="inputDescricao">Descrição</label>
+        <label for="inputDescricao" style="color: red;">Descrição*</label>
         <input type="text" class="form-control" id="inputDescricao" placeholder="Descrição" ng-model="turno.descricao" ng-required="true">
       </div>
     </div>
@@ -51,7 +51,7 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="escalasGroup">Escala*</label>
+        <label for="escalasGroup" style="color: red;">Escala*</label>
         <div class="btn-group btn-group" role="group" aria-label="escalasGroup" ng-repeat="escala in escalas">
           <button type="button" class="btn btn-default" ng-class="{'btn-primary': escala.selecionada}" ng-click="checkUncheckEscala(escala)" ng-disabled="preencherEscala.flag">
             {{escala.nome}}
