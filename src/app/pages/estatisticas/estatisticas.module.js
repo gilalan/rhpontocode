@@ -34,8 +34,13 @@
             },
             
             equipes: function(teamAPI) {
-              return teamAPI.get();
+              return [];//teamAPI.get(); ARRAY VAZIO PARA AGILIZAR OS OUTROS TESTES
             }
+            // ,
+
+            // rawAppoints: function(appointmentAPI) {
+            //   return appointmentAPI.getAllRawAppoints();
+            // }
             
           //   currentDate: function(appointmentAPI) {
           //     return appointmentAPI.getCurrentDate();

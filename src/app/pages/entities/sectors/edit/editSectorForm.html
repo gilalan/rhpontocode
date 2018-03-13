@@ -10,28 +10,78 @@
       <strong>Ops!</strong> {{errorMsg}}
     </div>
   </div>
-  <div class="form-group">
-    <ui-select ng-model="selected.item"
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputMunicipio">Câmpus</label>
+        <ui-select ng-model="selected.item"
+                   class="btn-group bootstrap-select form-control"
+                   ng-disabled="false"
+                   append-to-body="true"
+                   search-enabled="false" 
+                   ng-required="true">
+          <ui-select-match placeholder="Selecione um Câmpus">
+            <span> {{$select.selected.nome}}</span>
+          </ui-select-match>
+          <ui-select-choices repeat="campus in (campi | filter: $select.search) track by campus._id">
+            <span ng-bind-html="campus.nome"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputNome">Setor</label>
+        <input type="text" class="form-control" id="inputNome" placeholder="Nome do setor" ng-model="setor.nome" ng-required="true">
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputEstado">Estado</label>
+         <ui-select ng-model="selectedEstado.item"
                class="btn-group bootstrap-select form-control"
-               ng-disabled="false"
+               ng-disabled="flagEstado"
+               on-select="selectedUF($item)"
                append-to-body="true"
-               search-enabled="false" 
-               ng-required="true">
-      <ui-select-match placeholder="Selecione um Câmpus">
-        <span> {{$select.selected.nome}}</span>
-      </ui-select-match>
-      <ui-select-choices repeat="campus in (campi | filter: $select.search) track by campus._id">
-        <span ng-bind-html="campus.nome"></span>
-      </ui-select-choices>
-    </ui-select>
+               search-enabled="false">
+          <ui-select-match placeholder="Selecione o Estado">
+            <span>{{$select.selected.nome_uf}}</span>
+          </ui-select-match>
+          <ui-select-choices repeat="estado in estados | filter: $select.search">
+            <span ng-bind-html="estado.nome_uf"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="inputMunicipio">Município</label>
+         <ui-select ng-model="selectedMunicipio.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="flagMunicipio"
+               append-to-body="true"
+               search-enabled="false">
+          <ui-select-match placeholder="Selecione o Município">
+            <span> {{$select.selected.nome_municipio}}</span>
+          </ui-select-match>
+          <ui-select-choices repeat="municipio in municipios | filter: $select.search">
+            <span ng-bind-html="municipio.nome_municipio"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
   </div>
-  <div class="form-group">
-    <label for="inputNome">Setor</label>
-    <input type="text" class="form-control" id="inputNome" placeholder="Nome do setor" ng-model="setor.nome" ng-required="true">
-  </div>
-  <div class="form-group">
-    <label for="textareaDescricao">Descrição</label>
-    <textarea placeholder="Descrição do setor" class="form-control" id="textareaDescricao" ng-model="setor.descricao"></textarea>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="form-group">
+        <label for="textareaDescricao">Descrição</label>
+        <textarea placeholder="Descrição do setor" class="form-control" id="textareaDescricao" ng-model="setor.descricao"></textarea>
+      </div>
+    </div>
   </div>
 
   

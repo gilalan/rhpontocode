@@ -29,6 +29,11 @@ angular.module('BlurAdmin.pages.employees').service("employeeAPI", function($htt
 		return $http.delete(_urlBaseFuncionarios + '/' + id);
 	};
 
+	svc.getActives = function() {
+
+		return $http.post(_urlBaseFuncionarios+'/actives');
+	};
+
 	svc.getFuncionario = function(id) {
 
 		return $http.get(_urlBaseFuncionarios+'/'+id);
@@ -47,6 +52,11 @@ angular.module('BlurAdmin.pages.employees').service("employeeAPI", function($htt
 	svc.getGestores = function() {
 		
 		return $http.get(_urlBaseGestores);
+	};
+
+	svc.getEquipe = function(idFuncionario) {
+
+		return $http.post(_urlBaseFuncionarios+'/'+idFuncionario+'/equipe', {});
 	};
 	
 });

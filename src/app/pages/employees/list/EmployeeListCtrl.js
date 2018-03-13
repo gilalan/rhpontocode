@@ -8,6 +8,7 @@
   angular.module('BlurAdmin.pages.employees')
     .controller('EmployeeListCtrl', EmployeeListCtrl)
     .controller('ModalDeleteEmployeeCtrl', ModalDeleteEmployeeCtrl)
+    .controller('ModalDemitirEmployeeCtrl', ModalDemitirEmployeeCtrl)
     .controller('ModalAssociateCtrl', ModalAssociateCtrl);
 
   /** @ngInject */
@@ -21,6 +22,7 @@
     console.log('funcionarios pelo Resolve: ', funcionarios);
     var pageAssociatePath = 'app/pages/employees/list/associateModal.html';
     var pageDeletePath = 'app/pages/employees/list/deleteModal.html';
+    var pageDemitirPath = 'app/pages/employees/list/demitirModal.html';
     var defaultSize = 'md';
 
     if (!funcionarios)
@@ -50,7 +52,31 @@
       }, function () {
         console.log('modal-component dismissed at: ' + new Date());
       });
-    }
+    };
+
+    $scope.demitir = function (id, index) {
+
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: pageDemitirPath,
+        size: defaultSize,
+        controller: 'ModalDemitirEmployeeCtrl',
+        resolve: {
+          funcionario: function (employeeAPI) {
+            return employeeAPI.getFuncionario(id);
+          }
+        }
+      });
+
+      modalInstance.result.then(function (confirmation) {
+        console.log('confirmação: ', confirmation);
+        if (confirmation){
+          $state.reload();
+        }
+      }, function () {
+        console.log('modal-component dismissed at: ' + new Date());
+      });
+    };
 
     $scope.associate = function(id) {
 
@@ -107,6 +133,54 @@
           $scope.errorMsg = response.data.message;
       });
     }
+  };
+
+  function ModalDemitirEmployeeCtrl ($uibModalInstance, $scope, funcionario, usersAPI, employeeAPI) {
+
+    console.log('funcionario, ', funcionario);
+    $scope.funcionario = funcionario.data;
+    var $ctrl = this;
+    $ctrl.confirmation = true;
+
+    $scope.demitir = function(){
+      
+      console.log('clicou para confirmar a demissão');
+      //proceedUpdateFunc();
+
+      usersAPI.unregister($scope.funcionario).then(function sucessCallback(response){
+
+        console.log('UnRegister?', response.data);
+        $scope.successMsg = response.data.message;
+        console.log('msg: ', $scope.successMsg);
+        proceedUpdateFunc();
+        //$uibModalInstance.close($ctrl.confirmation);
+
+        }, function errorCallback(response){
+
+          console.log('erro ao deletar ', response.data.message);
+          $scope.errorMsg = response.data.message;
+      });
+    }
+
+    function proceedUpdateFunc() {
+
+      $scope.funcionario.active = false;
+      $scope.funcionario.historico.datasAdmissao.push($scope.funcionario.alocacao.dataAdmissao);
+      $scope.funcionario.historico.datasDemissao.push(new Date());
+
+      employeeAPI.update($scope.funcionario).then(function sucessCallback(response){
+
+        console.log('deletou?', response.data);
+        $scope.successMsg = response.data.message;
+        console.log('msg: ', $scope.successMsg);
+        $uibModalInstance.close($ctrl.confirmation);
+
+        }, function errorCallback(response){
+
+          console.log('erro ao deletar ', response.data.message);
+          $scope.errorMsg = response.data.message;
+      });
+    };
   };
 
   function ModalAssociateCtrl ($uibModalInstance, $scope, funcionario, usuario, perfis, usersAPI) {

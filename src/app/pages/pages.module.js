@@ -27,6 +27,7 @@
     'BlurAdmin.pages.solicitations',
     'BlurAdmin.pages.users',
     'BlurAdmin.pages.estatisticas',
+    'BlurAdmin.pages.reports',
   ])
       .config(routeConfig);
 

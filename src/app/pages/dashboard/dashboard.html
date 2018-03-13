@@ -29,7 +29,7 @@
       <div class="btn-toolbar-example">
         <label class="control-label dadosIdent" for="Equipes"><strong>Equipes Geridas:</strong></label>
         <div class="btn-toolbar" role="toolbar" aria-label="Equipes do Gestor">
-          <div class="btn-group" role="group" aria-label="First group" ng-repeat="equipe in equipes">
+          <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="equipe in equipes">
             <button type="button" class="btn btn-sm" ng-class="{'btn-primary': equipe.selecionada}" ng-click="checkUncheckEquipe(equipe)">
             {{::equipe.nome}}
             </button>
@@ -43,7 +43,29 @@
 <!-- <dashboard-pie-chart></dashboard-pie-chart> -->
 
 <div class="row">
-  <div class="row">
+  
+  <!-- <div class="row">
+    <div class="col-sm-12" style="margin-bottom: -10px;"> 
+      <div style="color: #12198e;min-height: 260px;padding-left: 16px;float: left;">
+        <p style="margin-top: 220px;background: #c0c0c0;border-radius: 5px;color: #333;padding: 5px;font-style: italic;">{{currentDateFtd}}</p>
+      </div>
+      <div style="display:inline-block; min-height:260px; margin-left: 16px; color: #12198e;">
+        <div uib-datepicker ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" class="well well-sm" datepicker-options="options"></div>
+      </div>
+    </div>
+  </div> -->
+  <div class="row" style="padding-left: 15px;">
+    <div class="col-md-4 col-sm-6">
+          <p class="input-group" style="margin-bottom: 10px;">
+              <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+          </p>
+          <label style="border: 1px solid black; border-radius: 5px; background: #e2e2e2; padding: 5px; margin-bottom: 12px; font-size: 13px;">Data da busca: <em>{{datepic.dt | date:'fullDate' }}</em></label>
+      </div>
+  </div>
+  <!-- <div class="row">
     <div class="col-sm-12 dadosIdent dateDestak needSpace"> 
         <button type="button" class="btn btn-sm btn-default" ng-click="subtractOneDay()">
           <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -53,7 +75,8 @@
           <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
         </button>
     </div>
-  </div>
+  </div> -->
+  
   <div class="row">
     <div class="col-sm-12">
       <div ba-panel 
@@ -67,38 +90,50 @@
               <th></th>
               <th></th>
               <th></th>
-              <th colspan="4" style="text-align: center;">Marcações</th>
+              <th colspan="4" style="text-align: center;"><i>Marcações</i></th>
               <th></th>
             </tr>
             <tr>
-              <th class="col-xs-1 first">Status</th>
-              <th class="col-xs-1 first">Nome</th>
-              <th class="col-xs-1 first">Cargo</th>
-              <th class="col-xs-1 centerColSpan first">E1</th>
-              <th class="col-xs-1 centerColSpan first">S1</th>
-              <th class="col-xs-1 centerColSpan first">E2</th>
-              <th class="col-xs-1 centerColSpan first">S2</th>
-              <th class="col-xs-1 centerColSpan first">Saldo</th>
-              <th class="col-xs-1 centerColSpan first">Escala</th>
-              <th class="col-xs-1 centerColSpan first">Horário</th>
-              <th class="col-xs-2 centerColSpan first last">Observações</th>
+              <th class="col-xs-1 first" style="width: 1%;"><b>Status</b></th>
+              <th class="col-xs-2 first"><b>Nome</b></th>
+              <th class="col-xs-1 first"><b>Cargo</b></th>
+              <th class="col-xs-1 centerColSpan first" style="width: 1%;"><b>E1</b></th>
+              <th class="col-xs-1 centerColSpan first" style="width: 1%;"><b>S1</b></th>
+              <th class="col-xs-1 centerColSpan first" style="width: 1%;"><b>E2</b></th>
+              <th class="col-xs-1 centerColSpan first" style="width: 1%;"><b>S2</b></th>
+              <th class="col-xs-1 centerColSpan first" style="width: 1%;"><b>Saldo</b></th>
+              <th class="col-xs-1 centerColSpan first" style="width: 2%;"><b>Escala</b></th>
+              <th class="col-xs-1 centerColSpan first"><b>Horário</b></th>
+              <th class="col-xs-1 centerColSpan first last"><b>Ações</b></th>
             </tr>
             </thead>
             <tbody class="vertAlignMid">
             <tr ng-repeat="funcionario in equipe.componentes" ng-click="setSelected(funcionario)">
-              <td><img class="img-responsive" ng-src="{{funcionario.apontamentoDiario.statusImgUrl}}" alt="{{funcionario.apontamentoDiario.statusString}}" title="{{funcionario.apontamentoDiario.statusString}}"></td>
-              <td>{{funcionario.nome}}</td>
-              <td>{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
+              <td style="line-height: 19px !important;"><img class="img-responsive" ng-src="{{funcionario.apontamentoDiario.statusImgUrl}}" alt="{{funcionario.apontamentoDiario.statusString}}" title="{{funcionario.apontamentoDiario.statusString}}"></td>
+              <td style="line-height: 19px !important;">{{funcionario.nome}} {{funcionario.sobrenome}}</td>
+              <td style="line-height: 19px !important;">{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}
               </td>
-              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent1}}</td>
-              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai1}}</td>
-              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.ent2}}</td>
-              <td class="centerColSpan marcacoesDestak">{{funcionario.apontamentoDiario.marcacoesStringObj.sai2}}</td>
-              <td class="centerColSpan marcacoesDestak" ng-class="{'bh-positivo': funcionario.apontamentoDiario.objBHDiario.horasPosit, 'bh-negativo': funcionario.apontamentoDiario.objBHDiario.horasNegat}">{{funcionario.apontamentoDiario.objBHDiario.horasFtd}}</td>
-              <td class="centerColSpan">{{funcionario.alocacao.turno.escala.nome}}</td>
-              <td class="centerColSpan">{{funcionario.alocacao.turno.escala.codigo == 1?  funcionario.alocacao.turno.jornada.array[currentDate.getDay()].horarioFtd : funcionario.alocacao.turno.jornada.array[0].horarioFtd}}</td>
-              <td class="centerColSpan last"> 
-                {{funcionario.apontamento.observacoes}}
+              <td style="line-height: 19px !important;" class="centerColSpan marcacoesDestak" ng-class="{'web-appoint': funcionario.apontamentoDiario.marcacoesType.ent1}">{{funcionario.apontamentoDiario.marcacoesStringObj.ent1}}</td>
+              <td style="line-height: 19px !important;" class="centerColSpan marcacoesDestak" ng-class="{'web-appoint': funcionario.apontamentoDiario.marcacoesType.sai1}">{{funcionario.apontamentoDiario.marcacoesStringObj.sai1}}</td>
+              <td style="line-height: 19px !important;" class="centerColSpan marcacoesDestak" ng-class="{'web-appoint': funcionario.apontamentoDiario.marcacoesType.ent2}">{{funcionario.apontamentoDiario.marcacoesStringObj.ent2}}</td>
+              <td style="line-height: 19px !important;" class="centerColSpan marcacoesDestak" ng-class="{'web-appoint': funcionario.apontamentoDiario.marcacoesType.sai2}" ng-show="!funcionario.apontamentoDiario.moreThanFour">
+              {{funcionario.apontamentoDiario.marcacoesStringObj.sai2}}</td>
+              <td style="line-height: 19px !important;" class="centerColSpan marcacoesDestak" ng-show="funcionario.apontamentoDiario.moreThanFour">
+                <!-- <button title="Ver todas as batidas" type="button" class="btn btn-xs btn-default" uib-popover-html="apontamento.htmlPopover">
+                  <span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span>  
+                </button> -->
+                <button uib-popover-html="baloon.htmlPopover" popover-class="increase-popover-width" type="button" class="btn btn-xs btn-default">...</button>
+              </td>
+              <td style="line-height: 19px !important;" class="centerColSpan marcacoesDestak" ng-class="{'bh-positivo': funcionario.apontamentoDiario.objBHDiario.horasPosit, 'bh-negativo': funcionario.apontamentoDiario.objBHDiario.horasNegat}">{{funcionario.apontamentoDiario.objBHDiario.horasFtd}}</td>
+              <td style="line-height: 19px !important;" class="centerColSpan">{{funcionario.alocacao.turno.escala.nome}}</td>
+              <td style="line-height: 19px !important;" class="centerColSpan">{{funcionario.alocacao.turno.escala.codigo == 1?  funcionario.alocacao.turno.jornada.array[currentDate.getDay()].horarioFtd : funcionario.alocacao.turno.jornada.array[0].horarioFtd}}</td>
+              <td style="line-height: 19px !important;" class="centerColSpan last">
+                <!-- <div class="btn-group" role="group" aria-label="tudo">            
+                  <button title="Ver todas as batidas" type="button" class="btn btn-sm btn-default" ng-click="showAllAppointmentsFor(funcionario)">
+                    <span class="glyphicon glyphicon-list" aria-hidden="true"></span>  
+                  </button>
+                </div> -->
+                <!-- {{funcionario.apontamento.marcacoesType.ent1}}{{funcionario.apontamento.marcacoesType.sai1}} -->
               </td>
             </tr>
             </tbody>

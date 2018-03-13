@@ -43,6 +43,9 @@
         resolve: {
           campi: function(campusAPI) {
             return campusAPI.get();
+          },
+          estados: function(estadosAPI){
+            return estadosAPI.get();
           }
         },
         accessLevel: 3
@@ -58,6 +61,9 @@
           }, 
           campi: function(campusAPI) {
             return campusAPI.get();
+          },
+          estados: function(estadosAPI){
+            return estadosAPI.get();
           }
         },
         accessLevel: 3

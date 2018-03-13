@@ -12,7 +12,49 @@
 	    </div>
 	</div>
     
-    <div class="row">    
+	<div class="row">
+		<div class="col-xlg-6 col-md-12 col-sm-6">
+	        <h4>Popup</h4>
+	        <label>Selected date is: <em>{{dt | date:'fullDate' }}</em></label>
+	        <p class="input-group">
+	            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" />
+	          <span class="input-group-btn">
+	            <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+	          </span>
+	        </p>
+	        <label>Format: <span class="muted-text">(manual alternate <em>{{altInputFormats[0]}}</em>)</span></label> <select class="form-control" ng-model="format" ng-options="f for f in formats"><option></option></select>
+	    </div>
+	</div>
+
+	<div class="row">
+		<table class="table">
+		    <thead>
+			    <tr>
+			      <th>NSR</th>
+			      <th>PIS</th>
+			      <th>DATA</th>
+			      <th>HORA</th>
+			      <th>Ações</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+		      <tr ng-repeat="appoint in rawApps track by $index">
+		        <td>{{appoint.nsr}}</td>
+		        <td>{{appoint.pis}}</td>
+		        <td>{{appoint.data}}</td>
+		        <td>{{appoint.horario}}</td>
+		        <td>
+		          <ul class='list-group'>
+		            <p>Hey</p>
+		            <p>Olá</p>            
+		          </ul>
+		        </td>
+		      </tr>
+		    </tbody>
+		  </table>
+	</div>
+
+    <!-- <div class="row">    
     	
 		<h3> Estatisticas virão aqui </h3>
 		<table class="table" st-table="equipes">
@@ -35,15 +77,15 @@
 		        <td>
 		          <ul class='list-group'>
 		            <p ng-if='equipe.componentes.length===0'>Não há funcionários associados</p>
-		            <p ng-if='equipe.componentes.length>0'> {{equipe.componentes.length}} </p>
+		            <p ng-if='equipe.componentes.length>0'> {{equipe.componentes.length}} </p> -->
 		            <!-- <li ng-repeat="funcionario in equipe.componentes" class='list-group-item'>{{funcionario.nome + funcionario.sobrenome}}
 		            </li> -->
-		          </ul>
+		          <!-- </ul>
 		        </td>
 		      </tr>
 		    </tbody>
 		  </table>
 
-	</div>
+	</div> -->
 
 </div>

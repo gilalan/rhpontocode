@@ -15,6 +15,7 @@
     console.log("dentro do RegPontoCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);
+    var equipe = {};
     $scope.currentDate = currentDate.data.date;
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'dd/MM/yyyy');
 
@@ -366,36 +367,74 @@
 
     };
 
-    function isFeriado(date) {
-       
-      var day = date.getDate();//1 a 31
-      var month = date.getMonth();//0 a 11
-      var year = date.getFullYear();//
+    function isFeriado(dataDesejada) {
+      
+      var data = dataDesejada;
+
+      console.log('Data Desejada: ', data);
+      //console.log('Setor.local: ', $scope.equipe);
+
+      var date = data.getDate();//1 a 31
+      var month = data.getMonth();//0 a 11
+      var year = data.getFullYear();//
       var flagFeriado = false;
-      var tempDate;
+      var tempDate;      
 
       feriados.forEach(function(feriado){
         
-        tempDate = new Date(feriado.data);
-        console.log('new date from feriado: ', new Date(feriado.data));
-        if (feriado.fixo){
+        //console.log('feriado atual: ', feriado);        
+
+        for (var i = 0; i < feriado.array.length; i++) {
           
-          if (tempDate.getMonth() === month && tempDate.getDate() === day){
-            console.log("É Feriado (fixo)!");
-            flagFeriado = true;
-            return feriado;
+          tempDate = new Date(feriado.array[i]);
+          if (feriado.fixo){
+          
+            if (tempDate.getMonth() === month && tempDate.getDate() === date){
+              console.log("É Feriado (fixo)!", tempDate);
+              flagFeriado = checkFeriadoSchema(feriado);
+              return feriado;
+            }
+
+          } else {//se não é fixo
+
+            if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
+              console.log("É Feriado (variável)!", tempDate);
+              flagFeriado = checkFeriadoSchema(feriado);
+              return feriado;
+            }
           }
-
-        } else {//se não é fixo
-
-          if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === day) ){
-            console.log("É Feriado (variável)!");
-            flagFeriado = true;
-            return feriado;
-          }
-
         }
       });
+      console.log('FlagFeriado: ', flagFeriado);
+      return flagFeriado;//no futuro retornar o flag de Feriado e a descrição do mesmo!
+    };
+
+    function checkFeriadoSchema(feriado){
+
+      var abrangencias = ["Nacional", "Estadual", "Municipal"];
+      var flagFeriado = false;
+
+      if (feriado.abrangencia == abrangencias[0]){
+
+        console.log('Feriado Nacional!');
+        flagFeriado = true;
+
+      } else  if (feriado.abrangencia == abrangencias[1]){
+        
+        console.log('Feriado Estadual!');
+        if (equipe.setor.local.estado == feriado.local.estado._id){
+          console.log('Feriado Estadual no Estado correto!');
+          flagFeriado = true;
+        }
+
+      } else if (feriado.abrangencia == abrangencias[2]){
+        
+        console.log('Feriado Municipal!');
+        if (equipe.setor.local.municipio == feriado.local.municipio._id){
+          console.log('No municipio correto!');
+          flagFeriado = true;
+        }
+      }
 
       return flagFeriado;
     };
@@ -528,6 +567,19 @@
       });
     }
 
+    function initGetEquipe(){
+
+      employeeAPI.getEquipe($scope.funcionario._id).then(function successCallback(response){
+
+        equipe = response.data;
+        console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);        
+
+      }, function errorCallback(response){
+        
+        $scope.errorMsg = response.data.message;
+      });
+    };
+
     function init() {
       
       if (navigator.geolocation) {
@@ -541,10 +593,13 @@
         });
       }
 
-      if ($scope.funcionario)
+      if ($scope.funcionario){
+        initGetEquipe();
         getApontamentoDiarioFromFuncionario();
-      else
+      }
+      else{
         alert('Erro ao recuperar o funcionário cadastrado do Ponto');
+      }
             
     
       tick();

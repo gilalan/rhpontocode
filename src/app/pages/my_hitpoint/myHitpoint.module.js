@@ -28,10 +28,15 @@
                 return usersAPI.getUsuario($stateParams.userId); 
               else {
                 var user = Auth.getCurrentUser();
-                console.log('## Usuário retornado: ##', user)
+                console.log('## Usuário retornado: ##', user);
                 return usersAPI.getUsuario(user._id);
               }              
             },
+            // equipe: function(employeeAPI, $stateParams, Auth){
+            //   var user = Auth.getCurrentUser();
+            //   console.log('## Usuário retornado: ##', user);
+            //   return teamAPI.getEquipe(user.funcionario);
+            // },
             currentDate: function(appointmentAPI) {
               return appointmentAPI.getCurrentDate();
             },

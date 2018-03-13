@@ -9,13 +9,36 @@
       .controller('EstatisticasCtrl', EstatisticasCtrl);
 
   /** @ngInject */
-  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, Auth, usuario, equipes) {
+  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, Auth, usuario, equipes){//, rawAppoints) {
 
     console.log("dentro do EstatisticasCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);
 
     $scope.equipes = equipes.data;
+    $scope.rawApps = [];
+    //$scope.rawApps = rawAppoints.data.rawReps;
+    //console.log("rawAppoints: ", $scope.rawApps);
+
+    $scope.datepic = {
+      dt: new Date()
+    };
+
+    $scope.options = {
+      showWeeks: false
+    };
+    $scope.open = open;
+    $scope.something = {
+      opened: false
+    };
+
+    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+    $scope.format = $scope.formats[0];  
+
+    function open() {
+        console.log("open function", $scope.something.opened);
+        $scope.something.opened = true;
+    }
 
     init();
     

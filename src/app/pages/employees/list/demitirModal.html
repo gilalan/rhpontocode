@@ -1,0 +1,20 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">Demitir Funcionário?</h4>
+  </div>
+  <div class="modal-body">
+    
+      <p>
+        <strong>Confirma a demissão do funcionário {{funcionario.nome}} {{funcionario.sobrenome}}?</strong>
+      </p>
+      <p style="font-size: 10px;">Cuidado, essa ação é irreversível! O funcionário em questão não terá mais acesso ao sistema e será omitido das buscas caso esteja associado a alguma Equipe. Ele ficará apenas visível no relatório de ponto dos meses anteriores.</p>
+    
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-click="demitir()">Sim</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Não</button>
+  </div>
+</div>

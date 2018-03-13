@@ -60,5 +60,10 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 
 		return $http.post(_urlBaseApontamentos+'/allequipes/estatisticas', ObjArrayEquipes);
 	};
+
+	svc.getAllRawAppoints = function(){
+
+		return $http.post(_urlBaseApontamentos+'/allRepAppoints', {});
+	};
 	
 });

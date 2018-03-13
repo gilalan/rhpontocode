@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  angular.module('BlurAdmin.pages.solicitations', [])
+  angular.module('BlurAdmin.pages.solicitations', ['ui.bootstrap'])
     .config(routeConfig);
 
   /** @ngInject */

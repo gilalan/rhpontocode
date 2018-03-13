@@ -1,0 +1,53 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">{{objBatidasDiaria.solicitacao.funcionario.nome}} {{objBatidasDiaria.solicitacao.funcionario.sobrenome}}<br>{{objBatidasDiaria.data}}</h4>
+  </div>
+  <div class="modal-body">
+    <uib-tabset active="$tabSetStatus.activeTab">
+      <uib-tab heading="Anterior">
+        <div class="row">
+          <!-- <div class="col-md-6 col-md-offset-3">
+            <ul class='list-group'>
+              <p ng-if='objBatidasDiaria.array.length===0'>Não há registros de batidas para esta data.</p>
+              <li ng-repeat="item in objBatidasDiaria.array" class='list-group-item'>
+              {{item.descricao}}: {{item.horario}}
+              </li>
+            </ul>
+          </div> -->
+          <div class="col-md-6 col-md-offset-3" ng-if='objBatidasDiaria.solicitacao.anterior.marcacoes.length===0'>
+            <p>Não há registros de batidas para esta data.</p>
+          </div>
+          <table class="table">
+            <tbody>
+              <tr ng-repeat="item in objBatidasDiaria.solicitacao.anterior.marcacoes track by $index">
+                <td style="line-height: 45px !important; text-align: left; padding-left: 15px;">{{item.descricao}}:</td>
+                <td style="line-height: 45px !important; text-align: right; padding-right: 15px;">{{item.horarioFtd}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="separator2"></div>
+        </div>
+      </uib-tab>
+      <uib-tab heading="Proposto">
+        <div class="col-md-6 col-md-offset-3" ng-if='objBatidasDiaria.solicitacao.proposto.marcacoes.length===0'>
+          <p>Não há registros de batidas propostas para esta data.</p>
+        </div>
+        <table class="table">
+            <tbody>
+              <tr ng-repeat="item in objBatidasDiaria.solicitacao.proposto.marcacoes track by $index">
+                <td style="line-height: 45px !important; text-align: left; padding-left: 15px;">{{item.descricao}}:</td>
+                <td style="line-height: 45px !important; text-align: right; padding-right: 15px;">{{item.horarioFtd}}</td>
+              </tr>
+            </tbody>
+          </table>
+        <div class="separator2"></div>
+      </uib-tab>
+    </uib-tabset>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

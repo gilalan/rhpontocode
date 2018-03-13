@@ -6,6 +6,15 @@
 	margin-bottom: 10px;
 }
 
+.increase-popover-width {
+    max-width: 450px;
+}
+
+.funcionario-demitido {
+    background: #e6cece;
+    cursor: pointer;
+}
+
 .centerColSpan{
 	text-align: center;
 }
@@ -50,6 +59,11 @@
     font-size: 14px;
     color: #12198e;
     font-family: Montserrat;
+ }
+
+ .web-appoint {
+    font-style: italic;
+    text-decoration: underline;
  }
 
  .graphBGColor {

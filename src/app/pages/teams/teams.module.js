@@ -29,6 +29,9 @@
         controller: 'TeamListCtrl',
         title: 'Equipes',
         resolve: {
+          usuario: function(usersAPI, Auth){
+            return usersAPI.getUsuario(Auth.getCurrentUser()._id);
+          },
           equipes: function(teamAPI){
             return teamAPI.get();
           }
@@ -78,7 +81,7 @@
             return teamAPI.getEquipe($stateParams.id);
           },
           funcionarios: function(employeeAPI){
-            return employeeAPI.get();
+            return employeeAPI.getActives();
           }
         },
         accessLevel: 3

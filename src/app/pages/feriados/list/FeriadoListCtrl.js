@@ -13,7 +13,7 @@
   function FeriadoListCtrl($scope, $state, $stateParams, $uibModal, feriadoAPI, feriados) {
     
     console.log('feriados - List controller');
-    $scope.smartTablePageSize = 10;
+    $scope.smartTablePageSize = 15;
     var defaultSize = 'md';
     var pageDeletePath = 'app/pages/feriados/list/deleteModal.html';
     //var feriados = [];

@@ -28,6 +28,11 @@ angular.module('BlurAdmin').service("usersAPI", function($http, config){
 		return $http.post(_urlBaseUsuarios, usuario);
 	};
 
+	svc.unregister = function(funcionario) {
+
+		return $http.post(_urlBaseUsuarios + '/unregister', funcionario);
+	};
+
 	svc.update = function (user) {
 	
 		return $http.put(_urlBaseUsuarios + '/' + user._id, user);

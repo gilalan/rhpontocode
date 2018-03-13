@@ -39,6 +39,11 @@
         templateUrl: 'app/pages/feriados/edit/edit.html',
         controller: 'NewFeriadoCtrl',
         title: 'Feriados',
+        resolve: {           
+          estados: function(estadosAPI) {
+            return estadosAPI.get();
+          }
+        },
         accessLevel: 3
       })
       .state('feriados.edit', {
@@ -49,6 +54,9 @@
         resolve: {           
           feriado: function(feriadoAPI, $stateParams) {
             return feriadoAPI.getFeriado($stateParams.id);
+          },
+          estados: function(estadosAPI) {
+            return estadosAPI.get();
           }
         },
         accessLevel: 3
