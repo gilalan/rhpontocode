@@ -39,6 +39,7 @@
       }
 
       //acopla os dados ao funcionario
+      funcionario.active = true;
       funcionario.alocacao.cargo = $scope.selectedCargo.item;
       funcionario.alocacao.turno = $scope.selectedTurno.item;
       funcionario.alocacao.instituicao = $scope.selectedInst.item;

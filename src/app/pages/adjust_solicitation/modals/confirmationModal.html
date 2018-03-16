@@ -1,0 +1,30 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">Confirmar Solicitação de Ajuste</h4>
+    <div class="separator2" style="margin-bottom: 0px;"></div>
+  </div>
+  <div style="padding: 0px 15px 0px 15px;">
+    <div>
+      <label style="font-size: 13px; float: left; margin: 5px 5px 0px 0px;">{{solicitacaoAjuste.dataFtd}}</label>
+      <div class="col-md-6 col-md-offset-3" ng-if='solicitacaoAjuste.proposto.marcacoes.length===0'>
+        <p>Sem registros!</p>
+      </div>
+      <table class="table">
+        <tbody>
+          <tr ng-repeat="item in solicitacaoAjuste.proposto.marcacoes track by $index">
+            <td style="line-height: 45px !important; text-align: left; padding-left: 15px;">{{item.rDescricao}}:</td>
+            <td style="line-height: 45px !important; text-align: right; padding-right: 15px;">{{item.strHorario}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="separator2"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" ng-click="confirma()">Confirmar</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Cancelar</button>
+  </div>
+</div>
