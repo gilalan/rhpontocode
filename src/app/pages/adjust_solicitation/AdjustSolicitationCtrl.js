@@ -12,7 +12,7 @@
       .controller('ConfirmationModalCtrl', ConfirmationModalCtrl);
 
   /** @ngInject */
-  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, appointmentAPI, myhitpointAPI, usuario, currentDate, feriados) {
+  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, util, appointmentAPI, usuario, currentDate, feriados) {
 
     var usuario = usuario.data;
     var feriados = feriados.data;
@@ -24,27 +24,29 @@
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
     $scope.arrayES = [];
     $scope.ajuste = {};
+    $scope.infoHorario = {};
 
     var pagePath = 'app/pages/adjust_solicitation/modals/desconsiderarModal.html'; //representa o local que vai estar o html de conteúdo da modal
     var pageIncluirPath = 'app/pages/adjust_solicitation/modals/incluirBatimentoModal.html';
     var pageConfirmationPath = 'app/pages/adjust_solicitation/modals/confirmationModal.html';
     var defaultSize = 'md'; //representa o tamanho da Modal
 
-    //console.log('data ftd? ', $scope.currentDate);
+    console.log('$scope.currentDate: ', $scope.currentDate);
+    console.log('$scope.currentDateFtd: ', $scope.currentDateFtd);
 
-    // $scope.reconverter = function(index){
-    //   //console.log('descricao atual: ', $scope.arrayES[index]);
-    //   //console.log('descricao atual: ', $scope.arrayES[index].descricao);
-    //   //console.log('horario atual: ', $scope.arrayES[index].horario);
-    // };
     $scope.propor = function(ajuste){
       
       console.log('clicou para propor ajuste: ', ajuste);
 
-      var marcacoesPropostas = reorganizarBatidasPropostas($scope.arrayES);
-      
+      var marcacoesPropostas = reorganizarBatidasPropostas($scope.arrayES);      
+
       var solicitacaoAjuste = {
-        data: $scope.currentDate,
+        rawData: $scope.currentDate,
+        date: {
+          year: $scope.currentDate.getFullYear(),
+          month: $scope.currentDate.getMonth(),
+          day: $scope.currentDate.getDate()
+        },
         funcionario: $scope.funcionario._id,
         status: 0, //pendente (-1 é reprovada) e (1 é aprovada)
         motivo: ajuste.motivo,
@@ -203,7 +205,8 @@
         if (marcacao){
 
           $scope.arrayES.push(marcacao);
-          $scope.apontamento = true; //AJEITAR ISSO PLS
+          if (!$scope.apontamento)
+            $scope.apontamento = true; //AJEITAR ISSO PLS
         } 
 
       }, function () {
@@ -356,6 +359,7 @@
 
       if ($scope.funcionario){
 
+        $scope.infoHorario = util.getInfoHorario($scope.funcionario, []);
         initGetApontamento();
         $scope.liberado = true;
       }
@@ -448,24 +452,26 @@
 
   };
 
-  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, solicitacaoAjuste){
+  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, myhitpointAPI, solicitacaoAjuste){
     
     console.log('solicitacaoAjuste: ', solicitacaoAjuste);
     $scope.solicitacaoAjuste = solicitacaoAjuste;
-    $scope.solicitacaoAjuste.dataFtd = $filter('date')($scope.solicitacaoAjuste.data, 'abvFullDate');
+    $scope.dataFtd = $filter('date')($scope.solicitacaoAjuste.rawData, 'abvFullDate');
     
     $scope.confirma = function() {
-      alert('Indisponível no momento, ainda em fase de finalização');
-      // myhitpointAPI.create(solicitacaoAjuste).then(function successCallback(response){
+      
+      myhitpointAPI.create(solicitacaoAjuste).then(function successCallback(response){
 
-      //   var retorno = response.data;
-      //   $uibModalInstance.close({index: $scope.objBatida.index, motivo: $scope.algo.motivo});
+        var retorno = response.data;
+        $uibModalInstance.close(retorno.success);
+        //SERIA INTERESSANTE MOSTRAR QUE JA TEM UMA SOLICITAÇÃO DE AJUSTE NO DIA ATUAL!!!!
+        //CASO TENHA, LOGICO
 
-      // }, function errorCallback(response){
+      }, function errorCallback(response){
         
-      //   $scope.errorMsg = response.data.message;
-      //   console.log("Erro ao criar solicitação de ajuste.");
-      // });
+        $scope.errorMsg = response.data.message;
+        console.log("Erro ao criar solicitação de ajuste.");
+      });
     };
 
   };

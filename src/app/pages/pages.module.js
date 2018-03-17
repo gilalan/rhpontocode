@@ -29,6 +29,7 @@
     'BlurAdmin.pages.estatisticas',
     'BlurAdmin.pages.reports',
     'BlurAdmin.pages.adjustsolicitation',
+    'BlurAdmin.pages.admadjsol',
   ])
       .config(routeConfig);
 
