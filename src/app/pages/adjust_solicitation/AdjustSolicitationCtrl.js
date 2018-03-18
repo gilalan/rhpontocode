@@ -12,27 +12,67 @@
       .controller('ConfirmationModalCtrl', ConfirmationModalCtrl);
 
   /** @ngInject */
-  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, util, appointmentAPI, usuario, currentDate, feriados) {
+  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, util, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, feriados) {
 
     var usuario = usuario.data;
     var feriados = feriados.data;
     var arrayESOriginal = [];
 
-    $scope.liberado = false;
-    $scope.currentDate = new Date(currentDate.data.date);
+    console.log("tem data Solicitada: ", dataSolicitada);
+
+    if (dataSolicitada){
+      $scope.currentDate = new Date(dataSolicitada);
+      $scope.currentDateFtd = $filter('date')(dataSolicitada, 'abvFullDate');
+    } else {
+      $scope.currentDate = new Date(currentDate.data.date);
+      $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');  
+    }
+
+    $scope.hasFuncionario = false; //indica se há um funcionário
+    $scope.hasSolicitation = false;
     $scope.funcionario = usuario.funcionario;
-    $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
     $scope.arrayES = [];
     $scope.ajuste = {};
-    $scope.infoHorario = {};
+    // $scope.infoHorario = {};
 
     var pagePath = 'app/pages/adjust_solicitation/modals/desconsiderarModal.html'; //representa o local que vai estar o html de conteúdo da modal
     var pageIncluirPath = 'app/pages/adjust_solicitation/modals/incluirBatimentoModal.html';
     var pageConfirmationPath = 'app/pages/adjust_solicitation/modals/confirmationModal.html';
     var defaultSize = 'md'; //representa o tamanho da Modal
 
-    console.log('$scope.currentDate: ', $scope.currentDate);
-    console.log('$scope.currentDateFtd: ', $scope.currentDateFtd);
+    //parte do datePicker
+    $scope.datepic = {
+      dt: $scope.currentDate
+      //dt: new Date(teste.getFullYear(), teste.getMonth(), teste.getDate())
+    };
+    $scope.options = {
+      //minDate: $scope.datepic.dt,
+      showWeeks: true
+    };
+    $scope.open = open;
+    $scope.something = {
+      opened: false
+    };
+    $scope.formats = ['dd-MMMM-yyyy', 'dd/MM/yyyy', 'dd.MM.yyyy', 'fullDate'];
+    $scope.format = $scope.formats[1];
+    function open() {
+      //console.log("open function", $scope.something.opened);
+      $scope.something.opened = true;
+    }
+    $scope.changeDate = function(date) {
+      $scope.currentDate = new Date(date);
+      $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
+      //reset fields
+      $scope.hasSolicitation = false;
+      $scope.arrayES = [];
+      $scope.apontamento = null;
+      $scope.ajuste = {};
+      $scope.solicitacaoObtida = {};
+      console.log("infoHorario: ", $scope.infoHorario);
+      init();
+    };
+    //Fim do datePicker
+
 
     $scope.propor = function(ajuste){
       
@@ -108,7 +148,7 @@
             newArrayES[i-1].rDescricao = "Saída "+( (i/2) );
           } else { //ímpar é uma entrada
             newArrayES[i-1].descricao = "ent"+(Math.floor(i/2) + 1);
-            newArrayES[i-1].descricao = "Entrada "+(Math.floor(i/2) + 1);
+            newArrayES[i-1].rDescricao = "Entrada "+(Math.floor(i/2) + 1);
           }
         }
       }
@@ -163,11 +203,13 @@
 
       modalInstance.result.then(function (result){
 
-        //console.log('Result: ', result);
-        if (result.index){
+        console.log('Result: ', result);
+        if (result.indice >= 0){
 
-          $scope.arrayES[result.index].desconsiderada = true;
-          $scope.arrayES[result.index].motivo = result.motivo;
+          $scope.arrayES[result.indice].desconsiderada = true;
+          $scope.arrayES[result.indice].motivo = result.motivo;
+          $scope.arrayES[result.indice].estadoAtual = util.obterStatusMarcacao($scope.arrayES[result.indice]);
+          console.log('$scope.arrayES: ', $scope.arrayES);
         }
 
         //console.log('array novo: ', $scope.arrayES);
@@ -214,6 +256,48 @@
       });
     };
 
+    function getSolicitacaoOuApontamento(){
+
+      var dateAux = new Date($scope.currentDate);
+      var objDataFuncionario = {
+        date: {
+          raw: $scope.currentDate,
+          year: dateAux.getFullYear(),
+          month: dateAux.getMonth(),
+          day: dateAux.getDate()
+        },
+        funcionario: $scope.funcionario
+      };
+
+      myhitpointAPI.getFromDataFuncionario(objDataFuncionario).then(function successCallback(response){
+
+        console.log('response de solicitacaoAjuste: ', response.data);
+        if (!response.data || response.data.length <= 0){
+
+          getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, [$scope.funcionario], true, false, false);//pegando o diário
+
+        } else {
+
+          if (response.data.length > 0){
+            
+            var resultArray = util.getInfoSolicitacaoAjuste(response.data[0]);
+            $scope.solicitacaoObtida = {
+              anterior: resultArray.arrayESAnterior,
+              proposto: resultArray.arrayESProposto,
+              motivo: response.data[0].motivo
+            };
+            $scope.hasSolicitation = true;
+            console.log('vc já tem uma solicitação PENDENTE para esta data!');
+          }
+        }
+
+      }, function errorCallback(response){
+
+        $errorMsg = response.data.message;
+        console.log('response error : ', response.data.message);
+      });
+    };
+
     function getApontamentosByDateRangeAndEquipe(beginDate, intervaloDias, componentes) {
 
       ////console.log('beginDate? ', beginDate);
@@ -249,10 +333,8 @@
 
           objEntradasSaidas = getEntradasSaidas($scope.apontamento);
           itemApontamento.entradaSaidaFinal = objEntradasSaidas.esFinal;
-          // itemApontamento.arrayEntSai = objEntradasSaidas.arrayEntSai;
-          // itemApontamento.saldo = getSaldoPresente($scope.apontamento);
           $scope.arrayES = objEntradasSaidas.arrayEntSai;
-        }
+        } 
 
       }, function errorCallback(response){
         
@@ -326,6 +408,8 @@
           itemDescricaoHorario.strHorario = objHoraMinuto.hora + ":" + objHoraMinuto.minuto;
         }
 
+        itemDescricaoHorario.estadoAtual = util.obterStatusMarcacao(apontamentoF.marcacoes[i]);
+
         arrayEntSai.push(itemDescricaoHorario);
       }
 
@@ -350,18 +434,22 @@
       return {hora: hoursStr, minuto: minutesStr};
     };
 
-    function initGetApontamento(){
+    function initGetSolicitacaoOuApontamento(){
 
-      getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, [$scope.funcionario], true, false, false);//pegando o diário
+      getSolicitacaoOuApontamento();
+     
     };
 
     function init() {
 
       if ($scope.funcionario){
 
-        $scope.infoHorario = util.getInfoHorario($scope.funcionario, []);
-        initGetApontamento();
-        $scope.liberado = true;
+        $scope.hasFuncionario = true;
+        
+        if (!$scope.infoHorario)
+          $scope.infoHorario = util.getInfoHorario($scope.funcionario, []);
+
+        initGetSolicitacaoOuApontamento();
       }
     };
 
@@ -379,12 +467,12 @@
     $scope.confirmDes = function() {
       
       //$state.go('point_adjust', {obj: objAjusteParams});
-      $uibModalInstance.close({index: $scope.objBatida.index, motivo: $scope.algo.motivo});
+      $uibModalInstance.close({indice: $scope.objBatida.index, motivo: $scope.algo.motivo});
     };
 
   };
 
-  function IncluirBatimentoCtrl($uibModalInstance, $scope, $state, $filter, objBatida){
+  function IncluirBatimentoCtrl($uibModalInstance, $scope, $state, $filter, util, objBatida){
    
     $scope.algo = {};
     $scope.errorMsg = null;
@@ -401,6 +489,7 @@
         } else {
           console.log('objHorario: ', objHorario);
           var marcacao = {
+            incluida: true, //tem que remover na hora de enviar o objeto, é só local isso
             id: undefined,
             descricao: undefined,
             hora: objHorario.hora,
@@ -417,6 +506,7 @@
             motivo: batida.motivo,
             gerada: {created_at: new Date()}
           };
+          marcacao.estadoAtual = util.obterStatusMarcacao(marcacao);
           $uibModalInstance.close(marcacao);
         }
       } else {

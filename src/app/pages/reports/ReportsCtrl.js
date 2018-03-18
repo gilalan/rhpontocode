@@ -66,18 +66,25 @@
 
       } else {
 
-        funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);      
+        funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);        
 
         var dataInicial = new Date(ano.value, mes._id, 1);
         //Esse é um workaround pra funcionar a obtenção da quantidade de dias em Javascript
         //Dessa maneira a gnt obtém o último dia (valor zero no últ argumento) do mês anterior, que dá exatamente a qtde de dias do mês que vc quer
         //var dataFinal = new Date(ano.value, mes._id+1, 0);
         var dataFinal = new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
-        ////console.log('qtde dias: ', auxDate);
-        //var dataFinal = addOrSubtractDays(dataInicial, auxDate);  
 
-        initGetEquipe(funcSel);
-        getApontamentosByDateRangeAndEquipe(dataInicial, dataFinal, funcSel);
+        employeeAPI.getEquipe(funcSel._id).then(function successCallback(response){
+
+          equipe = response.data;
+          getApontamentosByDateRangeAndEquipe(dataInicial, dataFinal, funcSel);
+
+        }, function errorCallback(response){
+          
+          $scope.errorMsg = response.data.message;
+        });
+
+        //initGetEquipe(funcSel);//Chama 
       }
       
     }
@@ -135,15 +142,6 @@
 
     function initGetEquipe(funcionario){
 
-      employeeAPI.getEquipe(funcionario._id).then(function successCallback(response){
-
-        equipe = response.data;
-        //console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);
-
-      }, function errorCallback(response){
-        
-        $scope.errorMsg = response.data.message;
-      });
     };
 
     /*

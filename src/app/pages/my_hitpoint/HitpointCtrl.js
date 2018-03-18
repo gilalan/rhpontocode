@@ -15,6 +15,7 @@
 
     $scope.smartTablePageSize = 15;
     console.log("dentro do HitpointCtrl, USUARIO: ", usuario);
+    var Usuario = usuario.data;
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);
     $scope.currentDate = currentDate.data.date;
@@ -136,6 +137,7 @@
             minute: endDateAux.getMinutes()
           }
         },
+        usuario: Usuario,
         funcionario: $scope.funcionario
       };
 
@@ -897,16 +899,23 @@
     
     console.log('objBatidasDiaria: ', objBatidasDiaria);
     $scope.objBatidasDiaria = objBatidasDiaria;
+
     var objAjusteParams = {
-      dateWorker: objBatidasDiaria.dateWorker,
-      date: objBatidasDiaria.data,
-      arrayES: objBatidasDiaria.array
+      date: objBatidasDiaria.dateWorker.date,
+      usuario: objBatidasDiaria.dateWorker.usuario
+      // arrayES: objBatidasDiaria.array
     };
 
     $scope.ajuste = function() {
 
-      console.log('solicitou ajuste de ponto');
-      $state.go('point_adjust', {obj: objAjusteParams});
+      console.log('solicitou ajuste de ponto, obj enviado: ', objAjusteParams);
+      $state.go('adjustsolicitation', 
+        {
+          userId: objAjusteParams.usuario._id, 
+          year: objAjusteParams.date.year,
+          month: objAjusteParams.date.month,
+          day: objAjusteParams.date.day
+        });
       $uibModalInstance.dismiss();
     };
 

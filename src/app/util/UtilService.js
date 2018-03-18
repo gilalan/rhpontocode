@@ -116,4 +116,66 @@ angular.module('BlurAdmin').service("util", function(){
 
         return infoHorario;
     };
+
+    svc.getInfoSolicitacaoAjuste = function(solicitacaoAjuste){
+
+        var arrayAnterior = solicitacaoAjuste.anterior.marcacoes;
+        var arrayProposto = solicitacaoAjuste.proposto.marcacoes;
+
+        arrayAnterior.sort(
+            function (a, b) {
+                if (a.totalMin < b.totalMin)
+                return -1;
+                if (a.totalMin > b.totalMin)
+                return 1;
+                return 0;
+            } 
+        );
+
+        arrayProposto.sort(
+            function (a, b) {
+                if (a.totalMin < b.totalMin)
+                return -1;
+                if (a.totalMin > b.totalMin)
+                return 1;
+                return 0;
+            } 
+        );
+
+        var arrayESAnterior = [];
+        var arrayESProposto = [];
+
+        for (var i=0; i<arrayAnterior.length; i++){
+            arrayESAnterior.push(arrayAnterior[i].strHorario);
+        }
+
+        for (var i=0; i<arrayProposto.length; i++){
+            arrayESProposto.push(arrayProposto[i].strHorario);
+        }
+
+        return {
+            arrayESAnterior: arrayESAnterior,
+            arrayESProposto: arrayESProposto
+        };
+    };
+
+    svc.obterStatusMarcacao = function(item){
+      
+      if(item.desconsiderada){
+        
+        return "Batida Desconsiderada";
+
+      } else {
+
+        if (item.incluida){
+          return "Batida incluída manualmente";
+        }
+        else {
+          if (item.REP)
+            return "Batida Normal via REP";
+          if (item.RHWeb)
+            return "Batida Normal via WEB";          
+        }
+      }
+    };
 });

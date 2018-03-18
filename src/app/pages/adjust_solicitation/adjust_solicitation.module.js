@@ -12,7 +12,7 @@
   function routeConfig($stateProvider) {
     $stateProvider
         .state('adjustsolicitation', {
-          url: '/adjustsolicitation/:userId',
+          url: '/adjustsolicitation/:userId/:year/:month/:day',
           templateUrl: 'app/pages/adjust_solicitation/adjust_solicitation.html',
           controller: 'AdjustSolicitationCtrl',
           title: 'Solicitação de Ajuste',
@@ -35,11 +35,16 @@
             currentDate: function(appointmentAPI) {
               return appointmentAPI.getCurrentDate();
             },
+            dataSolicitada: function($stateParams) {  
+            console.log('$stateParameters: ', $stateParams);            
+              if ($stateParams.year && $stateParams.month && $stateParams.day)
+                return new Date($stateParams.year, $stateParams.month, $stateParams.day);
+            },
             feriados: function(feriadoAPI) {
               return feriadoAPI.get();
             }
           }
-        })
+        });
         // .state('point_adjust', {
         //   url: '/point_adjust',
         //   templateUrl: 'app/pages/my_hitpoint/adjust/pointAdjust.html',
