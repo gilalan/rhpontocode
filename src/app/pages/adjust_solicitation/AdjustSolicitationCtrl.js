@@ -12,19 +12,23 @@
       .controller('ConfirmationModalCtrl', ConfirmationModalCtrl);
 
   /** @ngInject */
-  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, util, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, feriados) {
+  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, feriados) {
 
     var usuario = usuario.data;
     var feriados = feriados.data;
     var arrayESOriginal = [];
+    var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
 
     console.log("tem data Solicitada: ", dataSolicitada);
 
     if (dataSolicitada){
+      if (util.compareOnlyDates(dataSolicitada, dataMaxBusca) == 1)
+        dataSolicitada = new Date(dataMaxBusca);
+
       $scope.currentDate = new Date(dataSolicitada);
       $scope.currentDateFtd = $filter('date')(dataSolicitada, 'abvFullDate');
     } else {
-      $scope.currentDate = new Date(currentDate.data.date);
+      $scope.currentDate = new Date(dataMaxBusca);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');  
     }
 
@@ -60,6 +64,15 @@
       $scope.something.opened = true;
     }
     $scope.changeDate = function(date) {
+      
+      $scope.dataErrorMsg = null;
+      if (util.compareOnlyDates(date, dataMaxBusca) == 1){
+        $scope.datepic.dt = new Date($scope.currentDate);
+        $scope.dataErrorMsg = "Você só pode solicitar ajustes de: "+$filter('date')(dataMaxBusca, 'abvFullDate')+" para trás.";
+        $timeout(hideDataError, 8000);
+        return $scope.dataErrorMsg;
+      }
+      console.log('passou por aqui!!!');
       $scope.currentDate = new Date(date);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
       //reset fields
@@ -71,12 +84,20 @@
       console.log("infoHorario: ", $scope.infoHorario);
       init();
     };
+
+    function hideDataError(seconds){
+      $scope.dataErrorMsg = null;
+    };
     //Fim do datePicker
 
 
     $scope.propor = function(ajuste){
       
       console.log('clicou para propor ajuste: ', ajuste);
+
+      if ($scope.arrayES.length % 2 != 0){
+        console.log('numero impar de batidas, não pode!');
+      }
 
       var marcacoesPropostas = reorganizarBatidasPropostas($scope.arrayES);      
 
@@ -174,7 +195,10 @@
       modalInstance.result.then(function (confirmation){
 
         if (confirmation){
-          $state.reload();
+          $state.go($state.current, {userId: usuario._id, year: solicitacaoAjuste.date.year,
+          month: solicitacaoAjuste.date.month,
+          day: solicitacaoAjuste.date.day}, {reload: true});
+          // $state.reload({});
         }
       }, function (args) {
         console.log('dismissed confirmation');

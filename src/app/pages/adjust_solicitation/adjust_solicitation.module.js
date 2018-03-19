@@ -15,7 +15,7 @@
           url: '/adjustsolicitation/:userId/:year/:month/:day',
           templateUrl: 'app/pages/adjust_solicitation/adjust_solicitation.html',
           controller: 'AdjustSolicitationCtrl',
-          title: 'Solicitação de Ajuste',
+          title: 'Ajustes de Batidas',
           sidebarMeta: {
              icon: 'ion-clipboard',
              order: 3,

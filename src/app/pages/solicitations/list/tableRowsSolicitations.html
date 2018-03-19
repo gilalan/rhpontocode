@@ -1,51 +1,76 @@
+<div id="loaderDiv" loader>
+  <p class="ajax-loader title-loader"> Carregando... </p>
+  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+</div>
+<div class="row">
+  <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Feito!</strong> {{successMsg}}
+  </div>
+
+  <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Ops!</strong> {{errorMsg}}
+  </div>
+</div>
+
 <div class="horizontal-scroll">
-  <div class="form-group select-page-size-wrap ">
+  <div class="form-group select-page-size-wrap " style="margin-bottom: 0px;">
     <label>Linhas por página
       <select class="form-control selectpicker show-tick" title="Linhas por página" selectpicker
               ng-model="smartTablePageSize" ng-options="i for i in [5,10,15,20,25]">
       </select>
     </label>
   </div>
- 
-  <table class="table" st-table="solicitacoes">
-    <thead>
-    <tr class="sortable">
-      <th><strong>Criada em</strong></th>
-      <th><strong>Funcionário</strong></th>
-      <th><strong>Tipo de Solicitação</strong></th>
-      <th><strong>Data de Referência</strong></th>
-      <th><strong>Motivo</strong></th>
-      <th><strong>Ações</strong></th>
-    </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="solicitacao in solicitacoes track by $index" style="color: #666666;">
-        <td>{{solicitacao.createdAt | date: 'shortDT'}}</td>
-        <td>{{solicitacao.funcionario.nome}} {{solicitacao.funcionario.sobrenome}}</td>
-        <td>Ajuste de Ponto</td>
-        <td>{{solicitacao.data | date: 'abvFullDate'}}</td>
-        <td>{{solicitacao.motivo}}</td>
-        <td>
-          <div class="btn-group" role="group" aria-label="acoes">            
-            <button title="Ver" type="button" class="btn btn-sm btn-default" ng-click="ver(solicitacao._id)">
-              <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>  
-            </button>
-            <button title="Aprovar" type="button" class="btn btn-sm btn-success" ui-sref="solicitations.edit({id: funcionario._id})">
-              <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>  
-            </button>
-            <button title="Reprovar" type="button" class="btn btn-sm btn-danger" ng-click="delete(solicitacao._id, $index)">
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>  
-            </button>
-          </div>
+  <div class="row" style="padding-top: 15px; padding-bottom: 15px; color: #314ff5;">
+    <div class="col-xs-12">
+      <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">
+        <label>Você tem <strong style="border: 1px solid #9f9696; border-radius: 20px; padding: 5px;">{{qtdeSolicitacoes}}</strong> solicitações pendentes.</label>
+      </span> 
+    </div>
+  </div>
+  <div class="row" style="margin: 0px;">
+    <table class="table" st-table="solicitacoes">
+      <thead>
+      <tr class="sortable">
+        <!-- <th><strong>Criada em</strong></th> -->
+        <th style="width: 25%; text-align: left;"><strong>Funcionário</strong></th>
+        <th style="width: 8%;"><strong>Tipo de Solicitação</strong></th>
+        <th style="width: 8%;"><strong>Data de Referência</strong></th>
+        <th style="width: 45%;"><strong>Motivo</strong></th>
+        <th style="width: 14%;"><strong>Ações</strong></th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="solicitacao in solicitacoes track by $index" style="color: #666666;">
+          <!-- <td>{{solicitacao.createdAt | date: 'shortDT'}}</td> -->
+          <td style="line-height: 19px !important; text-align: left;">{{solicitacao.funcionario.nome}} {{solicitacao.funcionario.sobrenome}}</td>
+          <td style="line-height: 19px !important;">Ajuste</td>
+          <td style="line-height: 19px !important;">{{solicitacao.data | date: 'abvFullDate'}}</td>
+          <td style="line-height: 19px !important;">{{solicitacao.motivo}}</td>
+          <td style="line-height: 19px !important;">
+            <div class="btn-group" role="group" aria-label="acoes">            
+              <button title="Ver" type="button" class="btn btn-sm btn-default" ng-click="ver(solicitacoes[$index])">
+                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>  
+              </button>
+              <button title="Aprovar" type="button" class="btn btn-sm btn-success" ng-click="aprove(solicitacoes[$index])">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>  
+              </button>
+              <button title="Reprovar" type="button" class="btn btn-sm btn-danger" ng-click="reprove(solicitacoes[$index])">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>  
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+        <td colspan="6" class="text-center">
+          <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
         </td>
       </tr>
-    </tbody>
-    <tfoot>
-    <tr>
-      <td colspan="6" class="text-center">
-        <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
-      </td>
-    </tr>
-    </tfoot>
-  </table>
+      </tfoot>
+    </table>
+  </div>
 </div>

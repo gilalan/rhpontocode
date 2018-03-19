@@ -36,4 +36,14 @@ angular.module('BlurAdmin.pages.myhitpoint').service("myhitpointAPI", function($
 	svc.getFromDataFuncionario = function(objDataFuncionario) {
 		return $http.post(_urlBaseHitpoint + '/data/funcionario', objDataFuncionario);
 	};
+
+	svc.saveSolicitationAndApontamento = function(objSolicitacaoApontamento){
+
+		return $http.post(_urlBaseHitpoint+'/solicitationappoint', objSolicitacaoApontamento);
+	};
+
+	svc.getByStatus = function(objStatus){
+
+		return $http.post(_urlBaseHitpoint+'/getbystatus', objStatus);
+	};
 });

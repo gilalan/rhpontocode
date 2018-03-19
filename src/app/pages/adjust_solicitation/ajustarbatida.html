@@ -29,10 +29,15 @@
         </span>
       </p>
       <label style="border: 1px solid black; border-radius: 5px; background: #e9e9e9; padding: 5px; font-size: 16px; font-weight: normal;">Data do Ajuste: <strong><em>{{datepic.dt | date:'fullDate' }}</em><strong></label>
+
+      <div ng-show="dataErrorMsg" class="alert bg-danger" role="alert">
+        <strong>Ops!</strong> {{dataErrorMsg}}
+      </div>
+
     </div>
     <div class="col-lg-6 col-md-6">
       <h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
-      <p ng-repeat="itemHorario in infoHorario track by $index">
+      <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
         <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
       </p>
     </div>

@@ -28,11 +28,14 @@
         controller: 'SolicitationListCtrl',
         title: 'Solicitações',
         resolve: {
-          // solicitacoes: function(solicitationAPI){
-          //   return solicitationAPI.get();
-          // }
-          solicitacoes: function(myhitpointAPI){
-            return myhitpointAPI.get();
+          usuario: function(usersAPI, Auth){
+            
+            var user = Auth.getCurrentUser();
+            console.log('## Usuário retornado: ##', user);
+            return usersAPI.getUsuario(user._id);
+          },
+          solicitacoes: function(myhitpointAPI){//solicitações de ajuste
+            return myhitpointAPI.getByStatus({status: 0}); //status 0 -> pendentes
           }
         },
         accessLevel: 3

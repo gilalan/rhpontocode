@@ -11,6 +11,7 @@
     <thead>
     <tr class="sortable ">
       <th class="table-id" st-sort="id" st-sort-default="true">#</th>
+      <th st-sort="ID">ID</th>
       <th st-sort="nome">Nome</th>
       <th st-sort="PIS">PIS</th>
       <th st-sort="data">Data</th>
@@ -20,6 +21,8 @@
     </tr>
     <tr>
       <th></th>
+      <th><input st-search="funcionario._id" placeholder="Buscar Nome" class="input-sm form-control search-input"
+                 type="search"/></th>
       <th><input st-search="funcionario.nome" placeholder="Buscar Nome" class="input-sm form-control search-input"
                  type="search"/></th>
        <th><input st-search="funcionario.PIS" placeholder="Buscar PIS" class="input-sm form-control search-input"
@@ -35,6 +38,7 @@
     <tbody>
       <tr ng-repeat="adjSol in adjSolicitations track by $index" ng-class="{'funcionario-demitido': !adjSol.motivo}">
         <td>{{$index}}</td>
+        <td>{{adjSol._id}}</td>
         <td>{{adjSol.funcionario.nome}}</td>
         <td>{{adjSol.funcionario.PIS}}</td>
         <td>{{adjSol.data | date: 'dd/MM/yyyy'}}</td>

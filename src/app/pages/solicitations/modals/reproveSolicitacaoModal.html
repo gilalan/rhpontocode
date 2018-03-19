@@ -1,3 +1,8 @@
+<div id="loaderDiv" ng-show="dataProcess">
+  <p class="ajax-loader title-loader"> Processando dados... </p>
+  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+</div>
 <div class="modal-content">
   <div class="modal-header" style="padding: 10px 15px 2px 15px;">
     <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
@@ -41,10 +46,27 @@
           <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacao.motivo}} </label>
         </div>
       </div>
+    </div>
+    <div class="row" style="margin:10px 0px 0px 0px;">
+      <label style="margin-left: 15px; font-size: 13px; font-weight: bold; color: #e73b2e;" for="textAreaMotivo">Para confirmar a reprovação do ajuste digite uma justificativa e clique em Sim*</label>
+      <form name="motivoForm"><textarea class="form-control" id="textAreaMotivo" placeholder="Informe o motivo para não aprovar essa solicitação de ajuste do funcionário." ng-model="algo.motivo" ng-required="true">
+      </textarea></form>
+
     </div> 
   </div>
   <div class="separator2"></div>
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+    <button type="button" class="btn btn-success" ng-disabled="motivoForm.$invalid" ng-click="reprova()">Sim</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Não</button>
   </div>
 </div>

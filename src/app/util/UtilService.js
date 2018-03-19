@@ -32,6 +32,7 @@ angular.module('BlurAdmin').service("util", function(){
         return newDate;
     };
 
+    //Traz um cabeçalho de informações com o horário do funcionário em questão
     svc.getInfoHorario = function(funcionario, infoHorario) {
 
         var weekFullDays = ["Domingo","Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
@@ -168,14 +169,256 @@ angular.module('BlurAdmin').service("util", function(){
       } else {
 
         if (item.incluida){
-          return "Batida incluída manualmente";
+          return "Batida manual incluída agora";
         }
         else {
           if (item.REP)
             return "Batida Normal via REP";
           if (item.RHWeb)
-            return "Batida Normal via WEB";          
+            return "Batida Normal via WEB";
+          if (!item.REP && !item.RHWeb)
+            return "Batida Manual Justificada";
         }
       }
+    };
+
+    /*
+    ** Compara apenas a data (dia, mes e ano)
+    ** Ex.: 15/02/2018 e 16/02/2018 => -1 (a dt1 é menor que a dt2)
+    */
+    svc.compareOnlyDates = function(date1, date2) {
+
+      //como a passagem é por referência, devemos criar uma cópia do objeto
+      var d1 = angular.copy(date1); 
+      var d2 = angular.copy(date2);
+      //console.log('date1', d1);
+      //console.log('date2', d2);
+      d1.setHours(0,0,0,0);
+      d2.setHours(0,0,0,0);
+
+      //console.log('date1 time', d1.getTime());
+      //console.log('date2 time', d2.getTime());
+
+      if (d1.getTime() < d2.getTime())
+        return -1;
+      else if (d1.getTime() === d2.getTime())
+        return 0;
+      else
+        return 1; 
+    };
+
+    svc.addOrSubtractDays = function(date, value) {
+          
+      date = angular.copy(date);
+      date.setHours(0,0,0,0);
+
+      return new Date(date.getTime() + (value*864e5));
+    };
+
+    svc.setStringHorario = function(hoursP, minutesP) {
+
+      var hours = parseInt(hoursP);
+      var minutes = parseInt(minutesP);
+      var hoursStr = "";
+      var minutesStr = "";
+
+      hoursStr = (hours >= 0 && hours <= 9) ? "0"+hours : ""+hours;           
+      minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
+
+      return hoursStr + ":" + minutesStr;
+
+    };
+
+    svc.getOnlyDate = function(date) {
+      
+      var data = angular.copy(date);
+      data.setHours(0,0,0,0); //essa data é importante zerar os segundos para que não tenha inconsistência na base
+      return data;
+    }; 
+
+    svc.getInfoTrabalho = function(funcionario, equipe, date, feriados){
+        
+        var turno = funcionario.alocacao.turno;
+        var escala = turno.escala;
+        var infoTrabalho = {};        
+
+        var flagFeriado = this.isFeriado(date, feriados, equipe);
+        console.log('flagFeriado: ', flagFeriado);
+
+        if (escala) {
+        
+            console.log('entrou no if de criar informações extra de Escala');
+            var ignoraFeriados = turno.ignoraFeriados;
+            var minutos_trabalhados = undefined;
+            if (escala.codigo == 1) {//escala tradicional na semana
+
+              var diaTrabalho = this.isWorkingDayWeeklyScale(date.getDay(), turno.jornada.array);
+              if (diaTrabalho.horarios && !flagFeriado) { //é um dia de trabalho normal
+
+                infoTrabalho.trabalha = true;
+                infoTrabalho.aTrabalhar = diaTrabalho.minutosTrabalho;
+                // minutos_trabalhados = getWorkedMinutes(date);
+                // if (minutos_trabalhados != undefined)
+                //   infoTrabalho.trabalhados = getWorkedMinutes(date);//só calcula para ciclos pares de batidas
+
+              } else {
+
+                if (flagFeriado && ignoraFeriados) { //é um feriado mas o turno do colaborador ignora isso
+                  
+                  infoTrabalho.trabalha = true;
+                  infoTrabalho.aTrabalhar = diaTrabalho.minutosTrabalho;
+                  // minutos_trabalhados = getWorkedMinutes(date);
+                  // if (minutos_trabalhados != undefined)
+                  //   infoTrabalho.trabalhados = getWorkedMinutes(date);//só calcula para ciclos pares de batidas
+
+                } else {
+
+                  infoTrabalho.trabalha = false;
+                  infoTrabalho.aTrabalhar = 0;
+                  // minutos_trabalhados = getWorkedMinutes(date);
+                  // if (minutos_trabalhados != undefined)
+                  //   infoTrabalho.trabalhados = getWorkedMinutes(date);//só calcula para ciclos pares de batidas
+                }
+              }
+
+            } else if (escala.codigo == 2) { //escala 12x36
+
+              //dia de trabalho
+              //console.log('new date from isWorkingDayRotationScale: ', new Date($scope.funcionario.alocacao.dataInicioEfetivo));
+              if (this.isWorkingDayRotationScale(date, new Date(funcionario.alocacao.dataInicioEfetivo)) && !flagFeriado){
+                
+                infoTrabalho.trabalha = true; 
+                infoTrabalho.aTrabalhar = turno.jornada.minutosTrabalho;
+                // minutos_trabalhados = getWorkedMinutes(date);
+                // if (minutos_trabalhados != undefined)
+                //   infoTrabalho.trabalhados = getWorkedMinutes(date);
+
+              } else {
+
+                if (flagFeriado && ignoraFeriados){ //é feriado mas o turno do colaborador ignora
+                  
+                  infoTrabalho.trabalha = true; 
+                  infoTrabalho.aTrabalhar = turno.jornada.minutosTrabalho;
+                  // minutos_trabalhados = getWorkedMinutes(date);
+                  // if (minutos_trabalhados != undefined)
+                  //   infoTrabalho.trabalhados = getWorkedMinutes(date);              
+
+                } else {
+                 
+                  infoTrabalho.trabalha = false; 
+                  infoTrabalho.aTrabalhar = 0;
+                  // minutos_trabalhados = getWorkedMinutes(date);
+                  // if (minutos_trabalhados != undefined)
+                  //   infoTrabalho.trabalhados = getWorkedMinutes(date);
+                }
+              }
+            }
+        } else {
+
+            return undefined;
+        }
+
+        return infoTrabalho;
+    };
+
+    svc.isFeriado = function(data, feriados, equipe){
+
+        var date = data.getDate();//1 a 31
+        var month = data.getMonth();//0 a 11
+        var year = data.getFullYear();//
+        var flagFeriado = false;
+        var tempDate;
+
+        feriados.forEach(function(feriado){
+        
+            for (var i = 0; i < feriado.array.length; i++) {
+              
+              tempDate = new Date(feriado.array[i]);
+              if (feriado.fixo){
+              
+                if (tempDate.getMonth() === month && tempDate.getDate() === date){
+                  //console.log("É Feriado (fixo)!", tempDate);
+                  flagFeriado = checkFeriadoSchema(feriado, equipe);
+                  return feriado;
+                }
+
+              } else {//se não é fixo
+
+                if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
+                  //console.log("É Feriado (variável)!", tempDate);
+                  flagFeriado = checkFeriadoSchema(feriado, equipe);
+                  return feriado;
+                }
+              }
+            }
+          });
+      // console.log('FlagFeriado: ', flagFeriado);
+      return flagFeriado;//no futuro retornar o flag de Feriado e a descrição do mesmo!
+
+    };
+
+    function checkFeriadoSchema(feriado, equipe){
+
+      var abrangencias = ["Nacional", "Estadual", "Municipal"];
+      var flagFeriado = false;
+
+      if (feriado.abrangencia == abrangencias[0]){
+
+        console.log('Feriado Nacional!');
+        flagFeriado = true;
+
+      } else  if (feriado.abrangencia == abrangencias[1]){
+        
+        console.log('Feriado Estadual!');
+        if (equipe.setor.local.estado == feriado.local.estado._id){
+          console.log('Feriado Estadual no Estado correto!');
+          flagFeriado = true;
+        }
+
+      } else if (feriado.abrangencia == abrangencias[2]){
+        
+        console.log('Feriado Municipal!');
+        if (equipe.setor.local.municipio == feriado.local.municipio._id){
+          console.log('No municipio correto!');
+          flagFeriado = true;
+        }
+      }
+
+      return flagFeriado;
+    };
+
+    /*
+    *
+    * Não Verifica, mas retorna o dia de trabalho na escala semanal
+    *
+    */
+    svc.isWorkingDayWeeklyScale = function(dayToCompare, arrayJornadaSemanal) {
+      
+      var diaRetorno = {};
+      arrayJornadaSemanal.forEach(function(objJornadaSemanal){
+        if(dayToCompare == objJornadaSemanal.dia){
+          diaRetorno = objJornadaSemanal;
+          return diaRetorno;
+        }
+      });
+      return diaRetorno;
+    };
+
+    /*
+    *
+    * Verifica se é dia de trabalho na escala de revezamento 12x36h 
+    *
+    */
+    svc.isWorkingDayRotationScale = function(dateToCompare, dataInicioEfetivo) {
+
+      var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+      
+      var d1 = angular.copy(dateToCompare); 
+      var d2 = angular.copy(dataInicioEfetivo);
+      d1.setHours(0,0,0,0);
+      d2.setHours(0,0,0,0);
+
+      var diffDays = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
+      return (diffDays % 2 == 0) ? true : false;
     };
 });
