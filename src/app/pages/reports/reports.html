@@ -8,7 +8,8 @@
 	<div class="row" ng-if="isAdmin">
 		<i><strong>Tela em construção para Administradores...</strong></i>
 	</div>
-    <div class="row" ng-if="!isAdmin">
+    <!-- <div class="row" ng-if="!isAdmin"> -->
+    <div class="row">
     	<div class="col-lg-4 col-md-4">
     		<h4 class="sub-header"><strong style="color: #334db7;">Escolha o tipo de relatório:</strong></h4>
     		<div class="list-group">
@@ -41,7 +42,8 @@
 	        <label style="color: #33aab7;">Funcionário:</label>
 		    <!-- <pre>Model: {{funcionario.selected | json}}</pre> -->
 		    
-	    	<input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">		    
+	    	<input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
+
 		</div>
     </div>
     <div class="separator"></div>

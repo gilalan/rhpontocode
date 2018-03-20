@@ -32,6 +32,8 @@
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');  
     }
 
+    console.log("Current Date para os trabalhos: ",$scope.currentDate);
+
     $scope.hasFuncionario = false; //indica se há um funcionário
     $scope.hasSolicitation = false;
     $scope.funcionario = usuario.funcionario;
@@ -103,11 +105,12 @@
 
       var solicitacaoAjuste = {
         rawData: $scope.currentDate,
-        date: {
-          year: $scope.currentDate.getFullYear(),
-          month: $scope.currentDate.getMonth(),
-          day: $scope.currentDate.getDate()
-        },
+        // date: {
+        //   year: $scope.currentDate.getFullYear(),
+        //   month: $scope.currentDate.getMonth(),
+        //   day: $scope.currentDate.getDate()
+        // },
+        data: util.getOnlyDate($scope.currentDate),
         funcionario: $scope.funcionario._id,
         status: 0, //pendente (-1 é reprovada) e (1 é aprovada)
         motivo: ajuste.motivo,
@@ -311,7 +314,7 @@
               motivo: response.data[0].motivo
             };
             $scope.hasSolicitation = true;
-            console.log('vc já tem uma solicitação PENDENTE para esta data!');
+            console.log('vc já tem uma solicitação PENDENTE para esta data!', $scope.solicitacaoObtida);
           }
         }
 
@@ -341,7 +344,7 @@
         equipe: componentes
       };
 
-      ////console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
+      console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
 
       appointmentAPI.getApontamentosByDateRangeAndEquipe(objDateEquipe).then(function successCallback(response){
 
@@ -349,7 +352,7 @@
         var apontamentosResponse = response.data;
         var itemApontamento = {};
         var objEntradasSaidas = {};
-        //console.log("!@# Apontamentos Semanais: ", apontamentosResponse);
+        console.log("!@# Apontamentos Recebidos: ", apontamentosResponse);
         if (apontamentosResponse.length > 0){
           $scope.apontamento = response.data[0];          
           itemApontamento.rawDate = new Date($scope.currentDate);
@@ -400,6 +403,7 @@
       var objHoraMinuto = {};
 
       arrayESOriginal = angular.copy(apontamentoF.marcacoes);
+      console.log('ArrayES do apontamentoF');
 
       for (var i=0; i<apontamentoF.marcacoes.length; i++){
 

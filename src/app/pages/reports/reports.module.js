@@ -31,6 +31,12 @@
             feriados: function(feriadoAPI){
               
               return feriadoAPI.get();
+            },
+            allEmployees: function(employeeAPI, Auth){
+
+              var user = Auth.getCurrentUser();
+              if (user.acLvl >= 5)
+                return employeeAPI.get();
             }
             // ,
             // currentDate: function(appointmentAPI) {

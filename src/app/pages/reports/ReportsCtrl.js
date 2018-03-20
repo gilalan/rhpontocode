@@ -9,7 +9,7 @@
       .controller('ReportsCtrl', ReportsCtrl);
 
   /** @ngInject */
-  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, Auth, usuario, feriados) {
+  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, Auth, usuario, feriados, allEmployees) {
 
     var Usuario = usuario.data;
     var feriados = feriados.data;
@@ -74,9 +74,12 @@
         //var dataFinal = new Date(ano.value, mes._id+1, 0);
         var dataFinal = new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
 
+        console.log('funcSelecionado para busca: ', funcSel);
+
         employeeAPI.getEquipe(funcSel._id).then(function successCallback(response){
 
           equipe = response.data;
+          console.log('response retornado da equipe do buscado: ', response);
           getApontamentosByDateRangeAndEquipe(dataInicial, dataFinal, funcSel);
 
         }, function errorCallback(response){
@@ -195,6 +198,18 @@
         $scope.errorMsg = response.data.message;
         ////console.log("Erro ao obter apontamentos por um range de data e equipe");
       });
+    };
+
+    //Traz todos os employees para tela de Administrador
+    function getAllEmployees() {
+      
+      var empsArray = allEmployees.data;
+
+      for (var j=0; j<empsArray.length; j++) {
+          $scope.employees.push(empsArray[j]);
+          $scope.employeesNames.push( { id: empsArray[j]._id, name: empsArray[j].nome + ' ' + empsArray[j].sobrenome});
+        }
+      $scope.equipesLiberadas = true;
     };
 
    /*
@@ -912,6 +927,8 @@
       } else if (Usuario.perfil.accessLevel == 5) {
 
         $scope.isAdmin = true;
+        //console.log('allEmployees: ', allEmployees.data);
+        getAllEmployees();
 
       } else {
 

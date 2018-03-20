@@ -90,8 +90,9 @@
           $scope.errorMsg = "Este funcionário não é Gestor e portanto não pode visualizar estas informações";
         }
       } else {
-          if ($scope.usuario.perfil.accessLevel >= 4) {
+          if (usuario.data.perfil.accessLevel >= 4) {
             //é um admin vendo a página, pode liberar
+            $scope.equipes = equipes.data;
             $scope.isAdmin = true;
             $scope.liberado =true;
           }
