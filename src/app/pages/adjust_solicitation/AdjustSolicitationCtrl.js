@@ -105,11 +105,11 @@
 
       var solicitacaoAjuste = {
         rawData: $scope.currentDate,
-        // date: {
-        //   year: $scope.currentDate.getFullYear(),
-        //   month: $scope.currentDate.getMonth(),
-        //   day: $scope.currentDate.getDate()
-        // },
+        date: {
+          year: $scope.currentDate.getFullYear(),
+          month: $scope.currentDate.getMonth(),
+          day: $scope.currentDate.getDate()
+        },
         data: util.getOnlyDate($scope.currentDate),
         funcionario: $scope.funcionario._id,
         status: 0, //pendente (-1 é reprovada) e (1 é aprovada)
