@@ -16,6 +16,9 @@
     $scope.funcionarios = funcionarios.data;
     $scope.smartTablePageSize = 10;
 
+    console.log('$scope.equipe', $scope.equipe);
+    console.log('$scope.funcionarios ', $scope.funcionarios);
+
     $scope.associar = function (usuario) {
 
       // Obtendo funcionários selecionados

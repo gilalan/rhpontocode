@@ -12,11 +12,12 @@
       .controller('ConfirmationModalCtrl', ConfirmationModalCtrl);
 
   /** @ngInject */
-  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, feriados) {
+  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, feriados) {
 
-    var usuario = usuario.data;
+    var Usuario = usuario.data;
     var feriados = feriados.data;
     var arrayESOriginal = [];
+    var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
 
     console.log("tem data Solicitada: ", dataSolicitada);
@@ -36,7 +37,7 @@
 
     $scope.hasFuncionario = false; //indica se há um funcionário
     $scope.hasSolicitation = false;
-    $scope.funcionario = usuario.funcionario;
+    $scope.funcionario = Usuario.funcionario;
     $scope.arrayES = [];
     $scope.ajuste = {};
     // $scope.infoHorario = {};
@@ -66,7 +67,7 @@
       $scope.something.opened = true;
     }
     $scope.changeDate = function(date) {
-      
+      console.log('já passou no changeDate no carregamento?');
       $scope.dataErrorMsg = null;
       if (util.compareOnlyDates(date, dataMaxBusca) == 1){
         $scope.datepic.dt = new Date($scope.currentDate);
@@ -92,6 +93,9 @@
     };
     //Fim do datePicker
 
+    function hideAppointErrorMsg(seconds){
+      $scope.invalidAppointMsg = null;
+    };
 
     $scope.propor = function(ajuste){
       
@@ -99,6 +103,10 @@
 
       if ($scope.arrayES.length % 2 != 0){
         console.log('numero impar de batidas, não pode!');
+        $scope.invalidAppointMsg = null;
+        $scope.invalidAppointMsg = "o total de batidas deve ser em quantidade par!";
+        $timeout(hideAppointErrorMsg, 5000);
+        return $scope.invalidAppointMsg;
       }
 
       var marcacoesPropostas = reorganizarBatidasPropostas($scope.arrayES);      
@@ -198,7 +206,7 @@
       modalInstance.result.then(function (confirmation){
 
         if (confirmation){
-          $state.go($state.current, {userId: usuario._id, year: solicitacaoAjuste.date.year,
+          $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.date.year,
           month: solicitacaoAjuste.date.month,
           day: solicitacaoAjuste.date.day}, {reload: true});
           // $state.reload({});
@@ -470,14 +478,54 @@
 
     function init() {
 
-      if ($scope.funcionario){
+      if (Usuario.perfil.accessLevel == 1){
 
-        $scope.hasFuncionario = true;
+        if ($scope.funcionario){
+
+          $scope.hasFuncionario = true;
+          
+          if (!$scope.infoHorario){
+            $scope.infoHorario = util.getInfoHorario($scope.funcionario, []);
+          }
+
+          employeeAPI.getEquipe($scope.funcionario._id).then(function successCallback(response){
+
+            $scope.noTeamMsg = null;
+            equipe = response.data;
+            console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);
+            if (!equipe){
+              $scope.noTeamMsg = "Você não está associado(a) a nenhuma EQUIPE no sistema e consequentemente não é possível ajustar seus batimentos. Verifique junto ao seu fiscal/gestor a sua associação a uma EQUIPE.";
+              return $scope.noTeamMsg;
+            } else {
+
+              initGetSolicitacaoOuApontamento();
+            }
+
+          }, function errorCallback(response){
+            
+            $scope.errorMsg = response.data.message;
+          });        
+        }
         
-        if (!$scope.infoHorario)
-          $scope.infoHorario = util.getInfoHorario($scope.funcionario, []);
+      } else if (Usuario.perfil.accessLevel == 2) {
+        //fiscal
+      } else if (Usuario.perfil.accessLevel == 3) {
+        
+        $scope.gestor = Usuario.funcionario;
+        // getEquipesByGestor();
 
-        initGetSolicitacaoOuApontamento();
+      } else if (Usuario.perfil.accessLevel == 4) {
+         
+         $scope.gestor = Usuario.funcionario;
+         $scope.isGestorGeral = true;
+         // getEquipesByGestor();
+
+      } else if (Usuario.perfil.accessLevel == 5) {
+
+        $scope.isAdmin = true;
+        //console.log('allEmployees: ', allEmployees.data);
+        // getAllEmployees();
+
       }
     };
 

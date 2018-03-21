@@ -766,8 +766,16 @@
 
       employeeAPI.getEquipe($scope.funcionario._id).then(function successCallback(response){
 
+        $scope.noTeamMsg = null;
         equipe = response.data;
         console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);
+        if (!equipe){
+          $scope.noTeamMsg = "Você não está associado(a) a nenhuma EQUIPE no sistema e consequentemente não é possível calcular seus batimentos. Verifique junto ao seu fiscal/gestor a sua associação a uma EQUIPE.";
+          return $scope.noTeamMsg;
+        } else {
+
+          initSearch();
+        }
 
       }, function errorCallback(response){
         
@@ -878,9 +886,8 @@
 
     function init() {
       
-      initGetEquipe();
       initHeader();
-      initSearch();
+      initGetEquipe(); //dentro de get equipe -> initSearch();
 
       console.log("infoHorario: " , $scope.infoHorario);
     };

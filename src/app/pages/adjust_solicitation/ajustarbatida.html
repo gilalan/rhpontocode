@@ -20,150 +20,174 @@
   <h1 style="font-size: 13px;">Atenção: O Ajuste/Correção de batidas segue as diretrizes governamentais, entre elas a portaria 1510 do MTE que informa que uma batida efetuada por um colaborador jamais poderá ser editada/removida, apenas desconsiderada e devidamente motivada.</h1>  
 
   <!-- <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">{{currentDateFtd}}</h4> -->
-  <div class="row">
-    <div class="col-lg-6 col-md-6">
-      <p class="input-group" style="margin-bottom: 10px;">
-          <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
-        <span class="input-group-btn">
-          <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
-        </span>
-      </p>
-      <label style="border: 1px solid black; border-radius: 5px; background: #e9e9e9; padding: 5px; font-size: 16px; font-weight: normal;">Data do Ajuste: <strong><em>{{datepic.dt | date:'fullDate' }}</em><strong></label>
-
-      <div ng-show="dataErrorMsg" class="alert bg-danger" role="alert">
-        <strong>Ops!</strong> {{dataErrorMsg}}
+  <div class="row" ng-if="gestor">
+    <div class="col-xs-12" style="border: 1px solid #666; border-radius: 5px; background: #e13030; padding: 10px; color: #fff;">
+      <div class="form-group" style="margin-bottom: 0px">
+        <p style="margin-bottom: 0px;"><strong>Tela para Gestor sendo construída...</strong></p>
       </div>
+    </div>
+  </div>
 
-    </div>
-    <div class="col-lg-6 col-md-6">
-      <h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
-      <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
-        <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
-      </p>
-    </div>
-  </div>  
-  <div class="separator"></div>
-  <div class="row" ng-if="hasFuncionario">  
-    
-    <div class="row" ng-if="hasSolicitation" style="margin: 0px;">
-      <h4 class="sub-header" style="color: #000; margin-bottom: 4px; font-weight: normal; margin-left: 15px;">Atenção, <strong>já existe</strong> uma solicitação de ajuste <strong>pendente</strong> para essa data:</h4>
-      <div class="row" style="border: 2px solid #676db9; margin: 0px 30px 0px 15px; border-radius: 5px; padding: 8px 0px 8px 0px;">
-        <div class="col-xs-12">
-          <h4 class="sub-header" style="color: #b9444c; margin-bottom: 4px; font-size: 14px;">Como eram os batimentos: </h4>
-          <div class="btn-toolbar-example">
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length>0">
-              <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObt in solicitacaoObtida.anterior track by $index">
-                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObt}}</label>
-              </div>
-            </div>
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length<=0">
-              <label style="margin-left: 5px; font-size: 12px;"> Sem batidas </label>
-            </div>
-          </div>
+  <div class="row" ng-if="!gestor">
+
+    <div class="row">
+      <div class="col-lg-6 col-md-6">
+        <p class="input-group" style="margin-bottom: 10px;">
+            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+        <label style="border: 1px solid black; border-radius: 5px; background: #e9e9e9; padding: 5px; font-size: 16px; font-weight: normal;">Data do Ajuste: <strong><em>{{datepic.dt | date:'fullDate' }}</em><strong></label>
+
+        <div ng-show="dataErrorMsg" class="alert bg-danger" role="alert">
+          <strong>Ops!</strong> {{dataErrorMsg}}
         </div>
-        <div class="col-xs-12" style="margin-top: 0px;">
-          <h4 class="sub-header" style="color: #5d9b4d; margin-bottom: 4px; font-size: 14px;">E como você propôs: </h4>
-          <div class="btn-toolbar-example">
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Propostos" ng-if="solicitacaoObtida.proposto.length>0">
-              <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObtProp in solicitacaoObtida.proposto track by $index">
-                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObtProp}}</label>
-              </div>
-            </div>
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.proposto.length<=0">
-                <label style="margin-left: 5px; font-size: 12px;"> Não propôs batidas </label>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-12" style="margin-top: 0px;">
-          <h4 class="sub-header" style="color: #000; margin-bottom: 5px; font-size: 14px;">Motivo:</h4>
-          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacaoObtida.motivo}} </label>
-        </div>
+
       </div>
-    </div>    
-
-    <div class="row" ng-if="!hasSolicitation" style="margin: 0px;">
-      <div class="row" style="margin: 0px;">
-        <div class="col-xs-12">
-          <div class="form-group" style="float: right;">
-            <ul class="btn-list clearfix">
-              <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="incluir()"><i class="ion-plus-round"></i>Incluir batimento</button></li>
-            </ul>
-          </div>
-        </div>
-      </div>  
-
-      <div class="row" ng-if="!apontamento" style="margin: 0px;">
+      <div class="col-lg-6 col-md-6">
+        <h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
+        <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
+          <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+        </p>
+      </div>
+    </div>  
+    <div class="separator"></div>
+    <div class="row" ng-if="hasFuncionario && !noTeamMsg">  
+      
+      <div class="row" ng-if="hasSolicitation" style="margin: 0px;">
+        <h4 class="sub-header" style="color: #000; margin-bottom: 4px; font-weight: normal; margin-left: 15px;">Atenção, <strong>já existe</strong> uma solicitação de ajuste <strong>pendente</strong> para essa data:</h4>
+        <div class="row" style="border: 2px solid #676db9; margin: 0px 30px 0px 15px; border-radius: 5px; padding: 8px 0px 8px 0px;">
           <div class="col-xs-12">
-            <div id="divMarcacoes" class="form-group">
-              <p><strong>Não há marcações nesse dia.</strong></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="row" ng-if="apontamento" style="margin: 0px;">
-        <table class="table table-condensed" style="table-layout: fixed;">
-          <thead>
-            <tr style="color: #334db7;">
-              <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>E/S</b></th>
-              <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>Marcação</b></th>
-              <th class="col-xs-1 centerColSpan first" style="width: 35%;"><b>Origem</b></th>
-              <th class="col-xs-1 centerColSpan first" style="width: 35%;"><b>Motivo</b></th>
-              <th class="col-xs-1 centerColSpan first last" style="width: 10%;"><b>Ações</b></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="item in arrayES track by $index" class="editable-row" ng-class="{'batida-desc': item.desconsiderada}">
-              <td style="line-height: 40px !important; text-align: center; padding-left: 15px; overflow: hidden; width: 10%;">{{item.rDescricao}}:</td>
-              <td style="line-height: 40px !important; text-align: center; padding-left: 5px; overflow: hidden; width: 10%;">              
-                <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{item.strHorario}}</label>
-              </td>
-              <td style="line-height: 40px !important; text-align: center; overflow: hidden; width: 35%;">              
-                {{item.estadoAtual}}
-              </td>
-              <td style="line-height: 40px !important; text-align: center; overflow: hidden; width: 35%;">              
-                {{item.motivo ? item.motivo : '-'}}
-              </td>
-              <td style="line-height: 40px !important; text-align: center; padding-right: 15px; overflow: hidden; width: 10%;">
-                <div class="btn-group" role="group" aria-label="acoes">            
-                  <!-- <button title="Reconverter" type="button" class="btn btn-sm btn-primary" ng-disabled="item.isReconv" ng-click="reconverter($index)">
-                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                  </button> -->
-                  <button title="Desconsiderar" type="button" class="btn btn-sm btn-danger" ng-disabled="item.desconsiderada" ng-click="desconsiderar($index)">
-                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  
-                  </button>
+            <h4 class="sub-header" style="color: #b9444c; margin-bottom: 4px; font-size: 14px;">Como eram os batimentos: </h4>
+            <div class="btn-toolbar-example">
+              <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length>0">
+                <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObt in solicitacaoObtida.anterior track by $index">
+                    <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObt}}</label>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="alert bg-danger" ng-if="batidaError"><strong>Atenção: </strong> as batidas devem ser em quantidade par.</div>
-        <div class="alert bg-danger" ng-if="numerosErro"><strong>Atenção: </strong> as horas e minutos devem ter dois dígitos no padrão 24h.</div>
-        <div class="alert bg-danger" ng-if="horaErro"><strong>Atenção: </strong> as horas devem estar entre 00 e 23.</div>
-        <div class="alert bg-danger" ng-if="minutoErro"><strong>Atenção: </strong> os minutos devem estar entre 00 e 59.</div>
-        <div class="separator2"></div>            
-      </div>
-
-      <div class="row" ng-if="apontamento">
-        <div class="col-xs-12">
-          <div class="form-group">
-            <label for="textAreaMotivo">Motivo da Solicitação*</label>
-            <textarea class="form-control" id="textAreaMotivo" placeholder="Qual o motivo deste ajuste?" ng-model="ajuste.motivo" ng-required="true">
-            </textarea>
+              </div>
+              <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length<=0">
+                <label style="margin-left: 5px; font-size: 12px;"> Sem batidas </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12" style="margin-top: 0px;">
+            <h4 class="sub-header" style="color: #5d9b4d; margin-bottom: 4px; font-size: 14px;">E como você propôs: </h4>
+            <div class="btn-toolbar-example">
+              <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Propostos" ng-if="solicitacaoObtida.proposto.length>0">
+                <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObtProp in solicitacaoObtida.proposto track by $index">
+                    <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObtProp}}</label>
+                </div>
+              </div>
+              <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.proposto.length<=0">
+                  <label style="margin-left: 5px; font-size: 12px;"> Não propôs batidas </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12" style="margin-top: 0px;">
+            <h4 class="sub-header" style="color: #000; margin-bottom: 5px; font-size: 14px;">Motivo:</h4>
+            <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacaoObtida.motivo}} </label>
           </div>
         </div>
-      </div>
+      </div>    
 
-      <div class="row" ng-if="apontamento">
-        <div class="col-xs-12">
-          <div class="form-group" style="float: right;">
-            <button type="submit" class="btn btn-primary" ng-disabled="ajusteForm.$invalid" ng-click="propor(ajuste)">Solicitar</button>
+      <div class="row" ng-if="!hasSolicitation" style="margin: 0px;">
+        <div class="row" style="margin: 0px;">
+          <div class="col-xs-12">
+            <div class="form-group" style="float: right;">
+              <ul class="btn-list clearfix">
+                <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="incluir()"><i class="ion-plus-round"></i>Incluir batimento</button></li>
+              </ul>
+            </div>
+          </div>
+        </div>  
+
+        <div class="row" ng-if="!apontamento" style="margin: 0px;">
+            <div class="col-xs-12">
+              <div id="divMarcacoes" class="form-group">
+                <p><strong>Não há marcações nesse dia.</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" ng-if="apontamento" style="margin: 0px;">
+          <table class="table table-condensed" style="table-layout: fixed;">
+            <thead>
+              <tr style="color: #334db7;">
+                <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>E/S</b></th>
+                <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>Marcação</b></th>
+                <th class="col-xs-1 centerColSpan first" style="width: 35%;"><b>Origem</b></th>
+                <th class="col-xs-1 centerColSpan first" style="width: 35%;"><b>Motivo</b></th>
+                <th class="col-xs-1 centerColSpan first last" style="width: 10%;"><b>Ações</b></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in arrayES track by $index" class="editable-row" ng-class="{'batida-desc': item.desconsiderada}">
+                <td style="line-height: 40px !important; text-align: center; padding-left: 15px; overflow: hidden; width: 10%;">{{item.rDescricao}}:</td>
+                <td style="line-height: 40px !important; text-align: center; padding-left: 5px; overflow: hidden; width: 10%;">              
+                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{item.strHorario}}</label>
+                </td>
+                <td style="line-height: 40px !important; text-align: center; overflow: hidden; width: 35%;">              
+                  {{item.estadoAtual}}
+                </td>
+                <td style="line-height: 40px !important; text-align: center; overflow: hidden; width: 35%;">              
+                  {{item.motivo ? item.motivo : '-'}}
+                </td>
+                <td style="line-height: 40px !important; text-align: center; padding-right: 15px; overflow: hidden; width: 10%;">
+                  <div class="btn-group" role="group" aria-label="acoes">            
+                    <!-- <button title="Reconverter" type="button" class="btn btn-sm btn-primary" ng-disabled="item.isReconv" ng-click="reconverter($index)">
+                      <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    </button> -->
+                    <button title="Desconsiderar" type="button" class="btn btn-sm btn-danger" ng-disabled="item.desconsiderada" ng-click="desconsiderar($index)">
+                      <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="alert bg-danger" ng-if="batidaError"><strong>Atenção: </strong> as batidas devem ser em quantidade par.</div>
+          <div class="alert bg-danger" ng-if="numerosErro"><strong>Atenção: </strong> as horas e minutos devem ter dois dígitos no padrão 24h.</div>
+          <div class="alert bg-danger" ng-if="horaErro"><strong>Atenção: </strong> as horas devem estar entre 00 e 23.</div>
+          <div class="alert bg-danger" ng-if="minutoErro"><strong>Atenção: </strong> os minutos devem estar entre 00 e 59.</div>
+          <div class="separator2"></div>            
+        </div>
+
+        <div class="row" ng-if="apontamento">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <label for="textAreaMotivo">Motivo da Solicitação*</label>
+              <textarea class="form-control" id="textAreaMotivo" placeholder="Qual o motivo deste ajuste?" ng-model="ajuste.motivo" ng-required="true">
+              </textarea>
+            </div>
+          </div>
+        </div>
+
+        <div ng-show="invalidAppointMsg" class="alert bg-danger"><!--  style="position: fixed; top: 0;" -->
+          <strong>Ops!</strong> {{invalidAppointMsg}}
+        </div>
+
+        <div class="row" ng-if="apontamento">
+          <div class="col-xs-12">
+            <div class="form-group" style="float: right;">
+              <button type="submit" class="btn btn-primary" ng-disabled="ajusteForm.$invalid" ng-click="propor(ajuste)">Solicitar</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="row" ng-if="noTeamMsg">
+      <div class="col-xs-12" style="border: 1px solid #666; border-radius: 5px; background: #e13030; padding: 10px; color: #fff;">
+        <div class="form-group" style="margin-bottom: 0px">
+          <p style="margin-bottom: 0px;"><strong>{{noTeamMsg}}</strong></p>
+        </div>
+      </div>
+    </div>
+    <div class="row" ng-if="!hasFuncionario">
+      <div class="col-xs-12"><p>Não há um funcionário associado ao usuário.</p></div>
+    </div>
+
   </div>
-  <div class="row" ng-if="!hasFuncionario">
-    <div class="col-xs-12"><p>Não há um funcionário associado ao usuário.</p></div>
-  </div>
+  <!-- </div> fim do !gestor -->
 
 </form>
