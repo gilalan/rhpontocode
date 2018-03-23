@@ -13,7 +13,7 @@
 
   factory('Auth', function($localStorage, $q, jwtHelper){
     
-    console.log('Auth factory');
+    //console.log('Auth factory');
 
     var batidaDireta = false;
 
@@ -21,9 +21,9 @@
       authorize: function(routerAccessLevel){
 
         var user = jwtHelper.decodeToken($localStorage.token);
-        console.log("USUARIO OBTIDO NO AUTH ATRAVES DO DECODEJWT: ", user);
-        console.log("ROTA NívelAcesso: ", routerAccessLevel);
-        console.log("USUARIO NívelAcesso: ", user.acLvl);
+        //console.log("USUARIO OBTIDO NO AUTH ATRAVES DO DECODEJWT: ", user);
+        //console.log("ROTA NívelAcesso: ", routerAccessLevel);
+        //console.log("USUARIO NívelAcesso: ", user.acLvl);
         if (user.acLvl >= routerAccessLevel) {
           //se usuario tem acesso maior que a página demanda... ele está autorizado
           return true;
@@ -39,15 +39,15 @@
       },
       setCurrentUser: function(user) {
         //var user = jwtHelper.decodeToken(getToken());
-        //console.log()
+        ////console.log()
       },
       getCurrentUser: function() {
         var user = jwtHelper.decodeToken($localStorage.token);
-        console.log('## Get Current User?!', user);
+        //console.log('## Get Current User?!', user);
         return user;
       },
       setBatidaDireta: function(flag) {
-        console.log("Setando a batida direta para " , flag);
+        //console.log("Setando a batida direta para " , flag);
         batidaDireta = flag;
       },
       getBatidaDireta: function() {
@@ -61,7 +61,7 @@
       isPwdExpired: function() {
         var user = jwtHelper.decodeToken($localStorage.token);
         return user.firstAccess;
-        //console.log("User.firstAccess: ", user);
+        ////console.log("User.firstAccess: ", user);
       },
       logout: function(){
         this.setBatidaDireta(false);

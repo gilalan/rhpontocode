@@ -68,7 +68,7 @@
         };
 
         function defineMenuItemStates(user) {
-          console.log('$state.get()', $state.get());
+          //console.log('$state.get()', $state.get());
           return $state.get()
               .filter(function(s) { //retorna apenas os States com o atributo 'sidebarMeta'
                 return s.sidebarMeta;

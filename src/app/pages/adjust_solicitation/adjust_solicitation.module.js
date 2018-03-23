@@ -44,33 +44,31 @@
               return feriadoAPI.get();
             }
           }
+        })
+        .state('adjustsolicitation-gestor', {
+          url: '/adjustsolicitation/gestor',
+          templateUrl: 'app/pages/adjust_solicitation/gestor/_adjust_solicitation.html',
+          controller: 'AdjustSolicitationGestorCtrl',
+          title: 'Gerenciar Batidas de Funcionários',
+          accessLevel: 3,
+          resolve: {
+            usuario: function(usersAPI, Auth){
+                          
+              var user = Auth.getCurrentUser();
+              // console.log('## Usuário retornado: ##', user);
+              return usersAPI.getUsuario(user._id);
+            },
+            currentDate: function(appointmentAPI) {
+              return appointmentAPI.getCurrentDate();
+            },
+            feriados: function(feriadoAPI) {
+              return feriadoAPI.get();
+            },
+            allEmployees: function(employeeAPI){
+              return employeeAPI.get();
+            }    
+          }
         });
-        // .state('point_adjust', {
-        //   url: '/point_adjust',
-        //   templateUrl: 'app/pages/my_hitpoint/adjust/pointAdjust.html',
-        //   controller: 'PointAdjustCtrl',
-        //   title: 'Meu Ponto',
-        //   params: {
-        //     obj: null
-        //   },
-        //   resolve: {
-        //     apontamento: function(appointmentAPI, $stateParams) {
- 
-        //       console.log('obj state params', $stateParams.obj);//só tem data inicial
-        //       return appointmentAPI.getApontamentosByDateRangeAndFuncionario($stateParams.obj.dateWorker);
-        //     },
-        //     dataSolicitada: function($stateParams){
-        //       return $stateParams.obj.dateWorker.date.raw;
-        //     },
-        //     funcionario: function($stateParams){
-        //       return $stateParams.obj.dateWorker.funcionario;
-        //     },
-        //     arrayES: function($stateParams){
-        //       return $stateParams.obj.arrayES;
-        //     }
-        //   },
-        //   accessLevel: 1
-        // });
   }
 
 })();

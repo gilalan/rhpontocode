@@ -1,6 +1,6 @@
 angular.module('BlurAdmin').service("usersAPI", function($http, config){
 
-	console.log('users service');
+	//console.log('users service');
 	var _urlBaseUsuarios = config.baseUrl + '/api/usuarios';
 	var svc = this;	
 
@@ -13,7 +13,7 @@ angular.module('BlurAdmin').service("usersAPI", function($http, config){
 
 	svc.signIn = function (usuario) {
 		
-		console.log(usuario);
+		//console.log(usuario);
 		return $http.post(config.baseUrl + '/api/authenticate', usuario).then(function sucessCallback(response){
 	      
 			svc.token = response.data.token;
