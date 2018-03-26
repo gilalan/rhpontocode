@@ -19,6 +19,7 @@
     var arrayESOriginal = [];
     var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
+    var lastSearch = null;
 
     $scope.employees = [];
     $scope.employeesNames = [];
@@ -96,6 +97,7 @@
     $scope.changeFunc = function(funcSel){
       
       $scope.funcionarioOficial = $scope.equipes[funcSel.indiceEq].componentes[funcSel.indiceComp];
+      $scope.funcionarioOficial.equipe = angular.copy(funcSel.equipe);
       $scope.infoHorario = util.getInfoHorario($scope.funcionarioOficial, []);
     };
 
@@ -115,10 +117,8 @@
 
     $scope.propor = function(ajuste){
       
-      console.log('clicou para propor ajuste: ', ajuste);
-
-      if ($scope.arrayES.length % 2 != 0){
-        console.log('numero impar de batidas, não pode!');
+      if (!util.isValidBatidasSchema($scope.arrayES)) {
+        
         $scope.invalidAppointMsg = null;
         $scope.invalidAppointMsg = "o total de batidas deve ser em quantidade par!";
         $timeout(hideAppointErrorMsg, 5000);
@@ -135,8 +135,14 @@
           day: $scope.currentDate.getDate()
         },
         data: util.getOnlyDate($scope.currentDate),
-        funcionario: $scope.funcionario.selected._id,
-        status: 0, //pendente (-1 é reprovada) e (1 é aprovada)
+        funcionario: $scope.funcionarioOficial,
+        status: 1, //pendente (-1 é reprovada) e (1 é aprovada)
+        resposta: {
+          aprovada: true,
+          data: util.getOnlyDate($scope.currentDate),
+          gestor: $scope.gestor,
+          motivo: "Aprovada Automaticamente"
+        },
         motivo: ajuste.motivo,
         anterior: {
           marcacoes: arrayESOriginal
@@ -145,18 +151,52 @@
           marcacoes: marcacoesPropostas
         }
       };
+
+      console.log('solicitacaoAjuste no metodo propor', solicitacaoAjuste);
       
       openConfirmaAjuste(solicitacaoAjuste);  
     };
 
     $scope.incluir = function(){
 
-      openIncluirModal($scope.currentDate, $scope.arrayES);
+      if (isValidSearch()){
+        openIncluirModal($scope.currentDate, $scope.arrayES);
+      } else {
+        $scope.dataErrorMsg = "é necessário realizar uma pesquisa de funcionário e data antes de incluir novos batimentos.";
+        $timeout(hideDataError, 6000);
+      }
     };
 
     $scope.desconsiderar = function(index){
       
       openDesconsiderarModal($scope.currentDate, $scope.arrayES, index);
+    };
+
+    function isValidSearch(){
+      console.log('lastSearch: ', lastSearch);
+      if (lastSearch){
+        
+        console.log('$scope.funcionario: ', $scope.funcionarioOficial._id);
+        console.log('last.funcionario: ', lastSearch.func);
+        console.log('date: ', $scope.currentDate.getTime());
+        console.log('last date: ', lastSearch.date);
+        
+        if ($scope.funcionarioOficial._id != lastSearch.func || 
+          $scope.currentDate.getTime() != lastSearch.date) {
+
+          console.log('mudou funcionário ou data');
+          return false;
+
+        } else {
+
+          return true;
+        }
+        
+      } else {
+
+        return false;
+      }
+
     };
 
     //Compara duas marcações e retorna a "menor" (que bateu mais cedo no dia)
@@ -206,15 +246,28 @@
 
     //seria bom mostrar telinha confirmando as alterações...
     function openConfirmaAjuste(solicitacaoAjuste) {
-      
+
       var modalInstance = $uibModal.open({
         animation: true,
         templateUrl: pageConfirmationPath,
         size: defaultSize,
         controller: 'ConfirmationModalCtrl',
+        backdrop: 'static',
         resolve: {
           solicitacaoAjuste: function () {
             return solicitacaoAjuste;
+          },
+          gestor: function(){
+            return $scope.gestor;
+          },
+          feriados: function(){
+            return feriados;
+          },
+          equipe: function(){
+            return $scope.funcionarioOficial.equipe;
+          },
+          apontamento: function(){
+            return $scope.apontamento;
           }
         }
       });
@@ -222,10 +275,10 @@
       modalInstance.result.then(function (confirmation){
 
         if (confirmation){
-          $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.date.year,
-          month: solicitacaoAjuste.date.month,
-          day: solicitacaoAjuste.date.day}, {reload: true});
-          // $state.reload({});
+          // $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.date.year,
+          // month: solicitacaoAjuste.date.month,
+          // day: solicitacaoAjuste.date.day}, {reload: true});
+          $state.reload();
         }
       }, function (args) {
         console.log('dismissed confirmation');
@@ -317,7 +370,7 @@
           month: dateAux.getMonth(),
           day: dateAux.getDate()
         },
-        funcionario: $scope.funcionario.selected
+        funcionario: $scope.funcionarioOficial
       };
 
       myhitpointAPI.getFromDataFuncionario(objDataFuncionario).then(function successCallback(response){
@@ -338,7 +391,12 @@
               motivo: response.data[0].motivo
             };
             $scope.hasSolicitation = true;
-            console.log('vc já tem uma solicitação PENDENTE para esta data!', $scope.solicitacaoObtida);
+            lastSearch = {
+              func: $scope.funcionarioOficial._id,
+              date: $scope.currentDate.getTime()
+            };
+            // console.log('vc já tem uma solicitação PENDENTE para esta data!', $scope.solicitacaoObtida);
+            // console.log('vc já tem uma solicitação PENDENTE, lastSearch: ', lastSearch);
           }
         }
 
@@ -368,7 +426,7 @@
         equipe: componentes
       };
 
-      console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
+      // console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
 
       appointmentAPI.getApontamentosByDateRangeAndEquipe(objDateEquipe).then(function successCallback(response){
 
@@ -385,7 +443,13 @@
           objEntradasSaidas = getEntradasSaidas($scope.apontamento);
           itemApontamento.entradaSaidaFinal = objEntradasSaidas.esFinal;
           $scope.arrayES = objEntradasSaidas.arrayEntSai;
-        } 
+        }
+
+        lastSearch = {
+          func: componentes[0]._id,
+          date: $scope.currentDate.getTime()
+        };
+        // console.log('independente de ter apontamento, tem lastSearch: ', lastSearch);
 
       }, function errorCallback(response){
         
@@ -447,8 +511,8 @@
         itemDescricaoHorario.NSR = apontamentoF.marcacoes[i].NSR;
         itemDescricaoHorario.desconsiderada = apontamentoF.marcacoes[i].desconsiderada;
         // itemDescricaoHorario.reconvertida = apontamentoF.marcacoes[i].reconvertida;
-        itemDescricaoHorario.motivo = apontamentoF.motivo;
-        itemDescricaoHorario.gerada = apontamentoF.gerada;
+        itemDescricaoHorario.motivo = apontamentoF.marcacoes[i].motivo;
+        itemDescricaoHorario.gerada = apontamentoF.marcacoes[i].gerada;
         
         itemDescricaoHorario.rDescricao = strDescricao.replace(/ent|sai/gi, function(matched){return mapObj[matched]});
         
@@ -548,7 +612,7 @@
           $scope.employeesNames.push( { 
             indiceEq: i, 
             indiceComp: j, 
-            equipe: $scope.equipes[i].nome,
+            equipe: $scope.equipes[i],
             id: $scope.equipes[i].componentes[j]._id, 
             name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome
           });
@@ -668,25 +732,157 @@
 
   };
 
-  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, myhitpointAPI, solicitacaoAjuste){
+  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, appointmentAPI, util, solicitacaoAjuste, gestor, feriados, equipe, apontamento){
     
+    $scope.dataProcess = false;
     console.log('solicitacaoAjuste: ', solicitacaoAjuste);
-    $scope.solicitacaoAjuste = solicitacaoAjuste;
-    $scope.dataFtd = $filter('date')($scope.solicitacaoAjuste.rawData, 'abvFullDate');
+    $scope.solicitacao = solicitacaoAjuste;
+    $scope.dataFtd = $filter('date')(solicitacaoAjuste.rawData, 'abvFullDate');
+
+    console.log('equipe encontrada: ', equipe);
+    console.log('feriados: ', feriados);
+    console.log('gestor: ', gestor);
+    console.log('apontamento?: ', apontamento);
+
+    var isNewApontamento = false;
+    var apontamentoR = apontamento;
+
+    var resultArray = util.getInfoSolicitacaoAjuste(solicitacaoAjuste);
+    $scope.solicitacaoObtida = {
+      anterior: resultArray.arrayESAnterior,
+      proposto: resultArray.arrayESProposto
+    };
     
     $scope.confirma = function() {
       
-      myhitpointAPI.create(solicitacaoAjuste).then(function successCallback(response){
+      $scope.dataProcess = true;
+      //não tem apontamento, o 'true' foi só um artifício de visualização dos dados
+      if (apontamentoR === true){ 
+        
+        apontamentoR = criarNovoApontamento(solicitacaoAjuste);
+        saveApontamento(apontamentoR);
 
-        var retorno = response.data;
-        $uibModalInstance.close(retorno.success);
-        //SERIA INTERESSANTE MOSTRAR QUE JA TEM UMA SOLICITAÇÃO DE AJUSTE NO DIA ATUAL!!!!
-        //CASO TENHA, LOGICO
+      } else {
+        
+        console.log('tem apontamento, fazer as coisas...');
+        coletarHistorico(apontamentoR);
+        modificarApontamento(apontamentoR);
+        console.log('apontamento final:', apontamentoR);
+        updateApontamento(apontamentoR);
+      }
+
+    };
+
+    function criarNovoApontamento(solicitacao){
+
+      var data = util.getOnlyDate(new Date(solicitacao.data));
+      var infoTrabalho = util.getInfoTrabalho(solicitacao.funcionario, equipe, data, feriados);
+      infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(solicitacao.proposto.marcacoes);
+
+      if (!infoTrabalho){
+        $scope.errorMsg = "Código 1020: Não foi possível obter a informação de horário do funcionário.";
+        return $scope.errorMsg;
+      }
+
+      var apontamento = {
+        data: data,
+        funcionario: solicitacao.funcionario._id,
+        PIS: solicitacao.funcionario.PIS,
+        status: {
+          id: 3,
+          descricao: "Justificado"
+        },
+        justificativa: "",
+        infoTrabalho: infoTrabalho,
+        marcacoes: solicitacao.proposto.marcacoes,
+        marcacoesFtd: resultArray.arrayESProposto,
+        historico: []
+      };
+
+      console.log('apontamento a ser criado: ', apontamento);
+      return apontamento;      
+    };
+
+    function coletarHistorico(apontamento){
+
+      var historicoArray = apontamento.historico;
+      var itemId = 1;
+      if (historicoArray.length > 0){
+        
+        historicoArray.sort(compareHist);
+        itemId = historicoArray[historicoArray.length-1] + 1;
+
+      }
+      var nextItemHistorico = {
+        id: itemId,
+        infoTrabalho: angular.copy(apontamento.infoTrabalho),
+        marcacoes: angular.copy(solicitacaoAjuste.anterior.marcacoes),
+        marcacoesFtd: angular.copy(apontamento.marcacoesFtd),
+        justificativa: "Cadastrado pelo Gestor",
+        gerencial: {
+          dataAlteracao: new Date(),
+          gestor: {
+            nome: gestor.nome,
+            sobrenome: gestor.sobrenome,
+            email: gestor.email,
+            PIS: gestor.PIS
+          }
+        }
+      };
+
+      console.log('nextItemHistorico: ', nextItemHistorico);
+      historicoArray.push(nextItemHistorico);
+    };
+
+    function modificarApontamento(apontamento){
+
+      apontamento.status = {
+        id: 3,
+        descricao: "Justificado"
+      };
+
+      apontamento.marcacoesFtd = resultArray.arrayESProposto;
+      apontamento.marcacoes = solicitacaoAjuste.proposto.marcacoes;      
+      apontamento.infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(apontamento.marcacoes);
+    };    
+
+    function saveApontamento(apontamento){
+
+      appointmentAPI.create(apontamento).then(function sucessCallback(response){
+
+        console.log("dados recebidos: ", response.data);
+        if (response.data.success){
+          $scope.successMsg = "Registro salvo com sucesso!";
+          $scope.dataProcess = false;
+          $uibModalInstance.close(response.data.success);
+        }
 
       }, function errorCallback(response){
         
         $scope.errorMsg = response.data.message;
-        console.log("Erro ao criar solicitação de ajuste.");
+        console.log("Erro de registro: " + response.data.message);
+        $scope.dataProcess = false;
+        
+      });
+    };
+
+    function updateApontamento(apontamento){
+
+      appointmentAPI.update(apontamento._id, apontamento).then(function sucessCallback(response){
+
+        console.log("dados recebidos: ", response.data);
+        if (response.data.success){
+          $scope.successMsg = "Registro atualizado com sucesso!";
+          $scope.dataProcess = false;
+          $uibModalInstance.close(response.data.success);
+        }
+
+      }, function errorCallback(response){
+        
+        $scope.errorMsg = response.data.message;
+        console.log("Erro de update: " + response.data.message);
+        $scope.dataProcess = false;
+        
       });
     };
 

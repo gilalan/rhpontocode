@@ -99,10 +99,8 @@
 
     $scope.propor = function(ajuste){
       
-      console.log('clicou para propor ajuste: ', ajuste);
-
-      if ($scope.arrayES.length % 2 != 0){
-        console.log('numero impar de batidas, não pode!');
+      if (!util.isValidBatidasSchema($scope.arrayES)) {
+        
         $scope.invalidAppointMsg = null;
         $scope.invalidAppointMsg = "o total de batidas deve ser em quantidade par!";
         $timeout(hideAppointErrorMsg, 5000);
@@ -431,8 +429,8 @@
         itemDescricaoHorario.NSR = apontamentoF.marcacoes[i].NSR;
         itemDescricaoHorario.desconsiderada = apontamentoF.marcacoes[i].desconsiderada;
         // itemDescricaoHorario.reconvertida = apontamentoF.marcacoes[i].reconvertida;
-        itemDescricaoHorario.motivo = apontamentoF.motivo;
-        itemDescricaoHorario.gerada = apontamentoF.gerada;
+        itemDescricaoHorario.motivo = apontamentoF.marcacoes[i].motivo;
+        itemDescricaoHorario.gerada = apontamentoF.marcacoes[i].gerada;
         
         itemDescricaoHorario.rDescricao = strDescricao.replace(/ent|sai/gi, function(matched){return mapObj[matched]});
         

@@ -264,32 +264,14 @@
 
       apontamento.marcacoesFtd = resultArray.arrayESProposto;
       apontamento.marcacoes = solicitacao.proposto.marcacoes;      
-      apontamento.infoTrabalho.trabalhados = calcularHorasMarcacoesPropostas(apontamento.marcacoes);
-    };
-
-    function calcularHorasMarcacoesPropostas(marcacoesArray){
-
-      var minutosTrabalhados = 0;
-      var lengthMarcacoes = marcacoesArray.length;
-      var parcial1 = 0;
-      var parcial2 = 0;
-
-      if (lengthMarcacoes >= 2){
-        for (var i=0; i < lengthMarcacoes-1; i=i+2){
-          parcial1 = marcacoesArray[i+1].hora*60 + marcacoesArray[i+1].minuto;
-          parcial2 = marcacoesArray[i].hora*60 + marcacoesArray[i].minuto;
-          minutosTrabalhados += parcial1 - parcial2;
-        }  
-      }
-      
-      return minutosTrabalhados;
-    };
+      apontamento.infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(apontamento.marcacoes);
+    };    
 
     function criarNovoApontamento(solicitacao){
 
       var data = util.getOnlyDate(new Date(solicitacao.data));
       var infoTrabalho = util.getInfoTrabalho(solicitacao.funcionario, equipe, data, feriados);
-      infoTrabalho.trabalhados = calcularHorasMarcacoesPropostas(solicitacao.proposto.marcacoes);
+      infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(solicitacao.proposto.marcacoes);
 
       if (!infoTrabalho){
         $scope.errorMsg = "Código 1020: Não foi possível obter a informação de horário do funcionário.";

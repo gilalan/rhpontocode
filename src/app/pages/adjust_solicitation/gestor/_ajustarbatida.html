@@ -24,7 +24,7 @@
 
       <label style="color: #33aab7;">Funcionário:</label>
       <input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control" typeahead-on-select="changeFunc(funcionario.selected)" ng-blur="isEmptyFunc()">
-      <label style="color: #33aab7; margin-top: 5px;" ng-if="funcionario.selected">Equipe: <strong style="color: #000;">{{funcionario.selected.equipe}}</strong></label>
+      <label style="color: #33aab7; margin-top: 5px;" ng-if="funcionario.selected">Equipe: <strong style="color: #000;">{{funcionario.selected.equipe.nome}}</strong></label>
       <h4 class="sub-header" ng-if="funcionario.selected" style="margin-top: 5px; font-size: 16px;"><strong style="color: #334db7;">Horário:</strong></h4>
       <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
         <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
@@ -71,7 +71,7 @@
           </div>
         </div>
         <div class="col-xs-12" style="margin-top: 0px;">
-          <h4 class="sub-header" style="color: #5d9b4d; margin-bottom: 4px; font-size: 14px;">E como você propôs: </h4>
+          <h4 class="sub-header" style="color: #5d9b4d; margin-bottom: 4px; font-size: 14px;">E como foi proposto: </h4>
           <div class="btn-toolbar-example">
             <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Propostos" ng-if="solicitacaoObtida.proposto.length>0">
               <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObtProp in solicitacaoObtida.proposto track by $index">
@@ -88,6 +88,9 @@
           <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacaoObtida.motivo}} </label>
         </div>
       </div>
+      <div class="row" style="margin: 5px 15px 0px 15px;"> 
+        <button type="button" class="btn btn-info btn-with-icon" ng-click="aprovarSolicitacaoPendente()" style="background-color: #3b9c00;"><i class="ion-checkmark-round"></i>Aprovar Agora!</button>
+      </div>
     </div>    
 
     <div class="row" ng-if="!hasSolicitation" style="margin: 0px;">
@@ -95,7 +98,7 @@
         <div class="col-xs-12">
           <div class="form-group" style="float: right;">
             <ul class="btn-list clearfix">
-              <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="incluir()"><i class="ion-plus-round"></i>Incluir batimento</button></li>
+              <li><button type="button" class="btn btn-primary btn-with-icon" ng-disabled="!funcionario.selected" ng-click="incluir()"><i class="ion-plus-round"></i>Incluir batimento</button></li>
             </ul>
           </div>
         </div>
@@ -169,12 +172,13 @@
       <div class="row" ng-if="apontamento">
         <div class="col-xs-12">
           <div class="form-group" style="float: right;">
-            <button type="submit" class="btn btn-primary" ng-disabled="ajusteForm.$invalid" ng-click="propor(ajuste)">Solicitar</button>
+            <button type="submit" class="btn btn-primary" ng-disabled="ajusteForm.$invalid" ng-click="propor(ajuste)">Salvar Alterações!</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
   <div class="row" ng-if="noTeamMsg">
     <div class="col-xs-12" style="border: 1px solid #666; border-radius: 5px; background: #e13030; padding: 10px; color: #fff;">
       <div class="form-group" style="margin-bottom: 0px">

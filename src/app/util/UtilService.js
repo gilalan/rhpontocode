@@ -421,4 +421,51 @@ angular.module('BlurAdmin').service("util", function(){
       var diffDays = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
       return (diffDays % 2 == 0) ? true : false;
     };
+
+    /*
+    *
+    * Calcula a qtde de minutos trabalhados dentro de um array de batimentos.
+    * Ex.: [08:00, 12:00, 14:00, 18:00] -> return 8h * 60 = 480 min
+    *
+    */
+    svc.calcularHorasMarcacoesPropostas = function(marcacoesArray){
+
+      var minutosTrabalhados = 0;
+      var lengthMarcacoes = marcacoesArray.length;
+      var parcial1 = 0;
+      var parcial2 = 0;
+
+      if (lengthMarcacoes >= 2){
+        for (var i=0; i < lengthMarcacoes-1; i=i+2){
+          parcial1 = marcacoesArray[i+1].hora*60 + marcacoesArray[i+1].minuto;
+          parcial2 = marcacoesArray[i].hora*60 + marcacoesArray[i].minuto;
+          minutosTrabalhados += parcial1 - parcial2;
+        }  
+      }
+      
+      return minutosTrabalhados;
+    };
+
+    /*
+    *
+    * Verifica se a quantidade de batidas é válida (inclusive verificando as batidas desconsideradas)
+    * Uma quantidade válida de batidas deve estar em número PAR
+    * Para cada ENTRADA uma SAÍDA
+    *
+    */
+    svc.isValidBatidasSchema = function(arrayES){
+
+      var validCount = 0;
+      for (var i=0; i<arrayES.length; i++){
+        if (!arrayES[i].desconsiderada){
+          validCount++;
+        }
+      }
+      if (validCount % 2 == 0){
+        return true;
+      } else {
+        return false;
+      }
+    };
+
 });
