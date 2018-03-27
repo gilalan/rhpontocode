@@ -79,6 +79,7 @@
       $scope.currentDate = new Date(date);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
       //reset fields
+      arrayESOriginal = [];
       $scope.hasSolicitation = false;
       $scope.arrayES = [];
       $scope.apontamento = null;
@@ -616,11 +617,17 @@
 
   };
 
-  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, myhitpointAPI, solicitacaoAjuste){
+  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, util, myhitpointAPI, solicitacaoAjuste){
     
     console.log('solicitacaoAjuste: ', solicitacaoAjuste);
-    $scope.solicitacaoAjuste = solicitacaoAjuste;
-    $scope.dataFtd = $filter('date')($scope.solicitacaoAjuste.rawData, 'abvFullDate');
+    $scope.solicitacao = solicitacaoAjuste;
+    
+    var resultArray = util.getInfoSolicitacaoAjuste(solicitacaoAjuste);
+    $scope.solicitacaoObtida = {
+      anterior: resultArray.arrayESAnterior,
+      proposto: resultArray.arrayESProposto
+    };
+    // $scope.dataFtd = $filter('date')(solicitacaoAjuste.rawData, 'abvFullDate');
     
     $scope.confirma = function() {
       
@@ -628,8 +635,6 @@
 
         var retorno = response.data;
         $uibModalInstance.close(retorno.success);
-        //SERIA INTERESSANTE MOSTRAR QUE JA TEM UMA SOLICITAÇÃO DE AJUSTE NO DIA ATUAL!!!!
-        //CASO TENHA, LOGICO
 
       }, function errorCallback(response){
         

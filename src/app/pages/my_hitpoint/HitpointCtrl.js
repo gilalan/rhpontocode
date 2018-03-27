@@ -867,7 +867,7 @@
 
     function initSearch(){
       
-      var qtdeDiasAtras = -15;
+      var qtdeDiasAtras = -14;
       var dataCorrente = new Date();//CUIDADO COM TIMEZONE !!!
       var dataInicial = addOrSubtractDays(dataCorrente, qtdeDiasAtras);
       var dataAdmissao = new Date($scope.funcionario.alocacao.dataAdmissao);  
