@@ -21,8 +21,8 @@
              icon: 'ion-clock',
              order: 4,
           },
-          access: 'gestor',
-          accessLevel: 3,
+          access: 'fiscal',
+          accessLevel: 2,
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
               

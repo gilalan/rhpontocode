@@ -175,13 +175,14 @@
       openDesconsiderarModal($scope.currentDate, $scope.arrayES, index);
     };
 
-    $scope.aprovarSolicitacaoPendente(){
+    $scope.aprovarSolicitacaoPendente = function(){
 
-      alert('Em desenvolvimento! Por enquanto você pode aprovar essa solicitação no menu "Solicitações".');
+      alert('Em desenvolvimento! Por enquanto você pode aprovar essa solicitação no menu Solicitações.');
     };
 
-    $scope.reprovarSolicitacaoPendente(){
-      alert('Em desenvolvimento! Por enquanto você pode rejeitar essa solicitação no menu "Solicitações".');
+    $scope.reprovarSolicitacaoPendente = function(){
+      
+      alert('Em desenvolvimento! Por enquanto você pode rejeitar essa solicitação no menu Solicitações.');
     };
 
     function isValidSearch(){

@@ -1,3 +1,8 @@
+<div id="loaderDiv" loader>
+  <p class="ajax-loader title-loader"> Carregando... </p>
+  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+</div>
 <form name="funcionarioForm">
   <div class="row">
    <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
@@ -151,11 +156,26 @@
       </label>
     </div>
     <div class="col-sm-3">
-      <br/>
-      <label class="checkbox-inline custom-checkbox nowrap">
+      <!-- <label class="checkbox-inline custom-checkbox nowrap">
         <input type="checkbox" id="checkboxGestor" ng-model="funcionario.alocacao.gestor">
         <span>É um GESTOR?</span>
-      </label>
+      </label> -->
+      <div class="form-group">
+        <label for="inputAbrangencia" style="color: red;">Perfil*</label>
+         <ui-select ng-model="selectedPerfil.item"
+               class="btn-group bootstrap-select form-control"
+               ng-disabled="false"
+               append-to-body="true"
+               search-enabled="false"
+               ng-required="true">
+          <ui-select-match placeholder="Selecione o Perfil do funcionário">
+            <span> {{$select.selected.nome}}</span>
+          </ui-select-match>
+          <ui-select-choices repeat="perfil in perfis | filter: $select.search">
+            <span ng-bind-html="perfil.nome"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
     </div>
     <div class="col-sm-3">
       <div class="form-group">

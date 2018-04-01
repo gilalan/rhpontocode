@@ -11,9 +11,9 @@
   /** @ngInject */
   function EditEmployeeCtrl($scope, $filter, $state, $window, funcionario, employeeAPI, cargos, turnos, instituicoes, util) {
 
-    console.log("dentro do EditEmployeeCtrl! Lista de cargos: ", cargos);
-    console.log("dentro do EditEmployeeCtrl! Lista de turnos: ", turnos);
-    console.log("dentro do EditEmployeeCtrl! Lista de instituicoes: ", instituicoes);
+    // console.log("dentro do EditEmployeeCtrl! Lista de cargos: ", cargos);
+    // console.log("dentro do EditEmployeeCtrl! Lista de turnos: ", turnos);
+    // console.log("dentro do EditEmployeeCtrl! Lista de instituicoes: ", instituicoes);
 
     //dados
     $scope.title = 'Editar';
@@ -24,6 +24,7 @@
     $scope.cargos = cargos.data;
     $scope.turnos = turnos.data;
     $scope.instituicoes = instituicoes.data;
+    $scope.perfis = [{id: 1, nome: 'Colaborador'}, {id: 2, nome: 'Fiscal'}, {id: 3, nome: 'Gestor'}];
 
     $scope.isInitDateRequired = false;
     $window.scrollTo(0, 0);
@@ -45,6 +46,11 @@
       return $scope.funcionario.alocacao.instituicao._id == inst._id;
     }
 
+    function checkPerfil(perfil) {
+
+      return ($scope.funcionario.alocacao) == perfil.nome;
+    }
+
     function initSelects(){
       
       if ($scope.cargos.length > 0){
@@ -60,6 +66,16 @@
     	if ($scope.instituicoes.length > 0){
 
         $scope.selectedInst = { item: $scope.instituicoes[$scope.instituicoes.findIndex(checkInst)] };
+      }
+
+      if ($scope.funcionario.alocacao){
+
+        if ($scope.funcionario.alocacao.fiscal)
+          $scope.selectedPerfil = { item: $scope.perfis[1] };  
+        else if ($scope.funcionario.alocacao.gestor)
+          $scope.selectedPerfil = { item: $scope.perfis[2] };
+        else
+          $scope.selectedPerfil = { item: $scope.perfis[0] };
       }
     };
 
@@ -174,6 +190,8 @@
       
       console.log("_email anterior: ", _email);
       console.log("funcionario.email: ", funcionario.email);
+      funcionario.alocacao.fiscal = false;
+      funcionario.alocacao.gestor = false; //reset and couple after
 
       if (_email != funcionario.email){
                 
@@ -191,8 +209,11 @@
       if (!funcionario.rhponto)
         funcionario.rhponto = false;
 
-      if (!funcionario.alocacao.gestor)
-        funcionario.alocacao.gestor = false;
+      if ($scope.selectedPerfil.item.id == 2)
+        funcionario.alocacao.fiscal = true;
+
+      if ($scope.selectedPerfil.item.id == 3)
+        funcionario.alocacao.gestor = true;
 
       if (funcionario.localTrabalho) {
         funcionario.localTrabalho = funcionario.localTrabalho.toUpperCase();

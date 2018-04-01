@@ -11,14 +11,14 @@
   /** @ngInject */
   function ForgotPwdCtrl($scope, $filter, $location, usersAPI, Auth) {
 
-    console.log("dentro do ForgotPwdCtrl");
+    // console.log("dentro do ForgotPwdCtrl");
     $scope.teste = 10;
-    console.log("auth ", Auth);
-    console.log("auth.getToken: ", Auth.getToken());
+    // console.log("auth ", Auth);
+    // console.log("auth.getToken: ", Auth.getToken());
 
     $scope.recovery = function(userForm) {
 
-      console.log("user passado: ", userForm);
+      // console.log("user passado: ", userForm);
       var userD = {
         email: userForm.email,
         cpf: userForm.cpf,
@@ -28,7 +28,7 @@
 
       usersAPI.recoveryPwd(userD).then(function successCallback(response){
 
-        console.log('Funcionário recuperado com sucesso: ', response.data);
+        // console.log('Funcionário recuperado com sucesso: ', response.data);
         $scope.$emit('login', response.data.token, response.data.firstAccess, false);
         //Auth.setToken(response.data.token);
         //$scope.$emit('recovery', false);
@@ -36,7 +36,7 @@
 
       }, function errorCallback(response){
 
-        console.log('erro de recuperação de senha: ', response.data.message);
+        // console.log('erro de recuperação de senha: ', response.data.message);
         $scope.errorMsg = response.data.message;
       });
 

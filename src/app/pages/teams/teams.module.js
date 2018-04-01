@@ -49,6 +49,9 @@
           },
           gestores: function(employeeAPI){
             return employeeAPI.getGestores();
+          },
+          fiscais: function(employeeAPI){
+            return employeeAPI.getFiscais();
           }
         },
         accessLevel: 3
@@ -67,6 +70,9 @@
           },
           gestores: function(employeeAPI){
             return employeeAPI.getGestores();
+          },
+          fiscais: function(employeeAPI){
+            return employeeAPI.getFiscais();
           }
         },
         accessLevel: 3

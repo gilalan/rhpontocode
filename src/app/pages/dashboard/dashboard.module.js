@@ -20,7 +20,7 @@
           order: 5,
         },
         access: 'gestor',
-        accessLevel: 3,
+        accessLevel: 2,
         controller: 'DashboardCtrl',
         resolve: {
           setores: function(sectorAPI){

@@ -11,10 +11,10 @@
   /** @ngInject */
   function MainCtrl($scope, $filter, $location, Auth) {
 
-    console.log("dentro do MainCtrl");
+    // console.log("dentro do MainCtrl");
     $scope.teste = 10;
-    console.log("auth ", Auth);
-    console.log("auth.getToken: ", Auth.getToken());
+    // console.log("auth ", Auth);
+    // console.log("auth.getToken: ", Auth.getToken());
   }
 
 })();

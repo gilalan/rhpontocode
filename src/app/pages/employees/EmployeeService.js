@@ -54,6 +54,11 @@ angular.module('BlurAdmin.pages.employees').service("employeeAPI", function($htt
 		return $http.get(_urlBaseGestores);
 	};
 
+	svc.getFiscais = function() {
+		
+		return $http.post(_urlBaseGestores+'/fiscais');
+	};
+
 	svc.getEquipe = function(idFuncionario) {
 
 		return $http.post(_urlBaseFuncionarios+'/'+idFuncionario+'/equipe', {});

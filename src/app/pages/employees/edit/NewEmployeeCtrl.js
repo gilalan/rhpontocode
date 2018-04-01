@@ -11,16 +11,19 @@
   /** @ngInject */
   function NewEmployeeCtrl($scope, $filter, $state, $window, employeeAPI, cargos, turnos, instituicoes) {
 
-    console.log("dentro do NewEmployeeCtrl! Lista de cargos: ", cargos);
-    console.log("dentro do NewEmployeeCtrl! Lista de turnos: ", turnos);
-    console.log("dentro do NewEmployeeCtrl! Lista de instituicoes: ", instituicoes);
+    // console.log("dentro do NewEmployeeCtrl! Lista de cargos: ", cargos);
+    // console.log("dentro do NewEmployeeCtrl! Lista de turnos: ", turnos);
+    // console.log("dentro do NewEmployeeCtrl! Lista de instituicoes: ", instituicoes);
 
     //dados
     $scope.title = 'Novo';
     $scope.cargos = cargos.data;
     $scope.turnos = turnos.data;
     $scope.instituicoes = instituicoes.data;
+    $scope.perfis = [{id: 1, nome: 'Colaborador'}, {id: 2, nome: 'Fiscal'}, {id: 3, nome: 'Gestor'}];
     
+    $scope.selectedPerfil = { item: $scope.perfis[0] };
+
     if ($scope.cargos.length > 0)
       $scope.selectedCargo = { item: $scope.cargos[0] };
 
@@ -43,6 +46,8 @@
       funcionario.alocacao.cargo = $scope.selectedCargo.item;
       funcionario.alocacao.turno = $scope.selectedTurno.item;
       funcionario.alocacao.instituicao = $scope.selectedInst.item;
+      funcionario.alocacao.fiscal = false;
+      funcionario.alocacao.gestor = false;
       
       if (!funcionario.sexoMasculino)
         funcionario.sexoMasculino = false;
@@ -50,8 +55,11 @@
       if (!funcionario.rhponto)
         funcionario.rhponto = false;
 
-      if (!funcionario.alocacao.gestor)
-        funcionario.alocacao.gestor = false;
+      if ($scope.selectedPerfil.item.id == 2)
+        funcionario.alocacao.fiscal = true;
+
+      if ($scope.selectedPerfil.item.id == 3)
+        funcionario.alocacao.gestor = true;        
 
       var funcLength = funcionario.PIS.length;
       if (funcLength < 12){

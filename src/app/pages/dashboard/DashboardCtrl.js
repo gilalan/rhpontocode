@@ -187,6 +187,7 @@
       teamAPI.getEquipesByGestor($scope.gestor).then(function successCallback(response){
 
         $scope.equipes = response.data;
+        console.log('testando equipes para fiscal: ', response.data);
         if($scope.equipes){
           if($scope.equipes.length > 0){
             
@@ -1275,7 +1276,7 @@
 
       //updateBarGraph();
       if ($scope.gestor) {
-        if ($scope.gestor.alocacao.gestor) {//se realmente for um gestor
+        if ($scope.gestor.alocacao.gestor || $scope.gestor.alocacao.fiscal) {//se realmente for um gestor ou FISCAL agora
           $scope.liberado = true;
           //carregar equipes do gestor
           getEquipesByGestor();

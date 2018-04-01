@@ -9,7 +9,7 @@
       .controller('ReportsCtrl', ReportsCtrl);
 
   /** @ngInject */
-  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, Auth, usuario, feriados, allEmployees) {
+  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, Auth, util, utilReports, usuario, feriados, allEmployees) {
 
     var Usuario = usuario.data;
     var feriados = feriados.data;
@@ -66,7 +66,10 @@
 
       } else {
 
-        funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);        
+        funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);
+        $scope.infoHorario = [];
+        $scope.infoHorario = util.getInfoHorario(funcSel, []);
+        console.log('infoHorario: ', $scope.infoHorario);
 
         var dataInicial = new Date(ano.value, mes._id, 1);
         //Esse é um workaround pra funcionar a obtenção da quantidade de dias em Javascript
@@ -94,30 +97,23 @@
 
     $scope.gerarPDF = function() {
 
-      var arrayInicio = [
-        'ESPELHO DE FREQUENCIA',
-        'SOLL - Serviços, Obras e Locações LTDA',
-        'Avenida Professor Andrade Bezerra, 1523',
-        'Salgadinho - OLINDA - PE - CEP 53110-110',
-        'Mês/Ano: ' + mes.nome + ' / ' + ano.value, 
-        //'DATA: ' + $scope.batidaInfo.date + ',    HORA: ' + $scope.batidaInfo.hora+':'+$scope.batidaInfo.minuto,
-        ' ', 
-        'Nome do Funcionário: ' + $scope.funcionario.selected.name,
-        ' ',
-        'DIAS                      INÍCIO/TÉRMINO'
-        // '01      07:00   |  18:00',
-        // '02      07:10   |  17:58'
-      ];
+      console.log('Funcionário selecionado: ', $scope.funcionario.selected);
       
-      var diasRelatorio = gerarDiasRelatorio();
+      var periodoStr = mes.nome + ' / ' + ano.value;
+      var diasRelatorio = gerarDiasRelatorioPonto();
 
-      var arrayContent = arrayInicio.concat(diasRelatorio);//testar
-
-      // download the PDF
-      var docDefinition = {
-        content: arrayContent
+      var docDefinition = utilReports.gerarEspelhoPonto($scope.funcionario.selected, 
+        $scope.infoHorario, periodoStr, diasRelatorio);
+      
+      docDefinition.footer = function(currentPage, pageCount) { 
+          return { 
+            text: currentPage.toString() + ' de ' + pageCount, 
+            alignment: 'right', 
+            margin: [20, 0] 
+          }; 
       };
 
+      // download the PDF
       pdfMake.createPdf(docDefinition).download('espelho_ponto.pdf');
 
     }
@@ -130,6 +126,33 @@
           arrayRelatorio.push($scope.periodoApontamento[i].data + '              ' + $scope.periodoApontamento[i].entradasSaidasTodas);
         else 
           arrayRelatorio.push($scope.periodoApontamento[i].data + '              ' + $scope.periodoApontamento[i].observacao);
+      }
+
+      return arrayRelatorio;
+    };
+
+    function gerarDiasRelatorioPonto(){
+      console.log('periodoApontamento: ', $scope.periodoApontamento);
+      var arrayRelatorio = [];
+      for (var i=0; i<$scope.periodoApontamento.length; i++){
+        if ($scope.periodoApontamento[i].entradasSaidasTodas)
+          arrayRelatorio.push(
+            {
+              hasPoint: true,
+              date: $scope.periodoApontamento[i].dataReport,
+              marcacoesStr: $scope.periodoApontamento[i].entradasSaidasTodas,
+              observacao: $scope.periodoApontamento[i].observacao,
+              saldo: $scope.periodoApontamento[i].saldo
+            }
+          );
+        else 
+          arrayRelatorio.push(
+            {
+              hasPoint: false,
+              date: $scope.periodoApontamento[i].dataReport,
+              observacao: $scope.periodoApontamento[i].observacao
+            }
+          );
       }
 
       return arrayRelatorio;
@@ -204,10 +227,18 @@
     function getAllEmployees() {
       
       var empsArray = allEmployees.data;
+      console.log('EmpsArray: ', empsArray);
 
       for (var j=0; j<empsArray.length; j++) {
           $scope.employees.push(empsArray[j]);
-          $scope.employeesNames.push( { id: empsArray[j]._id, name: empsArray[j].nome + ' ' + empsArray[j].sobrenome});
+          $scope.employeesNames.push( { 
+            id: empsArray[j]._id, 
+            name: empsArray[j].nome + ' ' + empsArray[j].sobrenome,
+            matricula: empsArray[j].matricula,
+            PIS: empsArray[j].PIS,
+            cargo: empsArray[j].sexoMasculino ? empsArray[j].alocacao.cargo.especificacao : empsArray[j].alocacao.cargo.nomeFeminino,
+            equipe: 'equipeVar'
+          });
         }
       $scope.equipesLiberadas = true;
     };
@@ -248,11 +279,18 @@
     };
 
     function fillEmployees(){
-
+      console.log('gsetor, equipes comonentes: ', $scope.equipes);
       for (var i=0; i<$scope.equipes.length; i++){
         for (var j=0; j<$scope.equipes[i].componentes.length; j++) {
           $scope.employees.push($scope.equipes[i].componentes[j]);
-          $scope.employeesNames.push( { id: $scope.equipes[i].componentes[j]._id, name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome});
+          $scope.employeesNames.push( { 
+            id: $scope.equipes[i].componentes[j]._id, 
+            name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome,
+            matricula: $scope.equipes[i].componentes[j].matricula,
+            PIS: $scope.equipes[i].componentes[j].PIS,
+            cargo: $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino,
+            equipe: $scope.equipes[i].nome
+          });
         }
       }
 
@@ -366,6 +404,7 @@
         itemApontamento.order = i;
         itemApontamento.rawDate = new Date(current);
         itemApontamento.data = $filter('date')(new Date(current), 'abvFullDate2');
+        itemApontamento.dataReport = $filter('date')(new Date(current), 'dd/EEE');
 
         if (apontamentoF){
           
