@@ -8,15 +8,15 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 	var svc = this;
 	var diff = 0;
 
-	svc.gerarEspelhoPonto = function(employeeInfo, employeeWorkJourney, periodo, appointsArray){
+	svc.gerarEspelhoPonto = function(employeeInfo, employeeWorkJourney, periodo, appointsArray, totaisFtd){
 
 		var contentArray = [];
 		contentArray.push(getCompanyInfo());
 		contentArray.push(createEmployeeInfo(employeeInfo));
 		contentArray.push(createWorkJourney(employeeWorkJourney, periodo));
 		contentArray.push(createAppointHeader());
-		contentArray.push(createAppointBody(appointsArray));
-		contentArray.push(getSaldoMes());
+		contentArray.push(createAppointBody(appointsArray, totaisFtd));
+		contentArray.push(getSaldoMes(totaisFtd));
 		contentArray.push(createSignature());
 
 		var docDefinition = {
@@ -203,14 +203,13 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 	    return appHeader;
 	};
 
-	function createAppointBody(appointsArray){
+	function createAppointBody(appointsArray, totaisFtd){
 
 		var rowsArrayBody = [];
 		var arrayEntSaidas = [];
 		var staticArrayEntSaidas = ['-', '-', '-','-', '-', '-','-', '-', '-', '-'];
 		var maxIndexArray = 0;
-		var saldoPTotal = 0;
-		var saldoNTotal = 0;
+		
 		for (var i=0; i<appointsArray.length; i++){
 
 			arrayEntSaidas = [];
@@ -234,17 +233,16 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 			
 			var saldoP = '00:00';
 			var saldoN = '00:00';
-			
+			console.log('order: ', i);
+			console.log('appointsArray: ', appointsArray[i]);
 			if (appointsArray[i].saldo){
 
 				if (appointsArray[i].saldo.horasPosit){
 					saldoP = appointsArray[i].saldo.horasFtd;
-					saldoPTotal += appointsArray[i].saldo.saldoDiario;
 				}
 
 				if (appointsArray[i].saldo.horasNegat){
 					saldoN = appointsArray[i].saldo.horasFtd;
-					saldoNTotal += appointsArray[i].saldo.saldoDiario;
 				}
 			}
 
@@ -267,12 +265,6 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 
 		}
 
-		//totais:
-		var sfPos = converteParaHoraMinutoSeparados(saldoPTotal);
-	    var sfNeg = converteParaHoraMinutoSeparados(Math.abs(saldoNTotal));
-        diff = saldoPTotal + saldoNTotal;
-	    console.log('horas totais de saldo diff: ', diff);
-
 		rowsArrayBody.push([
 			{text: '', border: [true, false, false, true]},
 			{text: '', border: [false, false, false, true], alignment: 'center'},
@@ -286,8 +278,8 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 			{text: '', border: [false, false, false, true], alignment: 'center'},
 			{text: '', border: [false, false, false, true], alignment: 'center'},
 			{text: 'Totais:', bold: true, alignment: 'right', border: [false, false, true, true]},
-			{text: sfPos.hora + ':' + sfPos.minuto, alignment: 'center', border: [true, false, true, true]},
-			{text: '-'+sfNeg.hora + ':' + sfNeg.minuto, alignment: 'center', border: [true, false, true, true]}
+			{text: totaisFtd.saldoPositivo, alignment: 'center', border: [true, false, true, true]},
+			{text: totaisFtd.saldoNegativo, alignment: 'center', border: [true, false, true, true]}
 		]);
 
 		console.log('rowsArrayBody: ', rowsArrayBody);
@@ -307,14 +299,7 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 	    return appBody;	    
 	};
 
-	function getSaldoMes(){
-
-		var sinalFlag = '';
-		
-		if(diff < 0)
-			sinalFlag = '-'
-
-		var sfTot = converteParaHoraMinutoSeparados(Math.abs(diff));
+	function getSaldoMes(totaisFtd){
 
 		var rowSaldo = {
 	        table: {
@@ -323,7 +308,7 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
                 body: [
                   [
                     {
-                     text: 'Saldo do Mês: ' + sinalFlag + sfTot.hora + ':' + sfTot.minuto, 
+                     text: 'Horas a Trabalhar: ' + totaisFtd.aTrabalhar + ' | Horas Trabalhadas: ' + totaisFtd.trabalhados + ' | Saldo do Mês: ' + totaisFtd.saldoFinal, 
                      bold: true, 
                      alignment: 'right', 
                      border: [true, false, true, true]

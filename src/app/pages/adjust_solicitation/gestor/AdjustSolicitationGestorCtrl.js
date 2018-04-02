@@ -770,12 +770,13 @@
       if (apontamentoR === true){ 
         
         apontamentoR = criarNovoApontamento(solicitacaoAjuste);
+        coletarHistorico(apontamentoR, true);
         saveApontamento(apontamentoR);
 
       } else {
         
         //console.log('tem apontamento, fazer as coisas...');
-        coletarHistorico(apontamentoR);
+        coletarHistorico(apontamentoR, false);
         modificarApontamento(apontamentoR);
         //console.log('apontamento final:', apontamentoR);
         updateApontamento(apontamentoR);
@@ -813,7 +814,7 @@
       return apontamento;      
     };
 
-    function coletarHistorico(apontamento){
+    function coletarHistorico(apontamento, isFirst){
 
       var historicoArray = apontamento.historico;
       var itemId = 1;
@@ -826,9 +827,9 @@
       var nextItemHistorico = {
         id: itemId,
         infoTrabalho: angular.copy(apontamento.infoTrabalho),
-        marcacoes: angular.copy(solicitacaoAjuste.anterior.marcacoes),
-        marcacoesFtd: angular.copy(apontamento.marcacoesFtd),
-        justificativa: "Cadastrado pelo Gestor",
+        marcacoes: isFirst ? [] : angular.copy(solicitacaoAjuste.anterior.marcacoes),
+        marcacoesFtd: isFirst ? [] : angular.copy(apontamento.marcacoesFtd),
+        justificativa: "Justificado pelo Gestor",
         gerencial: {
           dataAlteracao: new Date(),
           gestor: {

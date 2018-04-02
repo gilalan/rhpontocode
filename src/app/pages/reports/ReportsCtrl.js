@@ -101,9 +101,16 @@
       
       var periodoStr = mes.nome + ' / ' + ano.value;
       var diasRelatorio = gerarDiasRelatorioPonto();
+      var totais = {
+        aTrabalhar: $scope.minutosParaTrabalharFtd,
+        trabalhados: $scope.minutosTrabalhadosFtd,
+        saldoPositivo: $scope.saldoFinalPositivoFtd,
+        saldoNegativo: $scope.saldoFinalNegativoFtd,
+        saldoFinal: $scope.saldoFinalMesFtd
+      };
 
       var docDefinition = utilReports.gerarEspelhoPonto($scope.funcionario.selected, 
-        $scope.infoHorario, periodoStr, diasRelatorio);
+        $scope.infoHorario, periodoStr, diasRelatorio, totais);
       
       docDefinition.footer = function(currentPage, pageCount) { 
           return { 
@@ -135,7 +142,7 @@
       console.log('periodoApontamento: ', $scope.periodoApontamento);
       var arrayRelatorio = [];
       for (var i=0; i<$scope.periodoApontamento.length; i++){
-        if ($scope.periodoApontamento[i].entradasSaidasTodas)
+        if ($scope.periodoApontamento[i].entradasSaidasTodas){
           arrayRelatorio.push(
             {
               hasPoint: true,
@@ -145,14 +152,17 @@
               saldo: $scope.periodoApontamento[i].saldo
             }
           );
-        else 
+        }
+        else {
           arrayRelatorio.push(
             {
               hasPoint: false,
               date: $scope.periodoApontamento[i].dataReport,
-              observacao: $scope.periodoApontamento[i].observacao
+              observacao: $scope.periodoApontamento[i].observacao,
+              saldo: $scope.periodoApontamento[i].saldo
             }
-          );
+          );          
+        }
       }
 
       return arrayRelatorio;
@@ -392,27 +402,28 @@
       var saldoFinalPositivo = 0;
       var saldoFinalNegativo = 0;
       $scope.diasTrabalho = apontamentosSemanais.length;
+      $scope.diasParaTrabalhar = 0;
+      var minTrabalhados = 0;
+      var minParaTrabalhar = 0;
       
-      while (current <= endDate) {
+      while (current <= endDate) {//navegar no período solicitado
 
         itemApontamento = {};
         objEntradasSaidas = {};
-        ////console.log('itemApontamento antes: ', itemApontamento);
         apontamentoF = getApontamentoFromSpecificDate(apontamentosSemanais, current);
-        ////console.log('currentDate: ', current);
-        ////console.log('apontamento? ', apontamentoF);
+        // console.log('apontamentoF: ', apontamentoF);
         itemApontamento.order = i;
         itemApontamento.rawDate = new Date(current);
         itemApontamento.data = $filter('date')(new Date(current), 'abvFullDate2');
         itemApontamento.dataReport = $filter('date')(new Date(current), 'dd/EEE');
 
-        if (apontamentoF){
+        if (apontamentoF){ //se tiver apontamento já tem os dados de horas trabalhadas
           
           objEntradasSaidas = getEntradasSaidas(apontamentoF);
           itemApontamento.entradaSaidaFinal = objEntradasSaidas.esFinal;
           itemApontamento.entradasSaidasTodas = objEntradasSaidas.esTodas;
           itemApontamento.arrayEntSai = objEntradasSaidas.arrayEntSai;
-          //itemApontamento.ocorrencia = getOcorrenciaStatus(apontamentoF, current);
+          //na função getSaldoPresente temos as horas a trabalhar e trabalhadas
           itemApontamento.saldo = getSaldoPresente(apontamentoF);
           if (itemApontamento.saldo.saldoDiario > 0) {
             saldoFinalPositivo += itemApontamento.saldo.saldoDiario;
@@ -420,7 +431,18 @@
             saldoFinalNegativo -= itemApontamento.saldo.saldoDiario;
           }
 
-        } else {
+          //if (apontamentoF.infoTrabalho.trabalha){ //se era um dia de trabalho de fato, incrementa a variável
+            //talvez devessemos fazer um tratamento diferenciado para quando não for o dia de trabalho
+            //tem que ver se precisaria contar mais horas (horas extras e tals)
+            $scope.diasParaTrabalhar++;
+            minTrabalhados += apontamentoF.infoTrabalho.trabalhados;
+            minParaTrabalhar += apontamentoF.infoTrabalho.aTrabalhar;
+          //}
+
+          if (apontamentoF.status.id > 0) //Se for Incompleto, Erro ou Justificado...
+            itemApontamento.observacao = apontamentoF.status.descricao;
+
+        } else { //se não tiver apontamento tem que verificar qual o motivo (falta, feriado, folga, férias?)
 
           //console.log('Não vai ter batidas em ', current);
           itemApontamento.entradaSaidaFinal = "-";
@@ -429,6 +451,21 @@
           itemApontamento.saldo = {};
           //itemApontamento.observacao = "Sem Batidas";
           setInfoAusencia(itemApontamento, current); //injeta as informações de ausencia no apontamento
+          var teste = itemApontamento.saldo.horasFtd;
+          console.log('itemApontamento sem apontamento: ', teste);
+
+          if (itemApontamento.ocorrencia.statusCodeString == "AUS"){ //Ausente quando deveria ter trabalhado
+            $scope.diasParaTrabalhar++;
+            saldoFinalNegativo -= -itemApontamento.ocorrencia.minutosDevidos;
+            minParaTrabalhar += itemApontamento.ocorrencia.minutosDevidos;
+            //colocar o saldo negativo faltante do dia para exibição no Relatório de Espelho de Ponto
+            var devido = converteParaHoraMinutoSeparados(itemApontamento.ocorrencia.minutosDevidos);
+            itemApontamento.saldo = {
+              horasNegat: true,
+              horasFtd: '-' + devido.hora + ':' + devido.minuto
+            };
+            console.log('########quando falta: ', itemApontamento);
+          }
         }
 
         ////console.log('itemApontamento depois: ', itemApontamento);
@@ -437,17 +474,21 @@
         i++;
       }
 
+      var minTrabalhadosTot = converteParaHoraMinutoSeparados(minTrabalhados);
+      var minParaTrabalharTot = converteParaHoraMinutoSeparados(minParaTrabalhar);
+      $scope.minutosTrabalhadosFtd = minTrabalhadosTot.hora + ':' + minTrabalhadosTot.minuto;
+      $scope.minutosParaTrabalharFtd = minParaTrabalharTot.hora + ':' + minParaTrabalharTot.minuto;
       var sfPos = converteParaHoraMinutoSeparados(saldoFinalPositivo);
       var sfNeg = converteParaHoraMinutoSeparados(saldoFinalNegativo);
       var diff = saldoFinalPositivo - saldoFinalNegativo;
       var sfTot = converteParaHoraMinutoSeparados(Math.abs(diff));
-      $scope.saldoFinalPositivoFtd = 'Saldo Positivo: ' + sfPos.hora + ':' + sfPos.minuto;
-      $scope.saldoFinalNegativoFtd = 'Saldo Negativo: ' + sfNeg.hora + ':' + sfNeg.minuto;
+      $scope.saldoFinalPositivoFtd = sfPos.hora + ':' + sfPos.minuto;
+      $scope.saldoFinalNegativoFtd = sfNeg.hora + ':' + sfNeg.minuto;
       
       if (diff < 0)
-        $scope.saldoFinalMesFtd = 'Saldo Final do Mês: -' + sfTot.hora + ':' + sfTot.minuto;
+        $scope.saldoFinalMesFtd = '-' + sfTot.hora + ':' + sfTot.minuto;
       else
-        $scope.saldoFinalMesFtd = 'Saldo Final do Mês: ' + sfTot.hora + ':' + sfTot.minuto;
+        $scope.saldoFinalMesFtd = sfTot.hora + ':' + sfTot.minuto;
 
       //////console.log('rangeDate calculado:', retVal);
       // retVal.sort(function(a, b){//ordena o array de datas criadas
@@ -640,6 +681,7 @@
       var saldoDiarioFormatado = converteParaHoraMinutoSeparados(Math.abs(saldoDia));
 
       var objBHDiario = {
+        trabalha: apontamento.infoTrabalho.trabalha,
         saldoDiario: saldoDia,
         horasFtd: sinalFlag + saldoDiarioFormatado.hora + ':' + saldoDiarioFormatado.minuto,
         horasPosit: saldoFlag,
@@ -659,6 +701,7 @@
       //console.log('Funcionário Alocação: ', funcSel.alocacao);
       var expedienteObj = updateAbsenceStatus(funcSel.alocacao, currentDate);
       apontamento.ocorrencia.statusCodeString = expedienteObj.code;
+      apontamento.ocorrencia.minutosDevidos = expedienteObj.minutosDia;
       apontamento.ocorrencia.statusString = expedienteObj.string;
       apontamento.ocorrencia.statusImgUrl = expedienteObj.imgUrl;
       //////console.log('expedienteObj returned: ', expedienteObj);
@@ -668,6 +711,8 @@
         sinalFlag = '';
         saldoDiarioFormatado = converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
         apontamento.observacao = expedienteObj.string;
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = !saldoFlag;
 
       } else if (expedienteObj.code == "ENI") {
 
@@ -675,6 +720,8 @@
         sinalFlag = '';
         saldoDiarioFormatado = {hora: '-', minuto: '-'};
         apontamento.observacao = expedienteObj.string;
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = saldoFlag;
 
       } else if (expedienteObj.code == "DSR") {
 
@@ -682,18 +729,23 @@
         sinalFlag = '';
         saldoDiarioFormatado = {hora: '-', minuto: '-'};
         apontamento.observacao = expedienteObj.string;
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = saldoFlag;
 
       } else if (expedienteObj.code == "AUS") {
         
         saldoDiarioFormatado = converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
         apontamento.observacao = "Falta";
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = !saldoFlag;
       }
 
-      apontamento.saldo = {
-        horasFtd: sinalFlag + saldoDiarioFormatado.hora + ':' + saldoDiarioFormatado.minuto,
-        horasPosit: saldoFlag,
-        horasNegat: !saldoFlag
-      };
+      apontamento.saldo.horasFtd = sinalFlag + saldoDiarioFormatado.hora + ':' + saldoDiarioFormatado.minuto;
+      // apontamento.saldo = {
+      //   horasFtd: sinalFlag + saldoDiarioFormatado.hora + ':' + saldoDiarioFormatado.minuto,
+      //   horasPosit: saldoFlag,
+      //   horasNegat: !saldoFlag
+      // };
     };
 
     /*
@@ -847,13 +899,13 @@
 
           } else {
             //////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
-            return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
+            return {code: "AUS", minutosDia: objDay.minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
           }
 
         } else if (codDate === -1) {//Navegando em dia passado 
 
           //////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
-          return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
+          return {code: "AUS", minutosDia: objDay.minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
 
         } else { //Navegando em dias futuros
 
@@ -870,6 +922,7 @@
     function checkJornadaRevezamento(funcionarioAlocacao, dataDesejada) {
 
       var jornadaArray = funcionarioAlocacao.turno.jornada.array;
+      var minutosTrabalho = funcionarioAlocacao.turno.jornada.minutosTrabalho;
       var dataComparacao = dataDesejada;
       var dataHoje = new Date();
 
@@ -896,12 +949,12 @@
 
           } else {
             //////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
-            return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
+            return {code: "AUS", minutosDia: minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
           }
         } else if (codDate === -1) {//Navegando em dia passado 
 
           //////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
-          return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
+          return {code: "AUS", minutosDia: minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
         } else { //Navegando em dias futuros
 
           //////////console.log("Navegando em dias futuros, expediente não iniciado!");

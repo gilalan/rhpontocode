@@ -41,7 +41,11 @@
           <td style="line-height: 19px !important; text-align: center; padding-left: 5px; overflow: hidden; width: 28%;">              
             {{item.justificativa ? item.justificativa : "--"}}
           </td>
-          <td style="line-height: 19px !important; text-align: center; overflow: hidden; width: 40%;">             
+          <td style="line-height: 19px !important; text-align: center; overflow: hidden; width: 40%;">  
+
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos" ng-if="item.marcacoesFtd.length<=0">
+              <label style="margin-left: 5px; font-size: 12px;"> Sem batidas </label>
+            </div>                       
             <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="marcacao in item.marcacoesFtd track by $index">
               <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 19px; float: left;">
                 {{marcacao}}

@@ -149,10 +149,11 @@
 
     	<div class="col-md-offset-3 col-md-6 col-md-offset-3"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
 	    	<h4 class="sub-header"><strong style="color: #334db7;">RESUMO GERAL</strong></h4>
-		    <h5 class="sub-header" style="color: #253b80;">{{diasTrabalho}} dias de trabalho</h5>
-		    <h5 class="sub-header" style="color: #008641;">{{saldoFinalPositivoFtd}}</h5>
-		    <h5 class="sub-header" style="color: #c3000d;">{{saldoFinalNegativoFtd}}</h5>
-		    <h5 class="sub-header" style="color: #464646;">{{saldoFinalMesFtd}}</h5>
+		    <h5 class="sub-header" style="color: #7c267d;">{{diasParaTrabalhar}} <strong>dias de trabalho</strong>, ou seja, {{minutosParaTrabalharFtd}} horas a trabalhar.</h5>
+		    <h5 class="sub-header" style="color: #253b80;">{{diasTrabalho}} dias trabalhados com o total de {{minutosTrabalhadosFtd}} horas de trabalho.</h5>
+		    <h5 class="sub-header" style="color: #008641;">Saldo Positivo: {{saldoFinalPositivoFtd}}</h5>
+		    <h5 class="sub-header" style="color: #c3000d;">Saldo Negativo: -{{saldoFinalNegativoFtd}}</h5>
+		    <h5 class="sub-header" style="color: #464646;">Saldo Final do Mês: {{saldoFinalMesFtd}}</h5>
 	    </div>
     </div>
     <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
