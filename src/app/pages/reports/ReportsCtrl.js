@@ -9,7 +9,7 @@
       .controller('ReportsCtrl', ReportsCtrl);
 
   /** @ngInject */
-  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, Auth, util, utilReports, usuario, feriados, allEmployees) {
+  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, reportsAPI, Auth, util, utilReports, usuario, feriados, allEmployees) {
 
     var Usuario = usuario.data;
     var feriados = feriados.data;
@@ -19,7 +19,7 @@
     var testarRelatorioArray = [];
     var equipe = {};
     var funcSel = {};
-    // ////console.log('usuario.data: ', usuario.data);
+    // //////console.log('usuario.data: ', usuario.data);
     $scope.smartTablePageSize = 35;
     $scope.gestor = null;
     $scope.isGestorGeral = false;
@@ -34,20 +34,20 @@
     $scope.meses = [];
     $scope.anos = [];
     $scope.periodoApontamento = [];
-    // ////console.log("### Dentro de ReportsCtrl!!!", $scope.gestor);
+    // //////console.log("### Dentro de ReportsCtrl!!!", $scope.gestor);
 
     init();
     
     $scope.showEspelhoPonto = function () {
       $scope.bancoHoras = false;
       $scope.espelhoPonto = true;
-      ////console.log("mostrar espelho de ponto");
+      //////console.log("mostrar espelho de ponto");
     }
 
     $scope.showBancoHoras = function () {
       $scope.espelhoPonto = false;
       $scope.bancoHoras = true;
-      ////console.log("mostrar banco de horas");
+      //////console.log("mostrar banco de horas");
     }
 
     $scope.setMes = function (pMes) {
@@ -69,7 +69,7 @@
         funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);
         $scope.infoHorario = [];
         $scope.infoHorario = util.getInfoHorario(funcSel, []);
-        console.log('infoHorario: ', $scope.infoHorario);
+        //console.log('infoHorario: ', $scope.infoHorario);
 
         var dataInicial = new Date(ano.value, mes._id, 1);
         //Esse é um workaround pra funcionar a obtenção da quantidade de dias em Javascript
@@ -77,12 +77,12 @@
         //var dataFinal = new Date(ano.value, mes._id+1, 0);
         var dataFinal = new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
 
-        console.log('funcSelecionado para busca: ', funcSel);
+        //console.log('funcSelecionado para busca: ', funcSel);
 
         employeeAPI.getEquipe(funcSel._id).then(function successCallback(response){
 
           equipe = response.data;
-          console.log('response retornado da equipe do buscado: ', response);
+          //console.log('response retornado da equipe do buscado: ', response);
           getApontamentosByDateRangeAndEquipe(dataInicial, dataFinal, funcSel);
 
         }, function errorCallback(response){
@@ -95,9 +95,54 @@
       
     }
 
+    $scope.buildAllReports = function() {
+
+      var beginDate = new Date(ano.value, mes._id, 1);
+      var endDate = new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
+
+      var dateAux = new Date(beginDate);
+      var endDateAux = new Date(endDate);
+
+      var equipeIds = $scope.employees.map(a => a._id);
+
+      var objDateWorker = {
+        date: {
+          raw: beginDate,
+          year: dateAux.getFullYear(),
+          month: dateAux.getMonth(),
+          day: dateAux.getDate(),
+          hour: dateAux.getHours(),
+          minute: dateAux.getMinutes(),
+          finalInclude: true,
+          final: {
+            raw: endDate,
+            year: endDateAux.getFullYear(),
+            month: endDateAux.getMonth(),
+            day: endDateAux.getDate(),
+            hour: endDateAux.getHours(),
+            minute: endDateAux.getMinutes()
+          }
+        },
+        equipe: equipeIds        
+      };
+
+      reportsAPI.getEspelhoPontoFuncionarios(objDateWorker).then(function successCallback(response){
+
+        var arrayFuncAppoints = response.data;
+        //console.log("##*## Funcionários e apontamentos: ", arrayFuncAppoints);
+        //$scope.periodoApontamento = createArrayRangeDate(dateAux, endDateAux, 1, apontamentosResponse);
+        generateSuperPDF(dateAux, endDateAux, 1, arrayFuncAppoints);
+
+      }, function errorCallback(response){
+        
+        $scope.errorMsg = response.data.message;
+        //////console.log("Erro ao obter apontamentos por um range de data e equipe");
+      });
+    };
+
     $scope.gerarPDF = function() {
 
-      console.log('Funcionário selecionado: ', $scope.funcionario.selected);
+      //console.log('Funcionário selecionado: ', $scope.funcionario.selected);
       
       var periodoStr = mes.nome + ' / ' + ano.value;
       var diasRelatorio = gerarDiasRelatorioPonto();
@@ -113,17 +158,67 @@
         $scope.infoHorario, periodoStr, diasRelatorio, totais);
       
       docDefinition.footer = function(currentPage, pageCount) { 
-          return { 
-            text: currentPage.toString() + ' de ' + pageCount, 
-            alignment: 'right', 
-            margin: [20, 0] 
-          }; 
+        return { 
+          text: currentPage.toString() + ' de ' + pageCount, 
+          alignment: 'right', 
+          margin: [20, 0] 
+        }; 
       };
 
       // download the PDF
       pdfMake.createPdf(docDefinition).download('espelho_ponto.pdf');
 
-    }
+    };
+
+    function generateSuperPDF(beginDate, endDate, interval, arrayFuncionariosApontamentos){
+
+      var currentFunc = {};
+      var horarioFunc = {};
+      var objRelatorio = {};
+      var contentArray = [];
+      var periodoStr = mes.nome + ' / ' + ano.value;
+      var docDefinition = utilReports.getDocDefinition();
+
+      docDefinition.footer = function(currentPage, pageCount) { 
+        return { 
+          text: currentPage.toString() + ' de ' + pageCount, 
+          alignment: 'right', 
+          margin: [20, 0] 
+        }; 
+      };
+      
+      for (var i=0; i<$scope.employees.length; i++){
+      //for (var i=0; i<5; i++){  
+        //console.log('i: ', i);
+        currentFunc = {};
+        currentFunc = $scope.employees[i];
+        currentFunc.name = currentFunc.nome + ' ' + currentFunc.sobrenome;
+        currentFunc.cargo = currentFunc.sexoMasculino ? currentFunc.alocacao.cargo.especificacao : currentFunc.alocacao.cargo.nomeFeminino,
+        horarioFunc = util.getInfoHorario(currentFunc, []);
+        currentFunc.equipe = '';
+        
+        employeeAPI.getEquipe(currentFunc._id).then(function successCallback(response){
+
+          equipe = response.data;
+          //console.log('response retornado da equipe do buscado: ', response);
+          objRelatorio = getFtdPontosFuncionario(beginDate, endDate, interval, currentFunc, arrayFuncionariosApontamentos);
+        
+          utilReports.pushContentArray(contentArray, currentFunc, horarioFunc, periodoStr, 
+            objRelatorio.retVal, objRelatorio.saldos);
+
+          if (i == 0)
+            break;
+
+        }, function errorCallback(response){
+          
+          $scope.errorMsg = response.data.message;
+        });            
+
+      }
+
+      docDefinition.content = contentArray;
+      pdfMake.createPdf(docDefinition).download('espelho_ponto_geral.pdf');
+    };
 
     function gerarDiasRelatorio(){
 
@@ -139,7 +234,7 @@
     };
 
     function gerarDiasRelatorioPonto(){
-      console.log('periodoApontamento: ', $scope.periodoApontamento);
+      //console.log('periodoApontamento: ', $scope.periodoApontamento);
       var arrayRelatorio = [];
       for (var i=0; i<$scope.periodoApontamento.length; i++){
         if ($scope.periodoApontamento[i].entradasSaidasTodas){
@@ -187,9 +282,9 @@
     **/
     function getApontamentosByDateRangeAndEquipe(beginDate, endDate, funcionario) {
 
-      ////console.log('beginDate? ', beginDate);
-      ////console.log('endDate? ', endDate);
-      ////console.log('funcionario ', funcionario);
+      //////console.log('beginDate? ', beginDate);
+      //////console.log('endDate? ', endDate);
+      //////console.log('funcionario ', funcionario);
       var dateAux = new Date(beginDate);
       var endDateAux = new Date(endDate);
 
@@ -214,22 +309,22 @@
         funcionario: funcionario
       };
 
-      ////console.log("objDateWorker Enviado: ", objDateWorker);
+      //////console.log("objDateWorker Enviado: ", objDateWorker);
       //Ajeita a formatação da data para não ter problema com a visualização
       $scope.periodoApontamento = [];
-      console.log("objDateWorker Enviado: ", objDateWorker);
+      //console.log("objDateWorker Enviado: ", objDateWorker);
 
       appointmentAPI.getApontamentosByDateRangeAndFuncionario(objDateWorker).then(function successCallback(response){
 
         var apontamentosResponse = response.data;
-        console.log("!@# Apontamentos do funcionário: ", apontamentosResponse);
+        //console.log("!@# Apontamentos do funcionário: ", apontamentosResponse);
         //$scope.periodoApontamento = createArrayRangeDate(dateAux, endDateAux, 1, apontamentosResponse);
         $scope.periodoApontamento = testePetrolina(dateAux, endDateAux, 1, apontamentosResponse);
 
       }, function errorCallback(response){
         
         $scope.errorMsg = response.data.message;
-        ////console.log("Erro ao obter apontamentos por um range de data e equipe");
+        //////console.log("Erro ao obter apontamentos por um range de data e equipe");
       });
     };
 
@@ -237,7 +332,7 @@
     function getAllEmployees() {
       
       var empsArray = allEmployees.data;
-      console.log('EmpsArray: ', empsArray);
+      ////console.log('EmpsArray: ', empsArray);
 
       for (var j=0; j<empsArray.length; j++) {
           $scope.employees.push(empsArray[j]);
@@ -269,12 +364,12 @@
           } 
         } 
 
-        ////console.log('Equipes do gestor: ', response.data);
+        //////console.log('Equipes do gestor: ', response.data);
 
       }, 
       function errorCallback(response){
         $errorMsg = response.data.message;
-        ////console.log("houve um erro ao carregar as equipes do gestor");
+        //////console.log("houve um erro ao carregar as equipes do gestor");
       });
     };
 
@@ -289,7 +384,7 @@
     };
 
     function fillEmployees(){
-      console.log('gsetor, equipes comonentes: ', $scope.equipes);
+      //console.log('gsetor, equipes comonentes: ', $scope.equipes);
       for (var i=0; i<$scope.equipes.length; i++){
         for (var j=0; j<$scope.equipes[i].componentes.length; j++) {
           $scope.employees.push($scope.equipes[i].componentes[j]);
@@ -304,7 +399,7 @@
         }
       }
 
-      ////console.log('employees: ', $scope.employeesNames);
+      //////console.log('employees: ', $scope.employeesNames);
     };
 
     function getId (array) {
@@ -394,8 +489,8 @@
       endDate = addOrSubtractDays(endDate, -1);
 
       var itemApontamento = {};
-      //////console.log('current ', current);
-      //////console.log('endDate ', endDate);
+      ////////console.log('current ', current);
+      ////////console.log('endDate ', endDate);
       var i = 0;
       var apontamentoF = null;
       var objEntradasSaidas = {};
@@ -411,7 +506,6 @@
         itemApontamento = {};
         objEntradasSaidas = {};
         apontamentoF = getApontamentoFromSpecificDate(apontamentosSemanais, current);
-        // console.log('apontamentoF: ', apontamentoF);
         itemApontamento.order = i;
         itemApontamento.rawDate = new Date(current);
         itemApontamento.data = $filter('date')(new Date(current), 'abvFullDate2');
@@ -419,12 +513,15 @@
 
         if (apontamentoF){ //se tiver apontamento já tem os dados de horas trabalhadas
           
+          console.log('apontamentoF #: ', apontamentoF);
           objEntradasSaidas = getEntradasSaidas(apontamentoF);
+          console.log('objEntradasSaidas: ', objEntradasSaidas);
           itemApontamento.entradaSaidaFinal = objEntradasSaidas.esFinal;
           itemApontamento.entradasSaidasTodas = objEntradasSaidas.esTodas;
           itemApontamento.arrayEntSai = objEntradasSaidas.arrayEntSai;
           //na função getSaldoPresente temos as horas a trabalhar e trabalhadas
           itemApontamento.saldo = getSaldoPresente(apontamentoF);
+          console.log('itemApontamento: ', itemApontamento);
           if (itemApontamento.saldo.saldoDiario > 0) {
             saldoFinalPositivo += itemApontamento.saldo.saldoDiario;
           } else {
@@ -444,15 +541,15 @@
 
         } else { //se não tiver apontamento tem que verificar qual o motivo (falta, feriado, folga, férias?)
 
-          //console.log('Não vai ter batidas em ', current);
+          ////console.log('Não vai ter batidas em ', current);
           itemApontamento.entradaSaidaFinal = "-";
           itemApontamento.arrayEntSai = [];
           itemApontamento.ocorrencia = {};
           itemApontamento.saldo = {};
           //itemApontamento.observacao = "Sem Batidas";
-          setInfoAusencia(itemApontamento, current); //injeta as informações de ausencia no apontamento
+          setInfoAusencia(itemApontamento, current, false); //injeta as informações de ausencia no apontamento
           var teste = itemApontamento.saldo.horasFtd;
-          console.log('itemApontamento sem apontamento: ', teste);
+          ////console.log('itemApontamento sem apontamento: ', teste);
 
           if (itemApontamento.ocorrencia.statusCodeString == "AUS"){ //Ausente quando deveria ter trabalhado
             $scope.diasParaTrabalhar++;
@@ -464,11 +561,11 @@
               horasNegat: true,
               horasFtd: '-' + devido.hora + ':' + devido.minuto
             };
-            console.log('########quando falta: ', itemApontamento);
+            //console.log('########quando falta: ', itemApontamento);
           }
         }
 
-        ////console.log('itemApontamento depois: ', itemApontamento);
+        //////console.log('itemApontamento depois: ', itemApontamento);
         retVal.push(itemApontamento);
         current = addOrSubtractDays(current, interval);
         i++;
@@ -490,7 +587,7 @@
       else
         $scope.saldoFinalMesFtd = sfTot.hora + ':' + sfTot.minuto;
 
-      //////console.log('rangeDate calculado:', retVal);
+      ////////console.log('rangeDate calculado:', retVal);
       // retVal.sort(function(a, b){//ordena o array de datas criadas
       //   return a.order < b.order;
       // });
@@ -504,8 +601,138 @@
         // a must be equal to b
         return 0;
       });
-      //////console.log('rangeDate calculado e ordenado decresc:', retVal);
+      ////////console.log('rangeDate calculado e ordenado decresc:', retVal);
       return retVal;  
+    };
+
+    function getFtdPontosFuncionario(startDate, endDate, interval, funcionario, apontamentosSemanais){
+
+      var interval = interval || 1;
+      var retVal = [];
+      var current = new Date(startDate);
+      var endDate = new Date(endDate);
+
+      ////console.log('apontamentosSemanais: ', apontamentosSemanais);
+      
+      endDate = addOrSubtractDays(endDate, -1);
+
+      var itemApontamento = {};
+      ////////console.log('current ', current);
+      ////////console.log('endDate ', endDate);
+      var i = 0;
+      var apontamentoF = null;
+      var objEntradasSaidas = {};
+      var saldoFinalPositivo = 0;
+      var saldoFinalNegativo = 0;
+      var diasTrabalho = apontamentosSemanais.length;
+      var diasParaTrabalhar = 0;
+      var minTrabalhados = 0;
+      var minParaTrabalhar = 0;
+
+      //console.log('current ', current);
+      //console.log('endDate ', endDate);
+      
+      while (current <= endDate) {//navegar no período solicitado
+
+        //console.log('data: ', current);
+        itemApontamento = {};
+        objEntradasSaidas = {};
+        apontamentoF = getApontamentoFromSpecificDateAndPis(apontamentosSemanais, current, funcionario.PIS);
+        itemApontamento.date = $filter('date')(new Date(current), 'dd/EEE');
+
+        if (apontamentoF){ //se tiver apontamento já tem os dados de horas trabalhadas
+          
+          itemApontamento.hasPoint = true;
+          objEntradasSaidas = getEntradasSaidas(apontamentoF);
+          if(objEntradasSaidas.esTodas){
+            itemApontamento.marcacoesStr = objEntradasSaidas.esTodas;
+          }
+          //na função getSaldoPresente temos as horas a trabalhar e trabalhadas
+          itemApontamento.saldo = getSaldoPresente(apontamentoF);
+          if (itemApontamento.saldo.saldoDiario > 0) {
+            saldoFinalPositivo += itemApontamento.saldo.saldoDiario;
+          } else {
+            saldoFinalNegativo -= itemApontamento.saldo.saldoDiario;
+          }
+
+          //if (apontamentoF.infoTrabalho.trabalha){ //se era um dia de trabalho de fato, incrementa a variável
+          //talvez devessemos fazer um tratamento diferenciado para quando não for o dia de trabalho
+          //tem que ver se precisaria contar mais horas (horas extras e tals)
+          diasParaTrabalhar++;
+          minTrabalhados += apontamentoF.infoTrabalho.trabalhados;
+          minParaTrabalhar += apontamentoF.infoTrabalho.aTrabalhar;
+          //}
+
+          if (apontamentoF.status.id > 0) //Se for Incompleto, Erro ou Justificado...
+            itemApontamento.observacao = apontamentoF.status.descricao;
+
+        } else { //se não tiver apontamento tem que verificar qual o motivo (falta, feriado, folga, férias?)
+
+          itemApontamento.hasPoint = true;
+          itemApontamento.ocorrencia = {};
+          itemApontamento.saldo = {};
+          //itemApontamento.observacao = "Sem Batidas";
+          setInfoAusencia(itemApontamento, current, funcionario); //injeta as informações de ausencia no apontamento
+
+          if (itemApontamento.ocorrencia.statusCodeString == "AUS"){ //Ausente quando deveria ter trabalhado
+            diasParaTrabalhar++;
+            saldoFinalNegativo -= -itemApontamento.ocorrencia.minutosDevidos;
+            minParaTrabalhar += itemApontamento.ocorrencia.minutosDevidos;
+            //colocar o saldo negativo faltante do dia para exibição no Relatório de Espelho de Ponto
+            var devido = converteParaHoraMinutoSeparados(itemApontamento.ocorrencia.minutosDevidos);
+            itemApontamento.saldo = {
+              horasNegat: true,
+              horasFtd: '-' + devido.hora + ':' + devido.minuto
+            };
+            ////console.log('########quando falta: ', itemApontamento);
+          }
+        }
+
+        //////console.log('itemApontamento depois: ', itemApontamento);
+        retVal.push(itemApontamento);
+        current = addOrSubtractDays(current, interval);
+        i++;
+      }
+
+      var minTrabalhadosTot = converteParaHoraMinutoSeparados(minTrabalhados);
+      var minParaTrabalharTot = converteParaHoraMinutoSeparados(minParaTrabalhar);
+      var minutosTrabalhadosFtd = minTrabalhadosTot.hora + ':' + minTrabalhadosTot.minuto;
+      var minutosParaTrabalharFtd = minParaTrabalharTot.hora + ':' + minParaTrabalharTot.minuto;
+      var sfPos = converteParaHoraMinutoSeparados(saldoFinalPositivo);
+      var sfNeg = converteParaHoraMinutoSeparados(saldoFinalNegativo);
+      var diff = saldoFinalPositivo - saldoFinalNegativo;
+      var sfTot = converteParaHoraMinutoSeparados(Math.abs(diff));
+      var saldoFinalPositivoFtd = sfPos.hora + ':' + sfPos.minuto;
+      var saldoFinalNegativoFtd = sfNeg.hora + ':' + sfNeg.minuto;
+      var saldoFinalMesFtd;
+      if (diff < 0)
+        saldoFinalMesFtd = '-' + sfTot.hora + ':' + sfTot.minuto;
+      else
+        saldoFinalMesFtd = sfTot.hora + ':' + sfTot.minuto;
+
+      var saldosTotalizados = {
+        aTrabalhar: minutosParaTrabalharFtd,
+        trabalhados: minutosTrabalhadosFtd,
+        saldoPositivo: saldoFinalPositivoFtd,
+        saldoNegativo: saldoFinalNegativoFtd,
+        saldoFinal: saldoFinalMesFtd
+      };
+
+      retVal.sort(function (a, b) {
+        if (a.order > b.order) {
+          return 1;
+        }
+        if (a.order < b.order) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
+      ////////console.log('rangeDate calculado e ordenado decresc:', retVal);
+      return {
+        retVal: retVal,
+        saldos: saldosTotalizados
+      };
     };
 
     function getApontamentoFromSpecificDate(apontamentosSemanais, dataAtual){
@@ -523,18 +750,34 @@
       return apontamentoByDate;
     };
 
+    function getApontamentoFromSpecificDateAndPis(apontamentosSemanais, dataAtual, pis){
+
+      //console.log('verificar data e pis: ', dataAtual);
+      //console.log('pis: ', pis);
+      for (var i=0; i<apontamentosSemanais.length; i++){
+
+        if ((compareOnlyDates(dataAtual, new Date(apontamentosSemanais[i].data)) == 0) && 
+          (pis == apontamentosSemanais[i].PIS)) {
+
+          return apontamentosSemanais[i];
+        }
+      }
+
+      return null;
+    };
+
     function compareOnlyDates(date1, date2) {
 
       //como a passagem é por referência, devemos criar uma cópia do objeto
       var d1 = angular.copy(date1); 
       var d2 = angular.copy(date2);
-      //////console.log('date1', d1);
-      //////console.log('date2', d2);
+      ////////console.log('date1', d1);
+      ////////console.log('date2', d2);
       d1.setHours(0,0,0,0);
       d2.setHours(0,0,0,0);
 
-      //////console.log('date1 time', d1.getTime());
-      //////console.log('date2 time', d2.getTime());
+      ////////console.log('date1 time', d1.getTime());
+      ////////console.log('date2 time', d2.getTime());
 
       if (d1.getTime() < d2.getTime())
         return -1;
@@ -691,20 +934,23 @@
       return objBHDiario;
     };
 
-    function setInfoAusencia(apontamento, currentDate){
+    function setInfoAusencia(apontamento, currentDate, funcionarioParam){
 
       var saldoFlag = false;
       var sinalFlag = '-';
       var saldoDiarioFormatado = {};
 
       //pode não ter expediente iniciado, ser feriado, estar atrasado, de folga ou faltante mesmo
-      //console.log('Funcionário Alocação: ', funcSel.alocacao);
-      var expedienteObj = updateAbsenceStatus(funcSel.alocacao, currentDate);
+      var expedienteObj;
+      if (funcionarioParam)
+        expedienteObj = updateAbsenceStatus(funcionarioParam.alocacao, currentDate);
+      else
+        expedienteObj = updateAbsenceStatus(funcSel.alocacao, currentDate);
+
       apontamento.ocorrencia.statusCodeString = expedienteObj.code;
       apontamento.ocorrencia.minutosDevidos = expedienteObj.minutosDia;
       apontamento.ocorrencia.statusString = expedienteObj.string;
       apontamento.ocorrencia.statusImgUrl = expedienteObj.imgUrl;
-      //////console.log('expedienteObj returned: ', expedienteObj);
 
       if (expedienteObj.code == "FRD"){
         saldoFlag = true;
@@ -764,12 +1010,12 @@
 
       if (objFeriadoRet.flag && !ignoraFeriados){//Caso 1 - feriado
         
-        //console.log('Feriado em: ', dataDesejada);
+        ////console.log('Feriado em: ', dataDesejada);
         return {code: "FRD", string: objFeriadoRet.name, imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};//getSaldoDiaFrd(funcionarioAlocacao)};
 
       } else if (hasFolgaSolicitada() || hasLicenca()){ //Caso 3 - Folgas/Licenças
 
-        //////console.log('Caso 3 - checar');
+        ////////console.log('Caso 3 - checar');
 
       } else { //Caso 2, 4 ou 5
         
@@ -786,8 +1032,8 @@
       
       var data = dataDesejada;
 
-      ////console.log('Data Desejada: ', data);
-      ////console.log('Setor.local: ', $scope.equipe);
+      //////console.log('Data Desejada: ', data);
+      //////console.log('Setor.local: ', $scope.equipe);
 
       var date = data.getDate();//1 a 31
       var month = data.getMonth();//0 a 11
@@ -798,7 +1044,7 @@
 
       feriados.forEach(function(feriado){
         
-        ////console.log('feriado atual: ', feriado);        
+        //////console.log('feriado atual: ', feriado);        
 
         for (var i = 0; i < feriado.array.length; i++) {
           
@@ -806,7 +1052,7 @@
           if (feriado.fixo){
           
             if (tempDate.getMonth() === month && tempDate.getDate() === date){
-              //console.log("É Feriado (fixo)!", tempDate);
+              ////console.log("É Feriado (fixo)!", tempDate);
               flagFeriado = checkFeriadoSchema(feriado);
               feriadoName = feriado.nome;
               return feriado;
@@ -815,7 +1061,7 @@
           } else {//se não é fixo
 
             if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
-              //console.log("É Feriado (variável)!", tempDate);
+              ////console.log("É Feriado (variável)!", tempDate);
               flagFeriado = checkFeriadoSchema(feriado);
               feriadoName = feriado.nome;
               return feriado;
@@ -823,7 +1069,7 @@
           }
         }
       });
-      //console.log('FlagFeriado: ', flagFeriado);
+      ////console.log('FlagFeriado: ', flagFeriado);
       return {flag: flagFeriado, name: feriadoName};//no futuro retornar o flag de Feriado e a descrição do mesmo!
     };
 
@@ -834,22 +1080,22 @@
 
       if (feriado.abrangencia == abrangencias[0]){
 
-        //console.log('Feriado Nacional!');
+        ////console.log('Feriado Nacional!');
         flagFeriado = true;
 
       } else  if (feriado.abrangencia == abrangencias[1]){
         
-        //console.log('Feriado Estadual!');
+        ////console.log('Feriado Estadual!');
         if (equipe.setor.local.estado == feriado.local.estado._id){
-          //console.log('Feriado Estadual no Estado correto!');
+          ////console.log('Feriado Estadual no Estado correto!');
           flagFeriado = true;
         }
 
       } else if (feriado.abrangencia == abrangencias[2]){
         
-        //console.log('Feriado Municipal!');
+        ////console.log('Feriado Municipal!');
         if (equipe.setor.local.municipio == feriado.local.municipio._id){
-          //console.log('No municipio correto!');
+          ////console.log('No municipio correto!');
           flagFeriado = true;
         }
       }
@@ -871,9 +1117,9 @@
       var dataAtual = dataDesejada;
 
       var jornadaArray = funcionarioAlocacao.turno.jornada.array; //para ambas as escalas
-      ////console.log('Dentro de Jornada Semanal: funcionarioAlocacao', funcionarioAlocacao);
+      //////console.log('Dentro de Jornada Semanal: funcionarioAlocacao', funcionarioAlocacao);
       var objDay = getDayInArrayJornadaSemanal(dataAtual.getDay(), jornadaArray);
-      ////console.log('objDay', objDay);
+      //////console.log('objDay', objDay);
       
       if (!objDay || !objDay.minutosTrabalho || objDay.minutosTrabalho <= 0) { //Caso 4 - DSR
         
@@ -884,32 +1130,32 @@
         var codDate = compareOnlyDates(dataAtual, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          //////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
+          ////////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
           var ENT1 = objDay.horarios.ent1;
-          //////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
-          //////console.log("Entrada 1: ", ENT1);
+          ////////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
+          ////////console.log("Entrada 1: ", ENT1);
 
           if (totalMinutesAtual < ENT1) {
           
-            //////////console.log("Ainda não iniciou o expediente");
+            ////////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            //////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
+            ////////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", minutosDia: objDay.minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
           }
 
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          //////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
+          ////////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", minutosDia: objDay.minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
 
         } else { //Navegando em dias futuros
 
-          //////////console.log("Navegando em dias futuros, expediente não iniciado!");
+          ////////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
       } 
@@ -926,7 +1172,7 @@
       var dataComparacao = dataDesejada;
       var dataHoje = new Date();
 
-      ////console.log('dataComparacao: ', dataComparacao);
+      //////console.log('dataComparacao: ', dataComparacao);
       var trabalha = isWorkingDay(dataComparacao, 
         new Date(funcionarioAlocacao.dataInicioEfetivo));
       
@@ -936,28 +1182,28 @@
         var codDate = compareOnlyDates(dataComparacao, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          //////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
+          ////////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
-          //////////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
+          ////////////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
 
           if (totalMinutesAtual < ENT1) {
           
-            //////////console.log("Ainda não iniciou o expediente");
+            ////////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            //////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
+            ////////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", minutosDia: minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
           }
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          //////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
+          ////////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", minutosDia: minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
         } else { //Navegando em dias futuros
 
-          //////////console.log("Navegando em dias futuros, expediente não iniciado!");
+          ////////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
 
@@ -976,7 +1222,7 @@
           return diaRetorno;
         }
       });
-      //////console.log("DIA RETORNO NO getDayInArrayJornadaSemanal: ", diaRetorno);
+      ////////console.log("DIA RETORNO NO getDayInArrayJornadaSemanal: ", diaRetorno);
       return diaRetorno;
     };
 
@@ -990,7 +1236,7 @@
       d2.setHours(0,0,0,0);
 
       var diffDays = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
-      //////////console.log("diffDays: ", diffDays);
+      ////////////console.log("diffDays: ", diffDays);
       
       return (diffDays % 2 == 0) ? true : false;
     };
@@ -1019,12 +1265,12 @@
       } else if (Usuario.perfil.accessLevel == 5) {
 
         $scope.isAdmin = true;
-        //console.log('allEmployees: ', allEmployees.data);
+        ////console.log('allEmployees: ', allEmployees.data);
         getAllEmployees();
 
       } else {
 
-        ////console.log("Não deve ter acesso.");
+        //////console.log("Não deve ter acesso.");
         $scope.errorMsg = "Este funcionário não é Gestor e portanto não pode visualizar estas informações";
 
       }

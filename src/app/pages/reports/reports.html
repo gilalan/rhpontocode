@@ -44,6 +44,10 @@
 		    
 	    	<input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
 
+	    	
+    		<button id="idBtnSearch" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin"  ng-click="buildAllReports()">
+				<i class="ion-search"></i> Gerar para Todos
+			</button>
 		</div>
     </div>
     <div class="separator"></div>

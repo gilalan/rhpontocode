@@ -12,7 +12,7 @@
 	    </div>
 	</div>
     
-	<div class="row">
+	<!-- <div class="row">
 		<div class="col-xlg-6 col-md-12 col-sm-6">
 	        <h4>Popup</h4>
 	        <label>Selected date is: <em>{{dt | date:'fullDate' }}</em></label>
@@ -24,9 +24,37 @@
 	        </p>
 	        <label>Format: <span class="muted-text">(manual alternate <em>{{altInputFormats[0]}}</em>)</span></label> <select class="form-control" ng-model="format" ng-options="f for f in formats"><option></option></select>
 	    </div>
-	</div>
+	</div> -->
 
 	<div class="row">
+		<table class="table">
+		    <thead>
+			    <tr>
+			      <th>#</th>
+			      <th>Nome</th>
+			      <th>Sobrenome</th>
+			      <th>PIS</th>
+			      <th>Matricula</th>
+			      <th>Gestor?</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+		      <tr ng-repeat="emp in employees track by $index">
+		        	<td>{{$index}}</td>
+		        	<td>{{emp.nome}}</td>
+			        <td>{{emp.sobrenome}}</td>
+			        <td>{{emp.PIS}}</td>
+			        <td>{{emp.matricula}}</td>
+			        <td>
+			          {{emp.alocacao.gestor}}
+			        </td>
+		      </tr>
+		    </tbody>
+		  </table>
+	</div>
+
+
+	<!-- <div class="row">
 		<table class="table">
 		    <thead>
 			    <tr>
@@ -53,7 +81,7 @@
 		    </tbody>
 		  </table>
 	</div>
-
+ -->
     <!-- <div class="row">    
     	
 		<h3> Estatisticas virão aqui </h3>

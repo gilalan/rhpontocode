@@ -8,6 +8,36 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 	var svc = this;
 	var diff = 0;
 
+	svc.getDocDefinition = function(){
+
+		return {
+		    pageSize: 'A4',
+		    pageOrientation: 'landscape',
+		    pageMargins: [ 20, 10 ],
+		    styles: createStylesEspelhoPonto(),
+		    defaultStyle: {
+				fontSize: 7,
+				margin: 0,
+				color: 'black'
+			},
+    	    content: []
+      	};
+	};
+
+	svc.pushContentArray = function(contentArray, employeeInfo, employeeWorkJourney, periodo, appointsArray, totaisFtd){
+
+		// var contentArray = [];
+		contentArray.push(getCompanyInfo());
+		contentArray.push(createEmployeeInfo(employeeInfo));
+		contentArray.push(createWorkJourney(employeeWorkJourney, periodo));
+		contentArray.push(createAppointHeader());
+		contentArray.push(createAppointBody(appointsArray, totaisFtd));
+		contentArray.push(getSaldoMes(totaisFtd));
+		contentArray.push(createSignature());
+
+		// return contentArray;
+	};
+
 	svc.gerarEspelhoPonto = function(employeeInfo, employeeWorkJourney, periodo, appointsArray, totaisFtd){
 
 		var contentArray = [];
@@ -209,6 +239,8 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 		var arrayEntSaidas = [];
 		var staticArrayEntSaidas = ['-', '-', '-','-', '-', '-','-', '-', '-', '-'];
 		var maxIndexArray = 0;
+		console.log('appointsArray: ', appointsArray);
+		console.log('totaisFtd: ', totaisFtd);
 		
 		for (var i=0; i<appointsArray.length; i++){
 

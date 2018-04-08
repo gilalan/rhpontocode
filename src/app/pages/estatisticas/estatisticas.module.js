@@ -32,7 +32,10 @@
                 return usersAPI.getUsuario(user._id);
               }              
             },
-            
+            allEmployees: function(employeeAPI, Auth){
+                          
+              return employeeAPI.get();
+            },
             equipes: function(teamAPI) {
               return [];//teamAPI.get(); ARRAY VAZIO PARA AGILIZAR OS OUTROS TESTES
             }

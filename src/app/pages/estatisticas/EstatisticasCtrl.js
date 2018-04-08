@@ -9,12 +9,13 @@
       .controller('EstatisticasCtrl', EstatisticasCtrl);
 
   /** @ngInject */
-  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, Auth, usuario, equipes){//, rawAppoints) {
+  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, Auth, usuario, equipes, allEmployees){//, rawAppoints) {
 
     console.log("dentro do EstatisticasCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);
 
+    $scope.employees = allEmployees.data;
     $scope.equipes = equipes.data;
     $scope.rawApps = [];
     //$scope.rawApps = rawAppoints.data.rawReps;

@@ -37,7 +37,14 @@
               var user = Auth.getCurrentUser();
               if (user.acLvl >= 5)
                 return employeeAPI.get();
+            },
+            allEquipes: function(teamAPI, Auth){
+
+              var user = Auth.getCurrentUser();
+              if (user.acLvl >= 5)
+                return teamAPI.get();
             }
+            
             // ,
             // currentDate: function(appointmentAPI) {
             //   return appointmentAPI.getCurrentDate();
