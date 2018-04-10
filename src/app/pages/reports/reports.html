@@ -167,6 +167,9 @@
 					<button id="idBtnGerarPDF" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="gerarPDF()">
 						<i class="ion-report"></i> Gerar PDF
 					</button>
+					<button id="idBtnCorrigirPontoEscalaRevezamento" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin" ng-click="corrigirEscalaRevezamento()">
+						<i class="ion-report"></i> Corrigir Pontos da Escala 12x36h
+					</button>
 				</div>
 	    </div>
     </div>

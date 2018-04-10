@@ -296,6 +296,13 @@
       d1.setHours(0,0,0,0);
       d2.setHours(0,0,0,0);
 
+      //Levar em consideração também os timezones tem  que calcular a timezone
+      // as vezes a hora do funcionário chega com TZ02:00:00 e a hora da batida ta com 03:00:00
+      // aí fica 1h a mais e esse diffDays dá false mas deveria ser True.
+      // var tz1 = d1.getTimezoneOffset();
+      // var tz2 = d2.getTimezoneOffset();
+      // var diffTzs = Math.abs(tz1 - tz2);
+
       var diffDays = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
       //////console.log("diffDays: ", diffDays);
       
@@ -320,7 +327,14 @@
             var parte2 = apontamento.marcacoes[0].hora*60 + apontamento.marcacoes[0].minuto;
             console.log('parte2: ', parte2);
             console.log('marcacao com id = 2, cálculo: ', (parte1 - parte2));
-            return (newDate.getHours()*60 + newDate.getMinutes()) - (apontamento.marcacoes[0].hora*60 + apontamento.marcacoes[0].minuto);
+            if (parte1 > parte2){
+              //return (newDate.getHours()*60 + newDate.getMinutes()) - (apontamento.marcacoes[0].hora*60 + apontamento.marcacoes[0].minuto);
+              return parte1 - parte2;
+
+            } else {
+
+              return parte2 - parte1;
+            }
           }
           else {            
             var minutosTrabalhados = 0;

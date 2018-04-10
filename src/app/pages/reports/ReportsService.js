@@ -18,6 +18,11 @@ angular.module('BlurAdmin.pages.reports').service("reportsAPI", function($http, 
 		return $http.post(_urlBaseReports + '/', objDate);
 	};
 
+	svc.setApontamentosCorrecao = function (arrayApps) {
+		
+		return $http.post(_urlBaseReports + '/updateAppoints', arrayApps);
+	};	
+
 	// svc.update = function (solicitacao) {
 
 	// 	return $http.put(_urlBaseReports + '/' + solicitacao._id, solicitacao);
