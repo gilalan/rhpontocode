@@ -46,5 +46,10 @@ angular.module('BlurAdmin.pages.teams').service("teamAPI", function($http, confi
 	svc.atualizarComponentes = function (id, componentes) {
 		
 		return $http.post(_urlBaseEquipes + '/' + id + '/updateWorkers', componentes);
-	}
+	};
+
+	svc.searchAndUpdateApps = function(id, componentes){
+
+		return $http.post(_urlBaseEquipes + '/' + id + '/searchAndUpdateAppointments', componentes);
+	};
 });

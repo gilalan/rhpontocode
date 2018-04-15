@@ -16,8 +16,15 @@
     $scope.funcionarios = funcionarios.data;
     $scope.smartTablePageSize = 10;
 
+
+    Array.prototype.diff = function (a) {
+      return this.filter(function (i) {
+          return a.indexOf(i) === -1;
+      });
+     };
+
     console.log('$scope.equipe', $scope.equipe);
-    console.log('$scope.funcionarios ', $scope.funcionarios);
+    //console.log('$scope.funcionarios ', $scope.funcionarios);
 
     $scope.associar = function (usuario) {
 
@@ -31,10 +38,36 @@
         return componente._id;
       });
 
+      var _PISes = selectedWorkers.map(function(componente){
+        return componente.PIS;
+      });
+
+      var _oldPISes = $scope.equipe.componentes.map(function(worker){
+        return worker.PIS;
+      });
+
+      console.log("Componentes antes do envio: ", _oldPISes);
       console.log("Componentes para envio: ", _componentes);
+      var diffComps = _PISes.diff(_oldPISes);
+      console.log('vai enviar: ', diffComps);
       teamAPI.atualizarComponentes($scope.equipe._id, _componentes).then(function sucessCallback(response){
 
         $scope.successMsg = response.data.message;
+
+        if (diffComps.length > 0){
+          var objToSend = {empIds: _componentes, arrayPIS: diffComps};
+          // console.log('vai enviar esses pra buscar: ', notAssociatedsPrev);
+          teamAPI.searchAndUpdateApps($scope.equipe._id, objToSend).then(function sucessCallback(response){
+
+            console.log('cadastro assincrono dos apontamentos anteriores dos funcionários efetuado com sucesso!');
+
+          }, function errorCallback(response){
+
+            console.log('falhou a atualização dos componentes em seus apontamentos anteriores');
+
+          });
+        }
+
         $state.go('teams.list');
       
       }, function errorCallback(response){
@@ -58,8 +91,9 @@
          
         $scope.funcionarios.some(function(funcionario){
 
-          if (funcionario._id === componente._id)
+          if (funcionario._id === componente._id){
             funcionario.selected = true;
+          }
 
           return funcionario._id === componente._id;
         });
