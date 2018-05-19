@@ -21,7 +21,7 @@
           icon: 'ion-android-bicycle',
           order: 100,
         },
-        accessLevel: 3
+        accessLevel: [4,5]
       })
       .state('entities.campus.list', {
         url: '/list',

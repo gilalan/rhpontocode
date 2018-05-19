@@ -20,7 +20,7 @@
            icon: 'ion-thumbsup',
            order: 62,
         },
-        accessLevel: 5,
+        accessLevel: [5],
         resolve: {
           adjSolicitations: function(myhitpointAPI){
             return myhitpointAPI.get();
@@ -37,7 +37,7 @@
         //     return institutionAPI.get();
         //   }
         // },
-        accessLevel: 5
+        accessLevel: [5]
       })
       .state('admadjsol.edit', {
         url: '/edit/:id',
@@ -49,7 +49,7 @@
         //     return employeeAPI.getFuncionario($stateParams.id);
         //   }
         // },
-        accessLevel: 5
+        accessLevel: [5]
       });
   }
 

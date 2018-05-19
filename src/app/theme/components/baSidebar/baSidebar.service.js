@@ -79,7 +79,7 @@
                 return {
                   name: s.name,
                   title: s.title,
-                  visible: user.acLvl >= s.accessLevel,
+                  visible: s.accessLevel.includes(user.acLvl), //user.acLvl >= s.accessLevel
                   level: (s.name.match(/\./g) || []).length,
                   order: meta.order,
                   icon: meta.icon,

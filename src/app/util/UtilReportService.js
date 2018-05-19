@@ -41,7 +41,7 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 	svc.gerarEspelhoPonto = function(employeeInfo, employeeWorkJourney, periodo, appointsArray, totaisFtd){
 
 		var contentArray = [];
-		contentArray.push(getCompanyInfo());
+		contentArray.push(getCompanyInfo('ESPELHO DE PONTO'));
 		contentArray.push(createEmployeeInfo(employeeInfo));
 		contentArray.push(createWorkJourney(employeeWorkJourney, periodo));
 		contentArray.push(createAppointHeader());
@@ -78,6 +78,28 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
       	return docDefinition;
 	};
 
+	svc.gerarRelatorioFuncionariosHorarios = function(employees){
+		
+		var contentArray = [];
+		contentArray.push(getCompanyInfo('RELATORIO DE FUNCIONARIOS COM HORARIOS'));
+		contentArray.push(createEmployeeInfoComHorario(employees));
+
+		var docDefinition = {
+		    pageSize: 'A4',
+		    pageOrientation: 'landscape',
+		    pageMargins: [ 20, 10 ],
+		    styles: createStylesEspelhoPonto(),
+		    defaultStyle: {
+				fontSize: 10,
+				margin: 0,
+				color: 'black'
+			},
+    	    content: contentArray
+      	};
+
+      	return docDefinition;	
+	};
+
 	function createStylesEspelhoPonto(){
 
 		var styles = {
@@ -104,7 +126,7 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 		return styles;
 	};
 
-	function getCompanyInfo(){
+	function getCompanyInfo(title){
 		
 		var emiDate = $filter('date')(new Date(), 'dd/MM/yyyy, HH:mm');
 
@@ -114,7 +136,7 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
             widths: ['*', 'auto'],
             body: [
               [ 
-                {text: 'ESPELHO DE PONTO', style: 'headerI', border: [true, true, false, true] }, 
+                {text: title, style: 'headerI', border: [true, true, false, true] }, 
                 {text: 'Emissão: '+emiDate, style: 'rigPeq', border: [false, true, true, true]} 
               ],
               [
@@ -142,6 +164,37 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
               ]
             ]  
           } 
+	    };
+
+	    return empInfo;
+	};
+
+	function createEmployeeInfoComHorario(employees){
+
+		// for (var i=0; i<employees.length; i++){
+		// 	contentArray.push(createEmployeeInfoComHorario(employees[i]));
+		// }
+		var employeeInfo = employees[0];
+
+		var arrayBody = [];
+
+		arrayBody.push([{text: 'Nome: '+employeeInfo.name, border: [true, false, false, false]}, 
+					{text: 'Matrícula: '+employeeInfo.matricula, border: [false, false, false, false]},
+	                {text: 'PIS: '+employeeInfo.PIS, border: [false, false, true, false], alignment: 'right'}
+	              ]);
+
+		arrayBody.push([
+	                {text: 'Nome: '+employeeInfo.name, border: [true, false, false, false]},
+	                {text: 'Matrícula: '+employeeInfo.matricula, border: [false, false, false, false]},
+	                {text: 'PIS: '+employeeInfo.PIS, border: [false, false, true, false], alignment: 'right'}
+	              ]);	              
+
+		var empInfo = {
+	        table: {
+	            headerRows: 1,
+	            widths: [424,150,200],
+	            body: arrayBody  
+          	} 
 	    };
 
 	    return empInfo;

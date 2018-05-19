@@ -18,14 +18,14 @@
     var batidaDireta = false;
 
     return {
-      authorize: function(routerAccessLevel){
+      authorize: function(routerAccessLevel){//s.accessLevel.includes(user.acLvl)
 
         var user = jwtHelper.decodeToken($localStorage.token);
         //console.log("USUARIO OBTIDO NO AUTH ATRAVES DO DECODEJWT: ", user);
         //console.log("ROTA NívelAcesso: ", routerAccessLevel);
         //console.log("USUARIO NívelAcesso: ", user.acLvl);
-        if (user.acLvl >= routerAccessLevel) {
-          //se usuario tem acesso maior que a página demanda... ele está autorizado
+        if (routerAccessLevel.includes(user.acLvl)){ //antes: user.acLvl >= routerAccessLevel) { //se usuario tem acesso maior que a página demanda... ele está autorizado
+          //agora a gnt ve se a lista de perfis de acesso possui o perfil que esta tentando acessar
           return true;
         } else {
           return false;

@@ -20,7 +20,7 @@
           icon: 'ion-ios-calendar',
           order: 60,
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('feriados.list', {
         url: '/list',

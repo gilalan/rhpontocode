@@ -22,7 +22,7 @@
              order: 4,
           },
           access: 'fiscal',
-          accessLevel: 2,
+          accessLevel: [2,3,4,5],
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
               
@@ -35,13 +35,13 @@
             allEmployees: function(employeeAPI, Auth){
 
               var user = Auth.getCurrentUser();
-              if (user.acLvl >= 5)
+              if (user.acLvl >= 4)
                 return employeeAPI.get();
             },
             allEquipes: function(teamAPI, Auth){
 
               var user = Auth.getCurrentUser();
-              if (user.acLvl >= 5)
+              if (user.acLvl >= 4)
                 return teamAPI.get();
             }
             

@@ -21,7 +21,7 @@
           icon: 'ion-ios-people',
           order: 20,
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('teams.list', {
         url: '/list',
@@ -36,7 +36,7 @@
             return teamAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('teams.new', {
         url: '/new',
@@ -54,7 +54,7 @@
             return employeeAPI.getFiscais();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('teams.edit', {
         url: '/edit/:id',
@@ -75,7 +75,7 @@
             return employeeAPI.getFiscais();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('teams.associate', {
         url: '/associate/:id',
@@ -90,7 +90,7 @@
             return employeeAPI.getActives();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       });
 
       $urlRouterProvider.when('/teams','/teams/list');

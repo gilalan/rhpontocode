@@ -104,8 +104,12 @@
 	        	$state.go('regponto'); //alterar o caminho da primeira página de acordo com o nível de acesso
 	      	else if (user.acLvl == 2) 
 	        	$state.go('regponto'); //se passar com o param userId ele vai bater o ponto diretamente...
-	      	else if (user.acLvl >= 3)
+	      	else if (user.acLvl == 3)
 	        	$state.go('dashboard');
+	        else if (user.acLvl == 4)
+	        	$state.go('reports');
+	        else if (user.acLvl == 5)
+	        	$state.go('reports');
 		}
 
 		//console.log('#redirectState!');

@@ -20,7 +20,7 @@
           icon: 'ion-ios-briefcase',
           order: 40,
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('jobs.list', {
         url: '/list',
@@ -32,14 +32,14 @@
             return jobAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('jobs.new', {
         url: '/new',
         templateUrl: 'app/pages/jobs/edit/edit.html',
         controller: 'NewJobCtrl',
         title: 'Cargos',
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('jobs.edit', {
         url: '/edit/:id',
@@ -51,7 +51,7 @@
             return jobAPI.getCargo($stateParams.id);
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       });
   }
 })();

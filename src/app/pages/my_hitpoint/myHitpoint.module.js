@@ -20,7 +20,7 @@
              icon: 'ion-clock',
              order: 1,
           },
-          accessLevel: 1,
+          accessLevel: [1],
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
                           

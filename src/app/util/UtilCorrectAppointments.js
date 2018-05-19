@@ -10,35 +10,43 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
 
 	svc.correctArray = function(funcionario, infoHorario, apontamentos, totais, feriados, equipe){
 
-		console.log('funcionario recebido? ', funcionario);
-		var arrayApps = [];
+		// console.log('funcionario recebido? ', funcionario);
+    // console.log('infoHorario: ', infoHorario);
+    // console.log('apontamentos: ', apontamentos);		
+    // console.log('totais: ', totais);
+    // console.log('feriados: ', feriados);
+    // console.log('equipe: ', equipe);
+    var arrayApps = [];
 
 		for (var i=0; i<apontamentos.length; i++){
 
 			console.log('apontamento: ', apontamentos[i]);
-			var extraInformations = verifyWorkerInfo(apontamentos[i].data, 
+			var extraInformations = verifyWorkerInfo(apontamentos[i], apontamentos[i].data, 
 				funcionario, feriados, equipe);
 
 			console.log('extraInformations: ', extraInformations);
 			arrayApps.push({
 				_id: apontamentos[i]._id,
 				trabalha: extraInformations.infoTrabalho.trabalha,
-				aTrabalhar: extraInformations.infoTrabalho.aTrabalhar
+				aTrabalhar: extraInformations.infoTrabalho.aTrabalhar,
+        trabalhados: extraInformations.infoTrabalho.trabalhados,
+        marcacoes: apontamentos[i].marcacoes,
+        marcacoesFtd: apontamentos[i].marcacoesFtd
 			});
 
 		}
-
+    // console.log()
 		reportsAPI.setApontamentosCorrecao(arrayApps).then(function successCallback(response){
 	        
-	        console.log('message returned: ', response.data);
+      console.log('message returned: ', response.data);
 
-	      }, function errorCallback(response){
-	        
-	        console.log('message returned: ', response.data);
-      	});
+    }, function errorCallback(response){
+      
+      console.log('message returned: ', response.data);
+  	});
 	};
 
-	function verifyWorkerInfo(data, funcionario, feriados, equipe) {
+	function verifyWorkerInfo(apontamento, data, funcionario, feriados, equipe) {
 
 		var date = new Date(data);
 	    var turno = null;
@@ -47,12 +55,12 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
       	var infoTrabalho = {};
 
 	    if (funcionario)
-	        if (funcionario.alocacao)
-	          if (funcionario.alocacao.turno){
-	            turno = funcionario.alocacao.turno;
-	            if (funcionario.alocacao.turno.escala)
-	              escala = funcionario.alocacao.turno.escala;
-	          }
+        if (funcionario.alocacao)
+          if (funcionario.alocacao.turno){
+            turno = funcionario.alocacao.turno;
+            if (funcionario.alocacao.turno.escala)
+              escala = funcionario.alocacao.turno.escala;
+          }
       
       var flagFeriado = isFeriado(date, equipe, feriados);
 
@@ -68,9 +76,9 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
 
             infoTrabalho.trabalha = true;
             infoTrabalho.aTrabalhar = diaTrabalho.minutosTrabalho;
-            minutos_trabalhados = getWorkedMinutes(date);
+            minutos_trabalhados = getWorkedMinutes(apontamento);
             if (minutos_trabalhados != undefined)
-              infoTrabalho.trabalhados = getWorkedMinutes(date);//só calcula para ciclos pares de batidas
+              infoTrabalho.trabalhados = minutos_trabalhados;//só calcula para ciclos pares de batidas
 
           } else {
 
@@ -78,17 +86,17 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
               
               infoTrabalho.trabalha = true;
               infoTrabalho.aTrabalhar = diaTrabalho.minutosTrabalho;
-              minutos_trabalhados = getWorkedMinutes(date);
+              minutos_trabalhados = getWorkedMinutes(apontamento);
               if (minutos_trabalhados != undefined)
-                infoTrabalho.trabalhados = getWorkedMinutes(date);//só calcula para ciclos pares de batidas
+                infoTrabalho.trabalhados = minutos_trabalhados;//só calcula para ciclos pares de batidas
 
             } else {
 
               infoTrabalho.trabalha = false;
               infoTrabalho.aTrabalhar = 0;
-              minutos_trabalhados = getWorkedMinutes(date);
+              minutos_trabalhados = getWorkedMinutes(apontamento);
               if (minutos_trabalhados != undefined)
-                infoTrabalho.trabalhados = getWorkedMinutes(date);//só calcula para ciclos pares de batidas
+                infoTrabalho.trabalhados = minutos_trabalhados;//só calcula para ciclos pares de batidas
             }
           }
 
@@ -102,9 +110,9 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
             
             infoTrabalho.trabalha = true; 
             infoTrabalho.aTrabalhar = turno.jornada.minutosTrabalho;
-            minutos_trabalhados = getWorkedMinutes(date);
+            minutos_trabalhados = getWorkedMinutes(apontamento);
             if (minutos_trabalhados != undefined)
-              infoTrabalho.trabalhados = getWorkedMinutes(date);
+              infoTrabalho.trabalhados = minutos_trabalhados;
 
           } else {
 
@@ -112,27 +120,30 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
               
               infoTrabalho.trabalha = true; 
               infoTrabalho.aTrabalhar = turno.jornada.minutosTrabalho;
-              minutos_trabalhados = getWorkedMinutes(date);
+              minutos_trabalhados = getWorkedMinutes(apontamento);
               if (minutos_trabalhados != undefined)
-                infoTrabalho.trabalhados = getWorkedMinutes(date);              
+                infoTrabalho.trabalhados = minutos_trabalhados;              
 
             } else {
              
               infoTrabalho.trabalha = false; 
               infoTrabalho.aTrabalhar = 0;
-              minutos_trabalhados = getWorkedMinutes(date);
+              minutos_trabalhados = getWorkedMinutes(apontamento);
               if (minutos_trabalhados != undefined)
-                infoTrabalho.trabalhados = getWorkedMinutes(date);
+                infoTrabalho.trabalhados = minutos_trabalhados;
             }
           }
         }
         
-        extraInformations.infoTrabalho = infoTrabalho;
+        extraInformations.infoTrabalho = infoTrabalho;        
 
       } else {
 
         console.log("Funcionário não possui um turno ou uma escala de trabalho cadastrado(a).");
       }
+
+      if (extraInformations.infoTrabalho.trabalhados == undefined)
+        extraInformations.infoTrabalho.trabalhados = 0;
 
       return extraInformations;
     };
@@ -241,6 +252,9 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
       // d1.setHours(0,0,0,0);
       // d2.setHours(0,0,0,0);
 
+      console.log('data 1 STRING', dateToCompare);
+      console.log('data 2 STRING', dataInicioEfetivo);
+
       var str1 = dateToCompare.split('-');
       var str2 = dataInicioEfetivo.split('-');
       var d1;
@@ -261,8 +275,10 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
       //Levar em consideração também os timezones tem  que calcular a timezone
       // as vezes a hora do funcionário chega com TZ02:00:00 e a hora da batida ta com 03:00:00
       // aí fica 1h a mais e esse diffDays dá false mas deveria ser True.
-      // var tz1 = d1.getTimezoneOffset();
-      // var tz2 = d2.getTimezoneOffset();
+      var tz1 = d1.getTimezoneOffset();
+      var tz2 = d2.getTimezoneOffset();
+      console.log('tz1: ', tz1);
+      console.log('tz2: ', tz2);
       // var diffTzs = Math.abs(tz1 - tz2);
 
       var diffDays = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
@@ -274,56 +290,128 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
     /*
     * De acordo com a atual batida do funcionário, calcula as horas trabalhadas
     */
-    function getWorkedMinutes(marcacoes) {
+    function getWorkedMinutes(apontamento) {
       	
-      	console.log('Get Worked Minutes!');
-      
-        //se for uma marcação par, dá para calcular certinho
-        if (marcacoes.length % 2 == 0) {
+      var marcacoes = apontamento.marcacoes;
+    	// console.log('Get Worked Minutes!');
+      console.log('ordenar o array de marcacoes');
+      sortArrayMarcacoes(apontamento);
+      // console.log('apontamento modificado: ', apontamento);
+    
+      //se for uma marcação par, dá para calcular certinho
+      if (marcacoes.length % 2 == 0) {
 
-          if (marcacoes.length == 0)
-          	return 0;
+        if (marcacoes.length == 0)
+        	return 0;
 
-          else if (marcacoes.length == 2){
-            var parte1 = marcacoes[1].hora*60 + marcacoes[1].minuto;
-            console.log('parte1: ', parte1);
-            var parte2 = marcacoes[0].hora*60 + marcacoes[0].minuto;
-            console.log('parte2: ', parte2);
-            console.log('marcacao com 2 batidas, cálculo: ', (parte1 - parte2));
-            if (parte1 > parte2){
+        else if (marcacoes.length == 2){
+          var parte1 = marcacoes[1].hora*60 + marcacoes[1].minuto;
+          // console.log('parte1: ', parte1);
+          var parte2 = marcacoes[0].hora*60 + marcacoes[0].minuto;
+          // console.log('parte2: ', parte2);
+           console.log('marcacao com 2 batidas, cálculo: ', (parte1 - parte2));
+          if (parte1 > parte2){
 
-              return parte1 - parte2;
+            return parte1 - parte2;
 
-            } else {
+          } else {
 
-              return parte2 - parte1;
-            }
+            return parte2 - parte1;
           }
-          else {            
-            var minutosTrabalhados = 0;
-            var lengthMarcacoes = marcacoes.length;
-            console.log('lengthMarcacoes: ', lengthMarcacoes);
-            //obtém a primeira parcial de trabalho com a última batida (saída) e o registro de entrada anterior a ela. ex.: sai2 - ent2
-            var parcial1 = marcacoes[lengthMarcacoes-1].hora*60 + marcacoes[lengthMarcacoes-1].minuto;
-            var parcial2 = marcacoes[lengthMarcacoes-2].hora*60 + marcacoes[lengthMarcacoes-2].minuto;
-            console.log('parcial 1: ', parcial1);
-            console.log('parcial 2: ', parcial2);
-            minutosTrabalhados = parcial1 - parcial2;
-            console.log('minutosTrabalhados: ', minutosTrabalhados);
-            //como ainda não foi atualizado, esse array não tem a nova batida registrada em 'newDate' (parametro da funcao)
-            for (var i=0; i < lengthMarcacoes-1; i=i+2){
-              console.log('index: ', i);
-              console.log('apontamento.marcacoes[i+1]: ', marcacoes[i+1]);
-              console.log('apontamento.marcacoes[i]: ', marcacoes[i]);
-              var forparcial1 = marcacoes[i+1].hora*60 + marcacoes[i+1].minuto;
-              var forparcial2 = marcacoes[i].hora*60 + marcacoes[i].minuto;
-              console.log('dentro do for, parcial 1: ', (forparcial1 - forparcial2));
-              minutosTrabalhados += forparcial1 - forparcial2;
-              console.log('minutosTrabalhados atualizado: ', minutosTrabalhados);
-            }
-            return minutosTrabalhados;
-          } 
-        } else return undefined;
+        }
+        else {            
+          var minutosTrabalhados = 0;
+          var lengthMarcacoes = marcacoes.length;
+          // console.log('lengthMarcacoes: ', lengthMarcacoes);
+          // //obtém a primeira parcial de trabalho com a última batida (saída) e o registro de entrada anterior a ela. ex.: sai2 - ent2
+          // var parcial1 = marcacoes[lengthMarcacoes-1].hora*60 + marcacoes[lengthMarcacoes-1].minuto;
+          // var parcial2 = marcacoes[lengthMarcacoes-2].hora*60 + marcacoes[lengthMarcacoes-2].minuto;
+          // // console.log('parcial 1: ', parcial1);
+          // // console.log('parcial 2: ', parcial2);
+          // minutosTrabalhados = parcial1 - parcial2;
+          //  console.log('minutosTrabalhados: ', minutosTrabalhados);
+          //como ainda não foi atualizado, esse array não tem a nova batida registrada em 'newDate' (parametro da funcao)
+          for (var i=0; i < lengthMarcacoes-1; i=i+2){
+            // console.log('index: ', i);
+            // console.log('apontamento.marcacoes[i+1]: ', marcacoes[i+1]);
+            // console.log('apontamento.marcacoes[i]: ', marcacoes[i]);
+            var forparcial1 = marcacoes[i+1].hora*60 + marcacoes[i+1].minuto;
+            var forparcial2 = marcacoes[i].hora*60 + marcacoes[i].minuto;
+             console.log('dentro do for, parcial 1: ', (forparcial1 - forparcial2));
+            minutosTrabalhados += forparcial1 - forparcial2;
+            // console.log('minutosTrabalhados atualizado: ', minutosTrabalhados);
+          }
+          return minutosTrabalhados;
+        } 
+      } else { //batidas em numero impar (incorretas)
+        
+        if (marcacoes.length > 1 && marcacoes.length < 5){
+          var parte1 = marcacoes[1].hora*60 + marcacoes[1].minuto;
+          // console.log('parte1: ', parte1);
+          var parte2 = marcacoes[0].hora*60 + marcacoes[0].minuto;
+          // console.log('parte2: ', parte2);
+           console.log('marcacao com 2 batidas, cálculo: ', (parte1 - parte2));
+          if (parte1 > parte2){
+
+            return parte1 - parte2;
+
+          } else {
+
+            return parte2 - parte1;
+          }
+        } 
+
+        if(marcacoes.length >= 5){
+
+          var minutosTrabalhados = 0;
+          var lengthMarcacoes = marcacoes.length;
+        
+          for (var i=0; i < lengthMarcacoes-2; i=i+2){
+            var forparcial1 = marcacoes[i+1].hora*60 + marcacoes[i+1].minuto;
+            var forparcial2 = marcacoes[i].hora*60 + marcacoes[i].minuto;
+             console.log('dentro do for, parcial 1: ', (forparcial1 - forparcial2));
+            minutosTrabalhados += forparcial1 - forparcial2;
+          }
+          return minutosTrabalhados;
+        }
+        return undefined;
+      }
+    };
+
+    function sortArrayMarcacoes(apontamento){
+
+      apontamento.marcacoes.sort(function (a, b) {
+        return a.totalMin - b.totalMin;        
+      });
+
+      apontamento.marcacoesFtd = [];
+
+      for (var i=0; i<apontamento.marcacoes.length; i++){
+        
+        apontamento.marcacoes[i].id = i+1;
+        apontamento.marcacoesFtd.push(apontamento.marcacoes[i].strHorario);
+
+        if (i === 0)
+          apontamento.marcacoes[i].descricao = "ent1";
+        
+        else if (i === 1)
+          apontamento.marcacoes[i].descricao = "sai1";
+        
+        else if (i === 2)
+          apontamento.marcacoes[i].descricao = "ent2";
+
+        else if (i === 3)
+          apontamento.marcacoes[i].descricao = "sai2";
+
+        else { //verificar quantos pares de entrada/saida já foram adicionados para gerar a descricao
+          if (i % 2 === 0) {//se é par
+            apontamento.marcacoes[i].descricao = "ent" + ( (i/2) + 1);
+          } else {
+            apontamento.marcacoes[i].descricao = "sai" + (Math.floor(i/2) + 1);
+          }
+        }
+      }
+
     };
 
 });

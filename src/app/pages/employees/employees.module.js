@@ -20,7 +20,7 @@
           icon: 'ion-person',
           order: 30,
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('employees.list', {
         url: '/list',
@@ -32,7 +32,7 @@
             return employeeAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('employees.new', {
         url: '/new',
@@ -50,7 +50,7 @@
             return institutionAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('employees.edit', {
         url: '/edit/:id',
@@ -71,7 +71,7 @@
             return institutionAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       });
   }
 })();

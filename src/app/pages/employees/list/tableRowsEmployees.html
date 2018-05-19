@@ -11,8 +11,8 @@
     <thead>
     <tr class="sortable ">
       <th class="table-id" st-sort="id" st-sort-default="true">#</th>
-      <th st-sort="nome">Nome</th>
-      <th st-sort="dataNascimento">Data de Nascimento</th>
+      <th st-sort="nomeCompleto">Nome</th>
+      <th st-sort="matricula">Matrícula</th>
       <th st-sort="PIS">PIS</th>
       <th st-sort="cargo">Cargo</th>
       <th>Ações</th>
@@ -21,7 +21,7 @@
       <th></th>
       <th><input st-search="nome" placeholder="Buscar Nome" class="input-sm form-control search-input"
                  type="search"/></th>      
-      <th><input st-search="dataNascimento" placeholder="Buscar Data de Nascimento" class="input-sm form-control search-input"
+      <th><input st-search="matricula" placeholder="Buscar Matrícula" class="input-sm form-control search-input"
                  type="search"/></th>
       <th><input st-search="PIS" placeholder="Buscar PIS" class="input-sm form-control search-input"
                  type="search"/></th>
@@ -32,8 +32,9 @@
     <tbody>
       <tr ng-repeat="funcionario in funcionarios track by $index" ng-class="{'funcionario-demitido': !funcionario.active}">
         <td>{{$index}}</td>
-        <td>{{funcionario.nome}}</td>
-        <td>{{funcionario.dataNascimento | date: 'dd/MM/yyyy'}}</td>
+        <td>{{funcionario.nome + ' ' + funcionario.sobrenome}}</td>
+        <td>{{funcionario.matricula}}</td>
+        <!-- <td>{{funcionario.dataNascimento | date: 'dd/MM/yyyy'}}</td> -->
         <!-- <td>{{funcionario.alocacao.dataAdmissao | date: 'dd/MM/yyyy'}}</td> -->
         <td>{{funcionario.PIS}}</td>
         <td>

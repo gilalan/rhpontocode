@@ -20,7 +20,7 @@
           sidebarMeta: {
             order: 0,
           },
-          accessLevel: 4
+          accessLevel: [4,5]
         })
         .state('entities.institutions.list', {
           url: '/list',

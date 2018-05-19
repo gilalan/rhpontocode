@@ -48,7 +48,7 @@ angular.module('BlurAdmin', [
     //console.log('#fromParams ', fromParams);
 
     //Precisa estar logado e com algum nível de autorização
-    if (toState && toState.accessLevel > 0) {
+    if (toState && toState.accessLevel.length > 0) { //s.accessLevel.includes(user.acLvl)
       
       var allowed = false;
       //console.log('Entrando em uma rota com nível de acesso > 0');

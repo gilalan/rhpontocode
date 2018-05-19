@@ -20,7 +20,7 @@
           icon: 'ion-flag',
           order: 50,
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('shifts.list', {
         url: '/list',
@@ -32,7 +32,7 @@
             return shiftAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('shifts.new', {
         url: '/new',
@@ -48,7 +48,7 @@
             return shiftAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       })
       .state('shifts.edit', {
         url: '/edit/:id',
@@ -63,7 +63,7 @@
             return scaleAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5]
       });
   }
 })();

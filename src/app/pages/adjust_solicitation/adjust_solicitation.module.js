@@ -20,7 +20,7 @@
              icon: 'ion-clipboard',
              order: 3,
           },
-          accessLevel: 1,
+          accessLevel: [1],
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
                           
