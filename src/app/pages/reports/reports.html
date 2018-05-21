@@ -17,13 +17,14 @@
 			  <!-- <button type="button" class="list-group-item list-group-item-action " ng-click="showBancoHoras()">Banco de Horas</button> -->
 			</div>
 		</div>
-		<div class="col-lg-8 col-md-8" ng-if="equipesLiberadas">
+		<div class="col-lg-8 col-md-8" ng-if="filtroPonto">
 			<h4 class="sub-header"><strong style="color: #334db7;">Escolha o Filtro</strong></h4>
-			<div class="form-group">
-		        <label for="inputEquipe" style="color: #33aab7;">Equipe:</label>
+			
+			<div class="form-group" ng-disabled="!checkboxModel.equipe">
+		        <label for="inputEquipe" style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.equipe" ng-change="clickTeamCB()">Equipe:</label>
 		         <ui-select ng-model="selectedEquipe.item"
 		               class="btn-group bootstrap-select form-control"
-		               ng-disabled="true"
+		               ng-disabled="false"
 		               ng-change="fillEmployees(selectedEquipe.item)"
 		               append-to-body="true"
 		               search-enabled="false"
@@ -39,10 +40,10 @@
 	        
 	        <i> ou </i>
 
-	        <label style="color: #33aab7;">Funcionário:</label>
+	        <label style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.funcionario" ng-change="clickEmployeeCB()">Funcionário:</label>
 		    <!-- <pre>Model: {{funcionario.selected | json}}</pre> -->
 		    
-	    	<input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
+	    	<input type="text"  ng-disabled="!checkboxModel.funcionario" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
 
 	    	
     		<button id="idBtnSearch" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin"  ng-click="buildAllReports()">

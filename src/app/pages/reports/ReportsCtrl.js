@@ -27,7 +27,7 @@
     $scope.isAdmin = false;
     $scope.espelhoPonto = true;
     $scope.bancoHoras = false;
-    $scope.equipesLiberadas = false;
+    $scope.filtroPonto = false;
 
     $scope.funcionario = {};
     $scope.employees = [];
@@ -35,6 +35,11 @@
     $scope.meses = [];
     $scope.anos = [];
     $scope.periodoApontamento = [];
+    $scope.checkboxModel = {
+      equipe: false,
+      funcionario: true
+    };
+
     // ////////console.log("### Dentro de ReportsCtrl!!!", $scope.gestor);
 
     init();
@@ -58,6 +63,24 @@
     $scope.setAno = function (pAno) { 
       ano = pAno;
     }
+
+    $scope.clickEmployeeCB = function(){
+      console.log('clicou employee', $scope.checkboxModel.funcionario);
+      if ($scope.checkboxModel.funcionario){
+          $scope.checkboxModel.equipe = false;
+      } else {
+        $scope.checkboxModel.equipe = true;
+      }
+    };
+
+    $scope.clickTeamCB = function(){
+      console.log('clicou equipe', $scope.checkboxModel.equipe);
+      if($scope.checkboxModel.equipe){
+        $scope.checkboxModel.funcionario = false;
+      } else {
+        $scope.checkboxModel.funcionario = true;
+      }
+    };
 
     $scope.search = function () {
 
@@ -104,7 +127,7 @@
       var dateAux = new Date(beginDate);
       var endDateAux = new Date(endDate);
 
-      var equipeIds = $scope.employees.map(a => a._id);
+      //var equipeIds = $scope.employees.map(a => a._id);
 
       var objDateWorker = {
         date: {
@@ -362,7 +385,7 @@
             equipe: 'equipeVar'
           });
         }
-      $scope.equipesLiberadas = true;
+      $scope.filtroPonto = true;
     };
 
    /*
@@ -397,7 +420,7 @@
 
       fillEmployees();
 
-      $scope.equipesLiberadas = true;
+      $scope.filtroPonto = true;
     };
 
     function fillEmployees(){
@@ -1270,7 +1293,7 @@
 
     function init () {
 
-      if (Usuario.perfil.accessLevel == 3) {
+      if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
         
         $scope.gestor = Usuario.funcionario;
         getEquipesByGestor();
@@ -1290,7 +1313,7 @@
       } else {
 
         ////////console.log("Não deve ter acesso.");
-        $scope.errorMsg = "Este funcionário não é Gestor e portanto não pode visualizar estas informações";
+        $scope.errorMsg = "Este funcionário não tem permissão para visualizar estas informações";
 
       }
 

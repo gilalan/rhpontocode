@@ -20,7 +20,7 @@
              icon: 'ion-clipboard',
              order: 3,
           },
-          accessLevel: [1],
+          accessLevel: [1, 2, 3],
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
                           
@@ -50,7 +50,7 @@
           templateUrl: 'app/pages/adjust_solicitation/gestor/_adjust_solicitation.html',
           controller: 'AdjustSolicitationGestorCtrl',
           title: 'Gerenciar Batidas de Funcionários',
-          accessLevel: 3,
+          accessLevel: [2,3],
           resolve: {
             usuario: function(usersAPI, Auth){
                           

@@ -506,9 +506,7 @@
           });        
         }
         
-      } else if (Usuario.perfil.accessLevel == 2) {
-        //fiscal
-      } else if (Usuario.perfil.accessLevel == 3) {
+      } else if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
         
         $scope.gestor = Usuario.funcionario;
         // getEquipesByGestor();

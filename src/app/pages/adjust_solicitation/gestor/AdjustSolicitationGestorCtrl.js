@@ -634,7 +634,7 @@
 
     function init() {
 
-      if (Usuario.perfil.accessLevel == 3) {
+      if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
         
         $scope.gestor = Usuario.funcionario;
         getEquipesByGestor();

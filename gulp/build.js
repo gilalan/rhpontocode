@@ -2,6 +2,7 @@
 
 var path = require('path');
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var conf = require('./conf');
 
 var $ = require('gulp-load-plugins')({
@@ -45,7 +46,7 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe(jsFilter)
     .pipe($.sourcemaps.init())
     .pipe($.ngAnnotate())
-    .pipe($.uglify({ preserveComments: $.uglifySaveLicense })).on('error', conf.errorHandler('Uglify'))
+    .pipe($.uglify().on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); }))//{ preserveComments: $.uglifySaveLicense })).on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })//conf.errorHandler('Uglify'))
     .pipe($.sourcemaps.write('maps'))
     .pipe(jsFilter.restore)
     .pipe(cssFilter)
@@ -93,6 +94,16 @@ gulp.task('other', ['copyVendorImages'], function () {
 
 gulp.task('clean', function () {
   return $.del([path.join(conf.paths.dist, '/'), path.join(conf.paths.tmp, '/')]);
+});
+
+var pump = require('pump');
+
+gulp.task('uglify-error-debugging', function (cb) {
+  pump([
+    gulp.src('app/**/*.js'),
+    uglify(),
+    gulp.dest('./dist/')
+  ], cb);
 });
 
 gulp.task('build', ['html', 'fonts', 'other']);
