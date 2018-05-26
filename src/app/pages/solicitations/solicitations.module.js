@@ -20,7 +20,7 @@
           icon: 'ion-ios-list',
           order: 2,
         },
-        accessLevel: [3]
+        accessLevel: [2, 3]
       })
       .state('solicitations.list', {
         url: '/list',
@@ -38,7 +38,7 @@
             return myhitpointAPI.getByStatus({status: 0}); //status 0 -> pendentes
           }
         },
-        accessLevel: [3]
+        accessLevel: [2, 3]
       })
       .state('solicitations.new', {
         url: '/new',
@@ -56,7 +56,7 @@
         //     return institutionAPI.get();
         //   }
         // },
-        accessLevel: [3]
+        accessLevel: [2, 3]
       })
       .state('solicitations.edit', {
         url: '/edit/:id',
@@ -77,7 +77,7 @@
         //     return institutionAPI.get();
         //   }
         // },
-        accessLevel: [3]
+        accessLevel: [2, 3]
       });
   }
 })();
