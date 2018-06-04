@@ -20,7 +20,7 @@
              icon: 'ion-clipboard',
              order: 3,
           },
-          accessLevel: [1, 2, 3],
+          accessLevel: [1, 2, 3, 4, 6],
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
                           
@@ -50,10 +50,9 @@
           templateUrl: 'app/pages/adjust_solicitation/gestor/_adjust_solicitation.html',
           controller: 'AdjustSolicitationGestorCtrl',
           title: 'Gerenciar Batidas de Funcionários',
-          accessLevel: [2,3],
+          accessLevel: [2,3,4,6],
           resolve: {
             usuario: function(usersAPI, Auth){
-                          
               var user = Auth.getCurrentUser();
               // console.log('## Usuário retornado: ##', user);
               return usersAPI.getUsuario(user._id);
@@ -64,8 +63,16 @@
             feriados: function(feriadoAPI) {
               return feriadoAPI.get();
             },
-            allEmployees: function(employeeAPI){
-              return employeeAPI.get();
+            allEmployees: function(employeeAPI, Auth){
+              var user = Auth.getCurrentUser();              
+              if (user.acLvl >= 4)
+                return employeeAPI.get();              
+            },
+            allEquipes: function(teamAPI, Auth){
+
+              var user = Auth.getCurrentUser();
+              if (user.acLvl >= 4)
+                return teamAPI.get();
             }    
           }
         });

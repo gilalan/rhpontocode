@@ -14,6 +14,9 @@
     $scope.title = 'Novo';
         
     $scope.save = function (cargo) {
+
+      if (!cargo.nomeFeminino || cargo.nomeFeminino === "" || cargo.nomeFeminino === " ")
+        cargo.nomeFeminino = cargo.especificacao;
       
       console.log('Cargo enviado: ', cargo);
 

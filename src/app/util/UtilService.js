@@ -183,6 +183,41 @@ angular.module('BlurAdmin').service("util", function(){
     };
 
     /*
+    ** Retorna quantidade de dias entre duas datas.
+    */
+    svc.daysCountBtwDates = function (date1, date2){
+
+      var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+      
+      var d1 = angular.copy(date1); 
+      var d2 = angular.copy(date2);
+      d1.setHours(0,0,0,0);
+      d2.setHours(0,0,0,0);
+
+      var objRetorno = {
+        daysCount: -1,
+        arrayDias: []
+      };
+
+      //objRetorno.daysCount = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
+
+      var current = angular.copy(d1);
+      var arrayDias = [];
+      while(current <= d2){
+        arrayDias.push({
+          date: current.getDate(), 
+          month: current.getMonth()+1,
+          year: current.getFullYear()
+        });
+        current = svc.addOrSubtractDays(current, 1);
+      }
+
+      objRetorno.arrayDias = arrayDias;
+      objRetorno.daysCount = arrayDias.length;
+      return objRetorno;
+    };
+
+    /*
     ** Compara apenas a data (dia, mes e ano)
     ** Ex.: 15/02/2018 e 16/02/2018 => -1 (a dt1 é menor que a dt2)
     */
@@ -191,13 +226,13 @@ angular.module('BlurAdmin').service("util", function(){
       //como a passagem é por referência, devemos criar uma cópia do objeto
       var d1 = angular.copy(date1); 
       var d2 = angular.copy(date2);
-      //console.log('date1', d1);
-      //console.log('date2', d2);
+      // console.log('date1', d1);
+      // console.log('date2', d2);
       d1.setHours(0,0,0,0);
       d2.setHours(0,0,0,0);
 
-      //console.log('date1 time', d1.getTime());
-      //console.log('date2 time', d2.getTime());
+      // console.log('date1 time', d1.getTime());
+      // console.log('date2 time', d2.getTime());
 
       if (d1.getTime() < d2.getTime())
         return -1;
@@ -323,35 +358,35 @@ angular.module('BlurAdmin').service("util", function(){
 
     svc.isFeriado = function(data, feriados, equipe){
 
-        var date = data.getDate();//1 a 31
-        var month = data.getMonth();//0 a 11
-        var year = data.getFullYear();//
-        var flagFeriado = false;
-        var tempDate;
+      var date = data.getDate();//1 a 31
+      var month = data.getMonth();//0 a 11
+      var year = data.getFullYear();//
+      var flagFeriado = false;
+      var tempDate;
 
-        feriados.forEach(function(feriado){
-        
-            for (var i = 0; i < feriado.array.length; i++) {
-              
-              tempDate = new Date(feriado.array[i]);
-              if (feriado.fixo){
-              
-                if (tempDate.getMonth() === month && tempDate.getDate() === date){
-                  //console.log("É Feriado (fixo)!", tempDate);
-                  flagFeriado = checkFeriadoSchema(feriado, equipe);
-                  return feriado;
-                }
-
-              } else {//se não é fixo
-
-                if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
-                  //console.log("É Feriado (variável)!", tempDate);
-                  flagFeriado = checkFeriadoSchema(feriado, equipe);
-                  return feriado;
-                }
-              }
+      feriados.forEach(function(feriado){
+      
+        for (var i = 0; i < feriado.array.length; i++) {
+          
+          tempDate = new Date(feriado.array[i]);
+          if (feriado.fixo){
+          
+            if (tempDate.getMonth() === month && tempDate.getDate() === date){
+              //console.log("É Feriado (fixo)!", tempDate);
+              flagFeriado = checkFeriadoSchema(feriado, equipe);
+              return feriado;
             }
-          });
+
+          } else {//se não é fixo
+
+            if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
+              //console.log("É Feriado (variável)!", tempDate);
+              flagFeriado = checkFeriadoSchema(feriado, equipe);
+              return feriado;
+            }
+          }
+        }
+      });
       // console.log('FlagFeriado: ', flagFeriado);
       return flagFeriado;//no futuro retornar o flag de Feriado e a descrição do mesmo!
 
@@ -385,6 +420,31 @@ angular.module('BlurAdmin').service("util", function(){
       }
 
       return flagFeriado;
+    };
+
+    svc.checkFerias = function(data, objFerias){
+
+      var date = data.getDate();//1 a 31
+      var month = data.getMonth()+1;//0 a 11 //add 1 para ficar no padrão humano
+      var year = data.getFullYear();//      
+      var estaFerias = false;
+
+      if(objFerias){
+
+        objFerias.forEach(function(ferias){
+      
+          for (var i = 0; i < ferias.arrayDias.length; i++) {
+                                    
+            if ( (ferias.arrayDias[i].year === year) && (ferias.arrayDias[i].month === month) && (ferias.arrayDias[i].date === date) ){
+              console.log("Está de ferias!", ferias.arrayDias[i]);
+              estaFerias = true;
+              return estaFerias;
+            }
+            
+          }
+        }); 
+      }
+      return estaFerias;      
     };
 
     /*

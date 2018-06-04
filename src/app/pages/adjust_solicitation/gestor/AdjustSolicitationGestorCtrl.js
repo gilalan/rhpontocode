@@ -12,9 +12,10 @@
       .controller('ConfirmationModalGestCtrl', ConfirmationModalGestCtrl);
 
   /** @ngInject */
-  function AdjustSolicitationGestorCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, teamAPI, usuario, currentDate, feriados, allEmployees) {
+  function AdjustSolicitationGestorCtrl($scope, $filter, $state, $uibModal, $timeout, util, Auth, employeeAPI, appointmentAPI, myhitpointAPI, teamAPI, usuario, currentDate, feriados, allEmployees, allEquipes) {
 
     var Usuario = usuario.data;
+    var currentUser = Auth.getCurrentUser();
     var feriados = feriados.data;
     var arrayESOriginal = [];
     var equipe = {};
@@ -271,7 +272,15 @@
             return solicitacaoAjuste;
           },
           gestor: function(){
-            return $scope.gestor;
+            if ($scope.gestor)
+              return $scope.gestor;
+            else
+              return {
+                nome: currentUser._id,
+                sobrenome: currentUser._id,
+                email: currentUser.email,
+                PIS: currentUser.email
+              };
           },
           feriados: function(){
             return feriados;
@@ -566,16 +575,17 @@
      
     };
 
-    //Traz todos os employees para tela de Administrador
-    function getAllEmployees() {
+    //Traz todos os employees/equipes para tela de Administrador
+    function getAllEmployees(allEmployees, allEquipes) {
       
-      var empsArray = allEmployees.data;
-
-      for (var j=0; j<empsArray.length; j++) {
-          $scope.employees.push(empsArray[j]);
-          $scope.employeesNames.push( { id: empsArray[j]._id, name: empsArray[j].nome + ' ' + empsArray[j].sobrenome});
-        }
-      $scope.equipesLiberadas = true;
+      //var empsArray = allEmployees.data;
+      $scope.equipes = allEquipes.data;
+      fillEquipes();
+      // for (var j=0; j<empsArray.length; j++) {
+      //     $scope.employees.push(empsArray[j]);
+      //     $scope.employeesNames.push( { id: empsArray[j]._id, name: empsArray[j].nome + ' ' + empsArray[j].sobrenome});
+      //   }
+      // $scope.equipesLiberadas = true;
     };
 
     /*
@@ -632,7 +642,7 @@
       //////console.log('employees: ', $scope.employeesNames);
     };
 
-    function init() {
+    function init(allEmployees, allEquipes) {
 
       if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
         
@@ -641,19 +651,19 @@
 
       } else if (Usuario.perfil.accessLevel == 4) {
          
-         $scope.gestor = Usuario.funcionario;
-         $scope.isGestorGeral = true;
-         getEquipesByGestor();
+        $scope.isAdmin = true;
+        ////console.log('allEmployees: ', allEmployees.data);
+        getAllEmployees(allEmployees, allEquipes);
 
-      } else if (Usuario.perfil.accessLevel == 5) {
+      } else if (Usuario.perfil.accessLevel >= 5) {
 
         $scope.isAdmin = true;
         ////console.log('allEmployees: ', allEmployees.data);
-        getAllEmployees();
+        getAllEmployees(allEmployees, allEquipes);
       }
     };
 
-    init();
+    init(allEmployees, allEquipes);
   };
 
   function DesconsiderarCtrl($uibModalInstance, $scope, $state, $filter, objBatida){
@@ -751,7 +761,7 @@
 
     //console.log('equipe encontrada: ', equipe);
     //console.log('feriados: ', feriados);
-    //console.log('gestor: ', gestor);
+    console.log('gestor: ', gestor);
     //console.log('apontamento?: ', apontamento);
 
     var isNewApontamento = false;

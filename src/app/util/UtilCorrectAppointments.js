@@ -46,6 +46,32 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
   	});
 	};
 
+  svc.putFeriasAppoints = function(apontamentos){
+    
+    var arrayApps = [];
+
+    for (var i=0; i<apontamentos.length; i++){
+
+      console.log('apontamento: ', apontamentos[i]);      
+      arrayApps.push({
+        _id: apontamentos[i]._id,
+        trabalha: false,
+        aTrabalhar: 0,
+        estaFerias: true
+      });
+    }
+
+    reportsAPI.setFeriasApontamentos(arrayApps).then(function successCallback(response){
+          
+      console.log('message returned: ', response.data);
+
+    }, function errorCallback(response){
+      
+      console.log('message returned: ', response.data);
+    });
+     
+  };
+
 	function verifyWorkerInfo(apontamento, data, funcionario, feriados, equipe) {
 
 		var date = new Date(data);

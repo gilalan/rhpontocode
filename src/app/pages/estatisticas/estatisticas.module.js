@@ -20,7 +20,7 @@
              icon: 'ion-thumbsup',
              order: 61,
           },
-          accessLevel: [5],
+          accessLevel: [6],
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
                           

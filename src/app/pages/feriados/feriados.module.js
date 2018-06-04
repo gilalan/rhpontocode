@@ -20,7 +20,7 @@
           icon: 'ion-ios-calendar',
           order: 60,
         },
-        accessLevel: [3,4,5]
+        accessLevel: [3,4,5,6]
       })
       .state('feriados.list', {
         url: '/list',
@@ -32,7 +32,7 @@
             return feriadoAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5,6]
       })
       .state('feriados.new', {
         url: '/new',
@@ -44,7 +44,7 @@
             return estadosAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5,6]
       })
       .state('feriados.edit', {
         url: '/edit/:id',
@@ -59,7 +59,7 @@
             return estadosAPI.get();
           }
         },
-        accessLevel: 3
+        accessLevel: [3,4,5,6]
       });
   }
 })();

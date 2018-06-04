@@ -21,7 +21,12 @@ angular.module('BlurAdmin.pages.reports').service("reportsAPI", function($http, 
 	svc.setApontamentosCorrecao = function (arrayApps) {
 		
 		return $http.post(_urlBaseReports + '/updateAppoints', arrayApps);
-	};	
+	};
+
+	svc.setFeriasApontamentos = function(arrayApps) {
+
+		return $http.post(_urlBaseReports + '/setFeriasAppoints', arrayApps);
+	};
 
 	// svc.update = function (solicitacao) {
 

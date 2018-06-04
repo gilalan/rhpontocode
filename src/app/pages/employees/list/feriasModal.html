@@ -1,0 +1,113 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">Indicar Período de Férias</h4>
+  </div>
+  <div class="modal-body">
+          
+        <div class="row">
+         <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Feito!</strong> {{successMsg}}
+          </div>
+
+          <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Ops!</strong> {{errorMsg}}
+          </div>
+        </div>
+        <h4 class="sub-header"><strong style="color: #334db7;">Dados</strong></h4>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label class="modal-label modal-label-associate"><strong>Nome: </strong></label>
+                <label class="modal-label modal-label-value">{{funcionario.nome}} {{funcionario.sobrenome}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label class="modal-label modal-label-associate"><strong>Cargo: </strong></label>
+                <label class="modal-label modal-label-value">{{funcionario.sexoMasculino ? funcionario.alocacao.cargo.especificacao : funcionario.alocacao.cargo.nomeFeminino}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label class="modal-label modal-label-associate"><strong>Data de Admissão: </strong></label>
+                <label class="modal-label modal-label-value">{{funcionario.alocacao.dataAdmissao | date:'dd/MM/yyyy'}}</label>
+              </div>
+            </div>
+          </div>
+        <br>
+        <h4 class="sub-header"><strong style="color: #334db7;">Histórico de Férias</strong></h4>
+          <div class="row" ng-if="funcionario.ferias" style="margin: 0px;">
+            <table class="table table-condensed" style="table-layout: fixed;">
+              <thead>
+                <tr style="color: #334db7;">
+                  <th class="col-xs-1 centerColSpan first" style="width: 2%;"><b>#</b></th>
+                  <th class="col-xs-1 centerColSpan first" style="width: 34%;"><b>Periodo</b></th>
+                  <th class="col-xs-1 centerColSpan first" style="width: 32%;"><b>Dias corridos</b></th>                  
+                  <th class="col-xs-1 centerColSpan first last" style="width: 32%;"><b>Aprovado por</b></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="item in funcionario.ferias track by $index" class="editable-row">
+                  <td style="line-height: 19px !important; overflow: hidden; width: 2%;">{{item.id}}</td>
+                  <td style="line-height: 19px !important; text-align: center; padding-left: 15px; overflow: hidden; width: 34%;">{{item.dataIniFtd | date:'dd/MM/yyyy'}} ate {{item.dataFinFtd | date:'dd/MM/yyyy'}}</td>
+                  <td style="line-height: 19px !important; text-align: center; overflow: hidden; width: 32%;">
+                    {{item.qtdeDias}}
+                  </td>
+                  <td style="line-height: 19px !important; text-align: center; padding-left: 5px; overflow: hidden; width: 32%;">              
+                    {{item.cadastradorPor.email ? item.cadastradorPor.email : "--"}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div ng-if="!funcionario.ferias || funcionario.ferias.length == 0">
+            Não há registro de férias anteriores.
+          </div>
+        <br>
+      <h4 class="sub-header"><strong style="color: #334db7;">Período de Gozo das Férias:</strong></h4>
+      <form name="periodoForm">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="inputNome">Data Inicial*</label>
+              <p class="input-group" style="margin-bottom: 10px;">
+                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+              </p>
+              <label style="border: 1px solid black; border-radius: 5px; background: #e9e9e9; padding: 5px; font-size: 16px; font-weight: normal;"><strong><em>{{datepic.dt | date:'fullDate' }}</em><strong></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="inputPassword">Data Final*</label>
+              <p class="input-group" style="margin-bottom: 10px;">
+                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepicF.dt" ng-change="changeDateF(datepicF.dt)" ng-readonly="true" is-open="somethingF.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="openF()"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+              </p>
+              <label style="border: 1px solid black; border-radius: 5px; background: #e9e9e9; padding: 5px; font-size: 16px; font-weight: normal;"><strong><em>{{datepicF.dt | date:'fullDate' }}</em><strong></label>
+            </div>
+          </div>
+        </div>
+      </form>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-disabled="periodoForm.$invalid" ng-click="indicarFerias()">Enviar</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

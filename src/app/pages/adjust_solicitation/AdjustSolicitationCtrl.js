@@ -517,7 +517,7 @@
          $scope.isGestorGeral = true;
          // getEquipesByGestor();
 
-      } else if (Usuario.perfil.accessLevel == 5) {
+      } else if (Usuario.perfil.accessLevel >= 5) {
 
         $scope.isAdmin = true;
         //console.log('allEmployees: ', allEmployees.data);

@@ -106,9 +106,11 @@
 	        	$state.go('reports'); //se passar com o param userId ele vai bater o ponto diretamente...
 	      	else if (user.acLvl == 3)
 	        	$state.go('dashboard');
-	        else if (user.acLvl == 4)
+	        else if (user.acLvl == 4) //Gestor da SOLL
 	        	$state.go('reports');
-	        else if (user.acLvl == 5)
+	        else if (user.acLvl == 5) //Gestor da Univasf
+	        	$state.go('dashboard')
+	        else if (user.acLvl == 6) //ADMIN 
 	        	$state.go('reports');
 		}
 

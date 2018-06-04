@@ -29,9 +29,13 @@
 
     function init() {
       
-      if (user.acLvl == 5) { //ADMIN
+      if (user.acLvl == 6) { //ADMIN
         $scope.infoUser = {
           text: "Perfil de Administrador (" + user.email + ")"
+        };
+      } else if (user.acLvl == 5) { //Gestor Univasf
+        $scope.infoUser = {
+          text: "Perfil de Gestor Univasf (" + user.email + ")"
         };
       } else if (user.acLvl == 4) { //Gestor Geral
         $scope.infoUser = {

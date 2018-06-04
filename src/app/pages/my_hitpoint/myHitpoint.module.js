@@ -102,7 +102,7 @@
               return $stateParams.obj.arrayES;
             }
           },
-          accessLevel: 1
+          accessLevel: [1]
         });
   }
 

@@ -18,8 +18,11 @@
     
     $scope.save = function (cargo) {
      
-      console.log('cargo enviada: ', cargo);
+      if (!cargo.nomeFeminino || cargo.nomeFeminino === "" || cargo.nomeFeminino === " ")
+        cargo.nomeFeminino = cargo.especificacao;
 
+      console.log('cargo enviada: ', cargo);
+      
       jobAPI.update(cargo).then(function sucessCallback(response){
 
         console.log('dados recebidos da atualização: ', response.data);

@@ -181,7 +181,7 @@
 
     $scope.gerarPDF = function() {
 
-      ////console.log('Funcionário selecionado: ', $scope.funcionario.selected);
+      //console.log('Funcionário selecionado: ', $scope.funcionario.selected);
       
       var periodoStr = mes.nome + ' / ' + ano.value;
       var diasRelatorio = gerarDiasRelatorioPonto();
@@ -196,6 +196,8 @@
       var docDefinition = utilReports.gerarEspelhoPonto($scope.funcionario.selected, 
         $scope.infoHorario, periodoStr, diasRelatorio, totais);
       
+      console.log('Funcionario selecionado para relatorio: ', $scope.funcionario.selected);
+
       docDefinition.footer = function(currentPage, pageCount) { 
         return { 
           text: currentPage.toString() + ' de ' + pageCount, 
@@ -204,8 +206,19 @@
         }; 
       };
 
+      var strPDFName = $scope.funcionario.selected.name + '-' + $scope.funcionario.selected.matricula + '.pdf';
+
       // download the PDF
-      pdfMake.createPdf(docDefinition).download('espelho_ponto.pdf');
+      pdfMake.createPdf(docDefinition).download(strPDFName);
+      // var dd = {
+      //   content: [
+      //     'First paragraph',
+      //     'Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines'
+      //   ]
+      // };
+
+      // pdfMake.createPdf(dd).download('espelho_ponto.pdf');
+
 
     };
 
@@ -359,7 +372,7 @@
         apontamentosTesteCorrect = response.data;
         ////console.log("!@# Apontamentos do funcionário: ", apontamentosResponse);
         //$scope.periodoApontamento = createArrayRangeDate(dateAux, endDateAux, 1, apontamentosResponse);
-        $scope.periodoApontamento = testePetrolina(dateAux, endDateAux, 1, apontamentosResponse);
+        $scope.periodoApontamento = testePetrolina(dateAux, endDateAux, 1, apontamentosResponse, funcionario);
 
       }, function errorCallback(response){
         
@@ -512,17 +525,19 @@
 
     function fillAnos() {
 
-      $scope.anos = [{value: '2018'}, {value: '2017'}, {value: '2016'}, {value: '2015'}, {value: '2014'}, {value: '2013'}, {value: '2012'}];
+      $scope.anos = [{value: '2018'}, {value: '2017'}, {value: '2016'}, {value: '2015'}, {value: '2014'}, {value: '2013'}];
       $scope.selectedAno = { item: $scope.anos[0] };
       ano = $scope.anos[0];
     };
 
-    function testePetrolina (startDate, endDate, interval, apontamentosSemanais) {
+    function testePetrolina (startDate, endDate, interval, apontamentosSemanais, funcionario) {
       
       var interval = interval || 1;
       var retVal = [];
       var current = new Date(startDate);
       var endDate = new Date(endDate);
+
+      var ferias = funcionario.ferias;
 
       //Tivemos que fazer um workaround para funcionar a obtenção dos apontamentos da data final no servidor
       //agora nós 'removemos' esse workaround:
@@ -567,15 +582,17 @@
             saldoFinalNegativo -= itemApontamento.saldo.saldoDiario;
           }
 
-          //if (apontamentoF.infoTrabalho.trabalha){ //se era um dia de trabalho de fato, incrementa a variável
+          if (!apontamentoF.infoTrabalho.ferias){ //se era um dia de trabalho de fato, incrementa a variável
             //talvez devessemos fazer um tratamento diferenciado para quando não for o dia de trabalho
             //tem que ver se precisaria contar mais horas (horas extras e tals)
             $scope.diasParaTrabalhar++;
             minTrabalhados += apontamentoF.infoTrabalho.trabalhados;
             minParaTrabalhar += apontamentoF.infoTrabalho.aTrabalhar;
-          //}
+          }
 
-          if (apontamentoF.status.id > 0) //Se for Incompleto, Erro ou Justificado...
+          if (apontamentoF.infoTrabalho.ferias)
+            itemApontamento.observacao = "Férias";
+          else if (apontamentoF.status.id > 0) //Se for Incompleto, Erro ou Justificado...
             itemApontamento.observacao = apontamentoF.status.descricao;
 
         } else { //se não tiver apontamento tem que verificar qual o motivo (falta, feriado, folga, férias?)
@@ -601,6 +618,8 @@
               horasFtd: '-' + devido.hora + ':' + devido.minuto
             };
             ////console.log('########quando falta: ', itemApontamento);
+          } else if (itemApontamento.ocorrencia.statusCodeString == "FER"){ //de férias, nada deve ser contabilizado
+
           }
         }
 
@@ -967,6 +986,7 @@
 
       var objBHDiario = {
         trabalha: apontamento.infoTrabalho.trabalha,
+        ferias: apontamento.infoTrabalho.ferias,
         saldoDiario: saldoDia,
         horasFtd: sinalFlag + saldoDiarioFormatado.hora + ':' + saldoDiarioFormatado.minuto,
         horasPosit: saldoFlag,
@@ -985,16 +1005,25 @@
       //pode não ter expediente iniciado, ser feriado, estar atrasado, de folga ou faltante mesmo
       var expedienteObj;
       if (funcionarioParam)
-        expedienteObj = updateAbsenceStatus(funcionarioParam.alocacao, currentDate);
+        expedienteObj = updateAbsenceStatus(funcionarioParam, currentDate);
       else
-        expedienteObj = updateAbsenceStatus(funcSel.alocacao, currentDate);
+        expedienteObj = updateAbsenceStatus(funcSel, currentDate);
 
       apontamento.ocorrencia.statusCodeString = expedienteObj.code;
       apontamento.ocorrencia.minutosDevidos = expedienteObj.minutosDia;
       apontamento.ocorrencia.statusString = expedienteObj.string;
       apontamento.ocorrencia.statusImgUrl = expedienteObj.imgUrl;
 
-      if (expedienteObj.code == "FRD"){
+      if (expedienteObj.code == "FER"){
+
+        saldoFlag = true;
+        sinalFlag = '';
+        saldoDiarioFormatado = converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
+        apontamento.observacao = expedienteObj.string;
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = !saldoFlag;
+
+      } else if (expedienteObj.code == "FRD"){
         saldoFlag = true;
         sinalFlag = '';
         saldoDiarioFormatado = converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
@@ -1037,36 +1066,48 @@
     };
 
     /*
-     * São 5 possíveis casos para ausência:
+     * São 6 possíveis casos para ausência:
      * 1- Feriado
      * 2- ENI - Expediente Não Iniciado
      * 3- Folga solicitada e aceita / Licença
      * 4- DSR - Descanso Semanal Remunerado 
      * 5- Ausência de fato
+     * 6- Férias!
     */
-    function updateAbsenceStatus(funcionarioAlocacao, dataDesejada) {
+    function updateAbsenceStatus(funcionario, dataDesejada) {
       
+      var funcionarioAlocacao = funcionario.alocacao;
       var codigoEscala = funcionarioAlocacao.turno.escala.codigo; 
       var ignoraFeriados =  funcionarioAlocacao.turno.ignoraFeriados;
       var objFeriadoRet = isFeriado(dataDesejada);
+      var objFerias = util.checkFerias(dataDesejada, funcionario.ferias);
+      console.log('está de férias ?', objFerias);
 
-      if (objFeriadoRet.flag && !ignoraFeriados){//Caso 1 - feriado
+      if (objFerias){
         
-        //////console.log('Feriado em: ', dataDesejada);
-        return {code: "FRD", string: objFeriadoRet.name, imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};//getSaldoDiaFrd(funcionarioAlocacao)};
+        console.log("funcionários de férias na data", dataDesejada);
+        return {code: "FER", string: "Férias!", imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};
 
-      } else if (hasFolgaSolicitada() || hasLicenca()){ //Caso 3 - Folgas/Licenças
+      } else {
 
-        //////////console.log('Caso 3 - checar');
+        if (objFeriadoRet.flag && !ignoraFeriados){ //Caso 1 - feriado
 
-      } else { //Caso 2, 4 ou 5
-        
-        if (codigoEscala == 1) {
-          return checkJornadaSemanal(funcionarioAlocacao, dataDesejada);
+          //////console.log('Feriado em: ', dataDesejada);
+          return {code: "FRD", string: objFeriadoRet.name, imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};//getSaldoDiaFrd(funcionarioAlocacao)};
+
+        } else if (hasFolgaSolicitada() || hasLicenca()){ //Caso 3 - Folgas/Licenças
+
+          //////////console.log('Caso 3 - checar');
+
+        } else { //Caso 2, 4 ou 5
+          
+          if (codigoEscala == 1) {
+            return checkJornadaSemanal(funcionarioAlocacao, dataDesejada);
+          }
+
+          else if (codigoEscala == 2)
+            return checkJornadaRevezamento(funcionarioAlocacao, dataDesejada);
         }
-
-        else if (codigoEscala == 2)
-          return checkJornadaRevezamento(funcionarioAlocacao, dataDesejada);
       }
     };
 
@@ -1304,7 +1345,7 @@
         //////console.log('allEmployees: ', allEmployees.data);
         getAllEmployees();
 
-      } else if (Usuario.perfil.accessLevel == 5) {
+      } else if (Usuario.perfil.accessLevel >= 5) {
 
         $scope.isAdmin = true;
         //////console.log('allEmployees: ', allEmployees.data);

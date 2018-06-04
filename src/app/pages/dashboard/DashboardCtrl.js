@@ -9,7 +9,7 @@
       .controller('DashboardCtrl', DashboardCtrl);
 
   /** @ngInject */
-  function DashboardCtrl($scope, $filter, $sce, setores, usuario, feriados, currentDate, util, teamAPI, appointmentAPI, baConfig, dashboardDataFactory) {
+  function DashboardCtrl($scope, $filter, $sce, setores, usuario, feriados, currentDate, util, teamAPI, appointmentAPI, baConfig, dashboardDataFactory, allEquipes) {
     
     //console.log('setore resolve: ', setores);
     //console.log('dashboardFactory from controller', dashboardDataFactory);
@@ -26,6 +26,10 @@
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
     $scope.equipe = {};
     $scope.gestor = $scope.usuario.funcionario;
+    var allTeams = null;
+    if (!$scope.gestor)
+      allTeams = allEquipes.data;
+
     //console.log('GESTOR: ', $scope.gestor);
     $scope.baloon = {}; // para o popover dos funcionários com mais de 4 batidas...
     $scope.liberado = false;
@@ -211,6 +215,25 @@
         $errorMsg = response.data.message;
         //console.log("houve um erro ao carregar as equipes do gestor");
       });
+    };
+
+    function fillAllTeams(allTeams){
+
+      $scope.equipes = allTeams;
+
+      if($scope.equipes.length > 0){
+            
+        for (var i=0; i < $scope.equipes.length; i++) {
+        
+          $scope.equipes[i].componentes = $scope.equipes[i].componentes.filter(function( obj ) {
+            return obj.active === true;
+          });
+
+        }
+        console.log("equipes trazidas pelo gestor: ", $scope.equipes);
+        $scope.equipes[0].selecionada = true;            
+        showIndicators($scope.equipes[0], $scope.barButtonSelected, $scope.lineButtonSelected);
+      } 
     };
 
     /*
@@ -1233,7 +1256,7 @@
     /*
     * Inicializando algumas variáveis básicas e obtendo as equipes do Gestor em questão.
     */
-    function init(){
+    function init(allTeams){
     
       $scope.currentWeek = {//fica variando a medida que o usuario navega
         begin: addOrSubtractDays($scope.currentDate, -7),
@@ -1285,15 +1308,20 @@
           $scope.errorMsg = "Este funcionário não é Gestor e portanto não pode visualizar estas informações";
         }
       } else {
-          if ($scope.usuario.perfil.accessLevel >= 4) {
-            //é um admin vendo a página, pode liberar
+          // if ($scope.usuario.perfil.accessLevel >= 4) {
+          //   //é um admin vendo a página, pode liberar
+          //   $scope.isAdmin = true;
+          //   $scope.liberado =true;
+          // }
+          if (allTeams != null){
             $scope.isAdmin = true;
             $scope.liberado =true;
+            fillAllTeams(allTeams);
           }
       }
     };
 
-    init();
+    init(allTeams);
 
   }
 })();

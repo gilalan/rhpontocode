@@ -20,7 +20,7 @@
           order: 5,
         },
         access: 'gestor',
-        accessLevel: [2, 3],
+        accessLevel: [2, 3, 5],
         controller: 'DashboardCtrl',
         resolve: {
           setores: function(sectorAPI){
@@ -34,6 +34,12 @@
           },
           currentDate: function(appointmentAPI) {
             return appointmentAPI.getCurrentDate();
+          },
+          allEquipes: function(teamAPI, Auth){
+
+            var user = Auth.getCurrentUser();
+            if (user.acLvl >= 5)
+              return teamAPI.get();
           }
         }
       });

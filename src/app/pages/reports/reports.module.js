@@ -22,7 +22,7 @@
              order: 4,
           },
           access: 'fiscal',
-          accessLevel: [2,3,4,5],
+          accessLevel: [2,3,4,5,6],
           resolve: {
             usuario: function(usersAPI, $stateParams, Auth){
               
