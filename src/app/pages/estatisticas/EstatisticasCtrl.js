@@ -14,6 +14,7 @@
     console.log("dentro do EstatisticasCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);
+    var arrayTestEmployees = ["0012315", "0192461", "098127615", "980157", "0009841", "0010002"] //(BLACK LIST USUARIOS)
 
     allEmployees.data.sort(function (a, b) {
       if (a.nome > b.nome) {
@@ -29,7 +30,7 @@
     $scope.equipes = equipes.data;
     $scope.rawApps = [];
     //$scope.rawApps = rawAppoints.data.rawReps;
-    //console.log("rawAppoints: ", $scope.rawApps);
+    //console.log("rawAppoints: ", $scope.employees);
 
     $scope.datepic = {
       dt: new Date()
@@ -64,28 +65,58 @@
         $scope.employees[i].infoHorario = util.getInfoHorario($scope.employees[i], []);
       }
 
-      var docDefinition = utilReports.gerarRelatorioFuncionariosHorarios($scope.employees);
-      docDefinition.footer = function(currentPage, pageCount) { 
-        return { 
-          text: currentPage.toString() + ' de ' + pageCount, 
-          alignment: 'right', 
-          margin: [20, 0] 
-        }; 
-      };
+      // var docDefinition = utilReports.gerarRelatorioFuncionariosHorarios($scope.employees);
+      // docDefinition.footer = function(currentPage, pageCount) { 
+      //   return { 
+      //     text: currentPage.toString() + ' de ' + pageCount, 
+      //     alignment: 'right', 
+      //     margin: [20, 0] 
+      //   }; 
+      // };
 
       // download the PDF
       //pdfMake.createPdf(docDefinition).download('relatorioFuncionarios.pdf');
 
-      appointmentAPI.getEquipesEstatistica(equipesArray).then(function successCallback(response){
+      // appointmentAPI.getEquipesEstatistica(equipesArray).then(function successCallback(response){
 
-        var apontamentosResponse = response.data;
-        console.log("!@# Apontamentos retornados: ", apontamentosResponse);
+      //   var apontamentosResponse = response.data;
+      //   console.log("!@# Apontamentos retornados: ", apontamentosResponse);
 
-      }, function errorCallback(response){
+      // }, function errorCallback(response){
         
-        //$errorMsg = response.data.message;
-        console.log("Erro ao obter apontamentos de equipe estatisticas");
-      });
+      //   //$errorMsg = response.data.message;
+      //   console.log("Erro ao obter apontamentos de equipe estatisticas");
+      // });
+    };
+
+    function indicateFiredEmployees(){
+
+      var arrayFireds = [];
+      var contador = 0;
+
+      for (var i=0; i < $scope.employees.length; i++){
+
+        for (var j=0; j < arrayTestEmployees.length; j++){
+          if ($scope.employees[i].matricula == arrayTestEmployees[j]){
+            $scope.employees.splice(i, 1);
+          }
+        }
+
+        arrayFireds = [];
+        $scope.employees[i].name = $scope.employees[i].nome + ' ' + $scope.employees[i].sobrenome;
+        
+        if ($scope.employees[i].historico.datasDemissao.length > 0) {
+          arrayFireds =  $scope.employees[i].historico.datasDemissao;
+          var dateDem = arrayFireds[arrayFireds.length-1];
+          $scope.employees[i].FIRED = $filter('date')(dateDem, 'dd/MM/yyyy');
+          contador++;
+        }
+
+        //$scope.employees[i].FIRED = $scope.employees[i].alocacao.gestor ? "GESTOR" : "FUNCIONARIO NORMAL";
+        //$scope.employees[i].FIRED = $scope.employees[i].historico.datasDemissao.length > 0 ? true : false; 
+      }
+
+      console.log("Contador de demitidos: ", contador);
     };
     
     function getId (array) {
@@ -93,8 +124,8 @@
     };
 
     function init () {
-
-      getAllEquipesEstatistica($scope.equipes);
+      indicateFiredEmployees();
+      //getAllEquipesEstatistica($scope.equipes);
     };
   }   
 

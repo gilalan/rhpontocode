@@ -34,8 +34,9 @@
             console.log('## Usuário retornado: ##', user);
             return usersAPI.getUsuario(user._id);
           },
-          solicitacoes: function(myhitpointAPI){//solicitações de ajuste
-            return myhitpointAPI.getByStatus({status: 0}); //status 0 -> pendentes
+          solicitacoes: function(myhitpointAPI, Auth){//solicitações de ajuste
+            console.log('vai charmar solicitacoes no module');
+            return myhitpointAPI.getByComponents({userId: Auth.getCurrentUser()._id, status: 0}); //status 0 -> pendentes
           }
         },
         accessLevel: [2, 3]

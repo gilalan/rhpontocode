@@ -46,4 +46,14 @@ angular.module('BlurAdmin.pages.myhitpoint').service("myhitpointAPI", function($
 
 		return $http.post(_urlBaseHitpoint+'/getbystatus', objStatus);
 	};
+
+	svc.getByTeams = function(objTeams){
+
+		return $http.post(_urlBaseHitpoint+'/getbyteams', objTeams);
+	};
+
+	svc.getByComponents = function(objPassed){
+		console.log('vai chamar o getbycomponents');
+		return $http.post(_urlBaseHitpoint+'/getbycomponents', objPassed);
+	};
 });

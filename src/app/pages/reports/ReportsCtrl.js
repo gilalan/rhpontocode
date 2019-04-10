@@ -9,7 +9,7 @@
       .controller('ReportsCtrl', ReportsCtrl);
 
   /** @ngInject */
-  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, reportsAPI, Auth, util, utilReports, utilCorrectApps, usuario, feriados, allEmployees) {
+  function ReportsCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, teamAPI, employeeAPI, reportsAPI, Auth, util, utilReports, utilCorrectApps, usuario, feriados, allEmployees, allEquipes) {
 
     var Usuario = usuario.data;
     var feriados = feriados.data;
@@ -31,7 +31,7 @@
 
     $scope.funcionario = {};
     $scope.employees = [];
-    $scope.employeesNames = [];
+    $scope.employeesNames = []; //Auxiliar para o AutoComplete do Input do nome do funcionario
     $scope.meses = [];
     $scope.anos = [];
     $scope.periodoApontamento = [];
@@ -39,10 +39,11 @@
       equipe: false,
       funcionario: true
     };
+    $scope.textoBotao = "Visualizar";
 
     // ////////console.log("### Dentro de ReportsCtrl!!!", $scope.gestor);
 
-    init();
+    init(allEmployees, allEquipes);
     
     $scope.showEspelhoPonto = function () {
       $scope.bancoHoras = false;
@@ -68,8 +69,10 @@
       console.log('clicou employee', $scope.checkboxModel.funcionario);
       if ($scope.checkboxModel.funcionario){
           $scope.checkboxModel.equipe = false;
+          $scope.textoBotao = "Visualizar";
       } else {
         $scope.checkboxModel.equipe = true;
+        $scope.textoBotao = "Salvar Relatório de Equipe em PDF";
       }
     };
 
@@ -77,45 +80,61 @@
       console.log('clicou equipe', $scope.checkboxModel.equipe);
       if($scope.checkboxModel.equipe){
         $scope.checkboxModel.funcionario = false;
+        $scope.textoBotao = "Salvar Relatório de Equipe em PDF";
       } else {
         $scope.checkboxModel.funcionario = true;
+        $scope.textoBotao = "Visualizar";
       }
     };
 
     $scope.search = function () {
 
-      if (!$scope.funcionario.selected){
+      if ($scope.checkboxModel.funcionario){
+
+        if (!$scope.funcionario.selected){
         
-        alert('Por favor, preencha o campo com o nome do funcionário.');
+          alert('Por favor, preencha o campo com o nome do funcionário.');
 
-      } else {
+        } else {
 
-        funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);
-        $scope.infoHorario = [];
-        $scope.infoHorario = util.getInfoHorario(funcSel, []);
-        ////console.log('infoHorario: ', $scope.infoHorario);
+          funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);
+          $scope.infoHorario = [];
+          $scope.infoHorario = util.getInfoHorario(funcSel, []);
+          equipe = funcSel.equipe;
+          // console.log('funcionario AutoComplete: ', $scope.funcionario.selected);
+          // console.log('funcionario pego: ', funcSel);
 
-        var dataInicial = new Date(ano.value, mes._id, 1);
-        //Esse é um workaround pra funcionar a obtenção da quantidade de dias em Javascript
-        //Dessa maneira a gnt obtém o último dia (valor zero no últ argumento) do mês anterior, que dá exatamente a qtde de dias do mês que vc quer
-        //var dataFinal = new Date(ano.value, mes._id+1, 0);
-        var dataFinal = new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
+          var dataInicial = new Date(ano.value, mes._id, 1);
+          //Esse é um workaround pra funcionar a obtenção da quantidade de dias em Javascript
+          //Dessa maneira a gnt obtém o último dia (valor zero no últ argumento) do mês anterior, que dá exatamente a qtde de dias do mês que vc quer
+          //var dataFinal = new Date(ano.value, mes._id+1, 0);
+          var dataFinal = new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
 
-        ////console.log('funcSelecionado para busca: ', funcSel);
-
-        employeeAPI.getEquipe(funcSel._id).then(function successCallback(response){
-
-          equipe = response.data;
-          ////console.log('response retornado da equipe do buscado: ', response);
           getApontamentosByDateRangeAndEquipe(dataInicial, dataFinal, funcSel);
 
-        }, function errorCallback(response){
-          
-          $scope.errorMsg = response.data.message;
-        });
+          ////console.log('funcSelecionado para busca: ', funcSel);
 
-        //initGetEquipe(funcSel);//Chama 
-      }
+          // employeeAPI.getEquipe(funcSel._id).then(function successCallback(response){
+
+          //   equipe = response.data;
+          //   ////console.log('response retornado da equipe do buscado: ', response);
+          //   getApontamentosByDateRangeAndEquipe(dataInicial, dataFinal, funcSel);
+
+          // }, function errorCallback(response){
+            
+          //   $scope.errorMsg = response.data.message;
+          // });
+
+          //initGetEquipe(funcSel);//Chama 
+        }
+
+      } 
+
+      if ($scope.checkboxModel.equipe) {
+
+        console.log('Selected Equipe: ', $scope.selectedEquipe.item);
+        //vou ter que calcular os totais para cada employee da equipe e depois gerar o PDF para concatenar num documento so
+      }      
       
     }
 
@@ -334,9 +353,6 @@
     **/
     function getApontamentosByDateRangeAndEquipe(beginDate, endDate, funcionario) {
 
-      ////////console.log('beginDate? ', beginDate);
-      ////////console.log('endDate? ', endDate);
-      ////////console.log('funcionario ', funcionario);
       var dateAux = new Date(beginDate);
       var endDateAux = new Date(endDate);
 
@@ -361,10 +377,9 @@
         funcionario: funcionario
       };
 
-      ////////console.log("objDateWorker Enviado: ", objDateWorker);
       //Ajeita a formatação da data para não ter problema com a visualização
       $scope.periodoApontamento = [];
-      ////console.log("objDateWorker Enviado: ", objDateWorker);
+      //console.log("objDateWorker Enviado: ", objDateWorker);
 
       appointmentAPI.getApontamentosByDateRangeAndFuncionario(objDateWorker).then(function successCallback(response){
 
@@ -382,22 +397,23 @@
     };
 
     //Traz todos os employees para tela de Administrador
-    function getAllEmployees() {
+    function getAllEmployees(allEmployees, allEquipes) {
       
-      var empsArray = allEmployees.data;
-      //////console.log('EmpsArray: ', empsArray);
+      //var empsArray = allEmployees.data;
+      $scope.equipes = allEquipes.data;
+      fillEquipes();
 
-      for (var j=0; j<empsArray.length; j++) {
-          $scope.employees.push(empsArray[j]);
-          $scope.employeesNames.push( { 
-            id: empsArray[j]._id, 
-            name: empsArray[j].nome + ' ' + empsArray[j].sobrenome,
-            matricula: empsArray[j].matricula,
-            PIS: empsArray[j].PIS,
-            cargo: empsArray[j].sexoMasculino ? empsArray[j].alocacao.cargo.especificacao : empsArray[j].alocacao.cargo.nomeFeminino,
-            equipe: 'equipeVar'
-          });
-        }
+      // for (var j=0; j<empsArray.length; j++) {
+      //     $scope.employees.push(empsArray[j]);
+      //     $scope.employeesNames.push( { 
+      //       id: empsArray[j]._id, 
+      //       name: empsArray[j].nome + ' ' + empsArray[j].sobrenome,
+      //       matricula: empsArray[j].matricula,
+      //       PIS: empsArray[j].PIS,
+      //       cargo: empsArray[j].sexoMasculino ? empsArray[j].alocacao.cargo.especificacao : empsArray[j].alocacao.cargo.nomeFeminino,
+      //       equipe: 'equipeVar'
+      //     });
+      //   }
       $scope.filtroPonto = true;
     };
 
@@ -440,6 +456,7 @@
       ////console.log('gsetor, equipes comonentes: ', $scope.equipes);
       for (var i=0; i<$scope.equipes.length; i++){
         for (var j=0; j<$scope.equipes[i].componentes.length; j++) {
+          setEquipeAttrsForEmployee($scope.equipes[i].componentes[j], $scope.equipes[i]);
           $scope.employees.push($scope.equipes[i].componentes[j]);
           $scope.employeesNames.push( { 
             id: $scope.equipes[i].componentes[j]._id, 
@@ -448,11 +465,23 @@
             PIS: $scope.equipes[i].componentes[j].PIS,
             cargo: $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino,
             equipe: $scope.equipes[i].nome
+            // equipe: $scope.equipes[i]
           });
         }
       }
 
       ////////console.log('employees: ', $scope.employeesNames);
+    };
+
+    function setEquipeAttrsForEmployee(employee, equipe){
+
+      employee.equipe = {
+        _id: equipe._id,
+        nome: equipe.nome,
+        gestor: equipe.gestor,
+        fiscal: equipe.fiscal,
+        setor: equipe.setor
+      };
     };
 
     function getId (array) {
@@ -525,7 +554,7 @@
 
     function fillAnos() {
 
-      $scope.anos = [{value: '2018'}, {value: '2017'}, {value: '2016'}, {value: '2015'}, {value: '2014'}, {value: '2013'}];
+      $scope.anos = [{value: '2019'}, {value: '2018'}, {value: '2017'}, {value: '2016'}, {value: '2015'}, {value: '2014'}, {value: '2013'}];
       $scope.selectedAno = { item: $scope.anos[0] };
       ano = $scope.anos[0];
     };
@@ -1332,7 +1361,7 @@
       return (hours * 60) + mins;
     };
 
-    function init () {
+    function init(allEmployees, allEquipes) {
 
       if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
         
@@ -1343,13 +1372,13 @@
          
          $scope.isAdmin = true;
         //////console.log('allEmployees: ', allEmployees.data);
-        getAllEmployees();
+        getAllEmployees(allEmployees, allEquipes);
 
       } else if (Usuario.perfil.accessLevel >= 5) {
 
         $scope.isAdmin = true;
         //////console.log('allEmployees: ', allEmployees.data);
-        getAllEmployees();
+        getAllEmployees(allEmployees, allEquipes);
 
       } else {
 

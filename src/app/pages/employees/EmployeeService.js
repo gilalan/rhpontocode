@@ -34,6 +34,11 @@ angular.module('BlurAdmin.pages.employees').service("employeeAPI", function($htt
 		return $http.post(_urlBaseFuncionarios+'/actives');
 	};
 
+	svc.getOnlyFuncionarios = function() {
+
+		return $http.post(_urlBaseFuncionarios+'/onlyemployees');
+	};
+
 	svc.getFuncionario = function(id) {
 
 		return $http.get(_urlBaseFuncionarios+'/'+id);

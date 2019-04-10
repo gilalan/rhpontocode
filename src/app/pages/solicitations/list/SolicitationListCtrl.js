@@ -12,18 +12,22 @@
     .controller('ModalReproveSolicitationCtrl', ModalReproveSolicitationCtrl);
 
   /** @ngInject */
-  function SolicitationListCtrl($scope, $state, $stateParams, $filter, $uibModal, Auth, solicitationAPI, usuario, solicitacoes) {
+  function SolicitationListCtrl($scope, $state, $stateParams, $filter, $uibModal, Auth, solicitationAPI, teamAPI, myhitpointAPI, usuario, solicitacoes){//, solicitacoes) {
     
     $scope.smartTablePageSize = 15;
+    $scope.gestor = usuario.data.funcionario;
     $scope.solicitacoes = solicitacoes.data;
-    $scope.qtdeSolicitacoes = solicitacoes.data.length;
+    
+    var allEmployees = [];
     // console.log('List Ctrl - SolicitationListCtrl');
-    // console.log('solicitacoes: ', solicitacoes.data);
+    //console.log('solicitacoes: ', solicitacoes.data);
     var Usuario = usuario.data;
     var pageShowSolicitationPath = 'app/pages/solicitations/modals/verSolicitacaoModal.html';
     var pageReproveSolicitationPath = 'app/pages/solicitations/modals/reproveSolicitacaoModal.html';
     var pageAproveSolicitationPath = 'app/pages/solicitations/modals/aproveSolicitacaoModal.html';
     var defaultSize = 'md'; //representa o tamanho da Modal
+
+    //init();
 
     $scope.ver = function (solicitation) {
       
@@ -134,6 +138,66 @@
         console.log('modal is dismissed or close.');
       });
     
+    };
+
+    /*
+     *
+     * Função chamada no início do carregamento, traz as equipes do gestor atual
+     *
+    **/
+    function getEquipesByGestor() {
+
+      teamAPI.getEquipesByGestor($scope.gestor).then(function successCallback(response){
+
+        $scope.equipes = response.data;
+        console.log('testando equipes para fiscal: ', response.data);
+        if($scope.equipes){
+          if($scope.equipes.length > 0){
+            
+            for (var i=0; i < $scope.equipes.length; i++) {
+              for (var j=0; j < $scope.equipes[i].componentes.length; j++) {
+                if ($scope.equipes[i].componentes[j].active === true){
+                  allEmployees.push($scope.equipes[i].componentes[j]);  
+                }
+              }
+            }
+            console.log("equipes trazidas pelo gestor: ", $scope.equipes);
+            console.log("allEmployees: ", allEmployees);
+            getSolicitationsByTeams(allEmployees);
+          } 
+        } 
+
+        //console.log('Equipes do gestor: ', response.data);
+
+      }, 
+      function errorCallback(response){
+        $errorMsg = response.data.message;
+        //console.log("houve um erro ao carregar as equipes do gestor");
+      });
+    };
+
+    function getSolicitationsByTeams (employees) {
+
+      var obj = {
+        status: 0,
+        employees: employees
+      };
+
+      myhitpointAPI.getByTeams(obj).then(function successCallback(response){
+
+        $scope.solicitacoes = response.data;
+        $scope.qtdeSolicitacoes = $scope.solicitacoes.length;
+        console.log('testando solicitações: ', response.data);
+
+      }, 
+      function errorCallback(response){
+        $errorMsg = response.data.message;
+        //console.log("houve um erro ao carregar as equipes do gestor");
+      });
+    };
+
+    function init() {
+      getEquipesByGestor();
     };
   };
 

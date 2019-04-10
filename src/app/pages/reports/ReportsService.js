@@ -28,6 +28,11 @@ angular.module('BlurAdmin.pages.reports').service("reportsAPI", function($http, 
 		return $http.post(_urlBaseReports + '/setFeriasAppoints', arrayApps);
 	};
 
+	svc.getEspelhoPontoEquipe = function (objEquipe) {
+
+		return $http.post(_urlBaseReports + '/getAppointsByTeam', objEquipe);
+	};
+
 	// svc.update = function (solicitacao) {
 
 	// 	return $http.put(_urlBaseReports + '/' + solicitacao._id, solicitacao);

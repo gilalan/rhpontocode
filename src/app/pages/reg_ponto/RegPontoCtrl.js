@@ -17,11 +17,15 @@
     console.log('Funcionário: ', $scope.funcionario);
     var equipe = {};
     $scope.currentDate = currentDate.data.date;
-    $scope.currentDateFtd = $filter('date')($scope.currentDate, 'dd/MM/yyyy');
+    var splitDateObj = currentDate.data.dateParameter;
+    var REAL_DATE = new Date(splitDateObj.nYear, splitDateObj.nMonth, splitDateObj.nDay, 
+      splitDateObj.nHours, splitDateObj.nMinutes, splitDateObj.nSeconds, splitDateObj.nMillisecs);
+    $scope.currentDateFtd = $filter('date')(REAL_DATE, 'dd/MM/yyyy');
 
-    var dataHoje = new Date($scope.currentDate);
+    //var dataHoje = new Date($scope.currentDate);
     console.log('currentDate: ', $scope.currentDate);
-    console.log('new Date (currentDate): ', new Date($scope.currentDate));
+    console.log('new Date (currentDate) local: ', new Date($scope.currentDate));
+    console.log('Real_Date from server: ', REAL_DATE);
 
     console.log('Batida Direta?!??', batidaDireta);
     var batidaDireta = batidaDireta;
@@ -32,7 +36,7 @@
     var marcacao = null;
     var pagePath = 'app/pages/reg_ponto/modals/registroModal.html';
     var defaultSize = 'md';
-    var clock = new Date($scope.currentDate);//new Date($scope.currentDate);
+    var clock = REAL_DATE;//new Date($scope.currentDate);
     var tick = function() {
       //$scope.clock = Date.now();//atualiza os segundos manualmente
       clock.setSeconds(clock.getSeconds() + secsControl);
@@ -67,16 +71,22 @@
         var newDate = new Date(response.data.date);
         console.log('newDate in client from server', newDate);
 
+        var splitDateObj = response.data.dateParameter;
+        var serverDate = new Date(splitDateObj.nYear, splitDateObj.nMonth, splitDateObj.nDay, 
+          splitDateObj.nHours, splitDateObj.nMinutes, splitDateObj.nSeconds, splitDateObj.nMillisecs);
+
+        console.log('ServerDate adjust: ', serverDate);
+
         var gId = (apontamento) ? getId(apontamento.marcacoes) : 1;
         var descricao = (apontamento) ? getDescricao(apontamento.marcacoes) : "ent1";
 
         marcacao = {
           id: gId,
           descricao: descricao,
-          hora: newDate.getHours(),
-          minuto: newDate.getMinutes(),
-          segundo: newDate.getSeconds(),
-          tzOffset: newDate.getTimezoneOffset(),
+          hora: serverDate.getHours(),
+          minuto: serverDate.getMinutes(),
+          segundo: serverDate.getSeconds(),
+          tzOffset: serverDate.getTimezoneOffset(),
           RHWeb: true,
           REP: false,
           NSR: "WEB",
@@ -87,7 +97,7 @@
         marcacao.strHorario = converteParaMarcacaoString(marcacao.hora, marcacao.minuto, ':');
 
         console.log('####### INICIO DE AVALIACAO DO METODO REGISTRO ##########');
-        console.log('newDate', newDate);
+        console.log('serverDate', serverDate);
         console.log('marcacao', marcacao);
         console.log('apontamento: ', apontamento);
 
@@ -102,7 +112,7 @@
           });
           console.log('apontamento.marcacoes ordenados: ', apontamento.marcacoes);
 
-          updateExtraInformations(newDate);//tem que ser chamado ANTES da atualização das marcações (o push abaixo)
+          updateExtraInformations(serverDate);//tem que ser chamado ANTES da atualização das marcações (o push abaixo)
           apontamento.marcacoes.push(marcacao);
           apontamento.marcacoesFtd.push(converteParaMarcacaoString(marcacao.hora, marcacao.minuto, ':'));
           setStatus(apontamento);
@@ -111,10 +121,10 @@
 
         } else {
 
-          var extraInfo = createExtraInformations(newDate);
+          var extraInfo = createExtraInformations(serverDate);
 
           apontamento = {
-            data: getOnlyDate(newDate),
+            data: getOnlyDate(serverDate),
             status: {id: 1, descricao: 'Incompleto'},
             funcionario: $scope.funcionario._id,
             PIS: $scope.funcionario.PIS,
@@ -557,11 +567,11 @@
     
       var date = {
         raw: $scope.currentDate,
-        year: dataHoje.getFullYear(),
-        month: dataHoje.getMonth(),
-        day: dataHoje.getDate(),
-        hour: dataHoje.getHours(),
-        minute: dataHoje.getMinutes()
+        year: REAL_DATE.getFullYear(),
+        month: REAL_DATE.getMonth(),
+        day: REAL_DATE.getDate(),
+        hour: REAL_DATE.getHours(),
+        minute: REAL_DATE.getMinutes()
         //dataFinal {}// => com o mesmo formato acima se quiser pegar para um range de datas...
       };
 

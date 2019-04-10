@@ -1,0 +1,24 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">{{objBatida.data}}</h4>
+    <div class="separator2" style="margin-bottom: 0px;"></div>
+  </div>
+  <div style="padding: 0px 15px 0px 15px;">
+    <div>
+      <label style="font-size: 14px; float: left; margin: 5px 5px 0px 0px;">Batimento: </label>
+      <label style="border: 1px solid; border-radius: 5px; padding: 3px 5px 3px 5px; background-color: #ede7e7; color: #1344ed;">{{horario}}</label>
+    </div>
+    <div class="form-group" style="margin: 10px 0px 10px 0px;">
+      <label style="font-size: 14px; font-weight: bold; color: #e73b2e;" for="textAreaMotivo">Motivo da Desconsideração da Batida*</label>
+      <form name="motivoForm"><textarea class="form-control" id="textAreaMotivo" placeholder="Informe o motivo para desconsiderar esta batida. Ex.: batida duplicada" ng-model="algo.motivo" ng-required="true">
+      </textarea></form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-disabled="motivoForm.$invalid" ng-click="confirmDes(algo.motivo)">Salvar</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div id="loaderDiv" ng-show="dataProcess">
+  <p class="ajax-loader title-loader"> Processando dados... </p>
+  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+</div>
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">Confirmar Ajuste</h4>
+    <div class="separator2" style="margin-bottom: 0px;"></div>
+  </div>
+  <div style="padding: 0px 15px 0px 15px;">
+    <div class="row" style="margin: 0px;">
+      <div class="row" style="border: 2px solid #676db9; margin: 0px; border-radius: 5px; padding: 5px 0px 0px 0px;">
+        <div class="col-xs-12">
+          <h4 class="sub-header" style="color: #b9444c; margin-bottom: 4px; font-size: 14px;">Como eram os batimentos: </h4>
+          <div class="btn-toolbar-example">
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length>0">
+              <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObt in solicitacaoObtida.anterior track by $index">
+                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObt}}</label>
+              </div>
+            </div>
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length<=0">
+              <label style="margin-left: 5px; font-size: 12px;"> Não havia batidas </label>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12" style="margin-top: 0px;">
+          <h4 class="sub-header" style="color: #5d9b4d; margin-bottom: 4px; font-size: 14px;">E como foi proposto: </h4>
+          <div class="btn-toolbar-example">
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Propostos" ng-if="solicitacaoObtida.proposto.length>0">
+              <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObtProp in solicitacaoObtida.proposto track by $index">
+                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObtProp}}</label>
+              </div>
+            </div>
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.proposto.length<=0">
+                <label style="margin-left: 5px; font-size: 12px;"> Não propôs batidas </label>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12" style="margin-top: 0px;">
+          <h4 class="sub-header" style="color: #000; margin-bottom: 5px; font-size: 14px;">Motivo:</h4>
+          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacao.motivo}} </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" ng-click="confirma()">Confirmar</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Cancelar</button>
+  </div>
+</div>

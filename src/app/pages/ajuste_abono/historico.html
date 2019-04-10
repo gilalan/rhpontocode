@@ -1,0 +1,64 @@
+<form name="histForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
+
+  <div class="row" ng-if="!apontamento" style="margin: 0px;">
+    <div class="col-xs-12">
+      <div id="divMarcacoes" class="form-group">
+        <p><strong>Não há histórico para esse dia.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="apontamento" style="margin: 0px;">
+    <table class="table table-condensed" style="table-layout: fixed;">
+      <thead>
+        <tr style="color: #334db7;">
+          <th class="col-xs-1 centerColSpan first" style="width: 2%;"><b>#</b></th>
+          <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>Data Alteração</b></th>
+          <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>Tipo</b></th>
+          <th class="col-xs-1 centerColSpan first" style="width: 28%;"><b>Justificativa</b></th>
+          <th class="col-xs-1 centerColSpan first" style="width: 40%;"><b>Marcações</b></th>
+          <th class="col-xs-1 centerColSpan first last" style="width: 10%;"><b>Gestor</b></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in apontamento.historico track by $index" class="editable-row">
+          <td style="line-height: 19px !important; overflow: hidden; width: 2%;">{{item.id}}</td>
+          <td style="line-height: 19px !important; text-align: center; padding-left: 15px; overflow: hidden; width: 10%;">{{item.gerencial.dataAlteracao | date:'dd/MM/yyyy'}}</td>
+          <td style="line-height: 19px !important; text-align: center; overflow: hidden; width: 10%;">              
+            Ajuste
+          </td>
+          <td style="line-height: 19px !important; text-align: center; padding-left: 5px; overflow: hidden; width: 28%;">              
+            {{item.justificativa ? item.justificativa : "--"}}
+          </td>
+          <td style="line-height: 19px !important; text-align: center; overflow: hidden; width: 40%;">             
+            <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="marcacao in item.marcacoesFtd track by $index">
+              <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 19px; float: left;">
+                {{marcacao}}
+              </label>
+            </div>
+          </td>
+          <td style="line-height: 19px !important; text-align: center; padding-right: 15px; overflow: hidden; width: 10%;">
+            {{item.gerencial.gestor.nome}} {{item.gerencial.gestor.sobrenome}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="alert bg-danger" ng-if="batidaError"><strong>Atenção: </strong> as batidas devem ser em quantidade par.</div>
+    <div class="alert bg-danger" ng-if="numerosErro"><strong>Atenção: </strong> as horas e minutos devem ter dois dígitos no padrão 24h.</div>
+    <div class="alert bg-danger" ng-if="horaErro"><strong>Atenção: </strong> as horas devem estar entre 00 e 23.</div>
+    <div class="alert bg-danger" ng-if="minutoErro"><strong>Atenção: </strong> os minutos devem estar entre 00 e 59.</div>
+    <div class="separator2"></div>            
+  </div>
+
+</form>

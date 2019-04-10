@@ -1,0 +1,24 @@
+<div class="widgets">
+  <div class="row">
+    <div class="col-md-12"
+         ba-panel
+         ba-panel-title="Ajustar Abono"
+         ba-panel-class="with-scroll">
+        <div ng-include="'app/pages/ajuste_abono/ajustarabono.html'"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <uib-accordion>
+        <uib-accordion-group panel-class="bootstrap-panel accordion-panel panel-primary">
+          <uib-accordion-heading>
+            Histórico de Alterações <i class="fa pull-right ion-clipboard"></i>
+          </uib-accordion-heading>
+          <div ng-include="'app/pages/ajuste_abono/historico.html'"></div>
+        </uib-accordion-group>
+      </uib-accordion>
+    </div>
+  </div>
+
+</div>

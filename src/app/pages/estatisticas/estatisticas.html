@@ -32,31 +32,32 @@
 			    <tr>
 			      <th>#</th>
 			      <th>Nome</th>
-			      <th>Sobrenome</th>
+			      <!-- <th>Sobrenome</th> -->
 			      <th>PIS</th>
 			      <th>Matricula</th>
-			      <!--<th>Gestor?</th>-->
-			      <th>Horário</th>
+			      <th>Demitido em?</th>
+			      <!-- <th>Horário</th> -->
 			    </tr>
 		    </thead>
 		    <tbody>
-		      <tr ng-repeat="emp in employees track by $index">
+		      <tr ng-repeat="emp in employees track by $index" ng-class="{'funcionario-demitido': !emp.active}">
 		        	<td>{{$index}}</td>
-		        	<td>{{emp.nome}}</td>
-			        <td>{{emp.sobrenome}}</td>
+		        	<td>{{emp.name}}</td>
+			        <!-- <td></td> -->
 			        <td>{{emp.PIS}}</td>
 			        <td>{{emp.matricula}}</td>
+			        <td>{{emp.FIRED}}</td>
 			        <!--<td>
 			          {{emp.alocacao.gestor}}
 			        </td>-->
-			        <td>
+			        <!-- <td>
 			        	<div class="col-lg-6 col-md-6">
-        					<!--<h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>-->
+        					<h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
         					<p ng-repeat="itemHorario in emp.infoHorario track by $index" style="font-weight: normal;">
           						<strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
         					</p>
       					</div>
-      				</td>
+      				</td> -->
 		      </tr>
 		    </tbody>
 		  </table>
