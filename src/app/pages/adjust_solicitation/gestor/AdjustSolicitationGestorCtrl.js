@@ -824,14 +824,24 @@
       return apontamento;      
     };
 
+    //Compara dois históricos e retorna a "menor" (que bateu mais cedo no dia)
+    // function compareHist(a, b) {
+    //   if (a.id < b.id)
+    //     return -1;
+    //   if (a.id > id)
+    //     return 1;
+    //   return 0;
+    // }  
+
     function coletarHistorico(apontamento, isFirst){
 
       var historicoArray = apontamento.historico;
       var itemId = 1;
       if (historicoArray.length > 0){
         
-        historicoArray.sort(compareHist);
-        itemId = historicoArray[historicoArray.length-1] + 1;
+        //console.log("ja tem historico!", historicoArray);
+        //historicoArray.sort(compareHist);
+        itemId = historicoArray.length + 1;
 
       }
       var nextItemHistorico = {

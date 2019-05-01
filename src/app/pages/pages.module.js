@@ -30,6 +30,7 @@
     'BlurAdmin.pages.reports',
     'BlurAdmin.pages.adjustsolicitation',
     'BlurAdmin.pages.admadjsol',
+    'BlurAdmin.pages.eventosabono',
     'BlurAdmin.pages.abono',
   ])
       .config(routeConfig);

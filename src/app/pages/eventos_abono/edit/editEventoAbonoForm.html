@@ -1,0 +1,24 @@
+<form name="eventoAbonoForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="form-group">
+        <label for="inputNome" style="color: red;" >Nome*</label>
+        <input type="text" class="form-control" id="inputNome" placeholder="Nome descritivo do evento de abono" ng-model="eventoAbono.nome" ng-required="true">
+      </div>
+    </div>
+  </div> 
+
+</form>
+<button type="submit" class="btn btn-primary" ng-disabled="eventoAbonoForm.$invalid" ng-click="save(eventoAbono)">Salvar</button>
