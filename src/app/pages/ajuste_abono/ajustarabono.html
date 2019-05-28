@@ -17,7 +17,9 @@
     </div>
   </div>
 
-  <h1 style="font-size: 13px;">Atenção: O Abono de batidas segue as diretrizes governamentais, entre elas a portaria 1510 do MTE que informa que uma batida efetuada por um colaborador jamais poderá ser editada/removida, apenas desconsiderada e devidamente motivada.</h1>  
+  <div class="row">
+    <h1 style="font-size: 13px;">Atenção: A justificação de ausências segue as diretrizes governamentais, entre elas a portaria 1510 do MTE que informa que uma batida efetuada por um colaborador jamais poderá ser editada/removida, apenas desconsiderada e devidamente motivada.</h1>  
+  </div>
 
   <!-- <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">{{currentDateFtd}}</h4> -->
   <div class="row" ng-if="gestor">
@@ -31,26 +33,108 @@
   <div class="row" ng-if="!gestor">
 
     <div class="row">
-      <div class="col-lg-6 col-md-6">
-        <p class="input-group" style="margin-bottom: 10px;">
-            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
-        </p>
-        <label style="border: 1px solid black; border-radius: 5px; background: #e9e9e9; padding: 5px; font-size: 16px; font-weight: normal;">Data do Ajuste: <strong><em>{{datepic.dt | date:'fullDate' }}</em><strong></label>
-
-        <div ng-show="dataErrorMsg" class="alert bg-danger" role="alert">
-          <strong>Ops!</strong> {{dataErrorMsg}}
-        </div>
-
-      </div>
-      <div class="col-lg-6 col-md-6">
-        <h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
+      
+      <div class="col-lg-4 col-md-4">
+        <h4 class="sub-header"><strong style="color: #334db7;">Horário do Funcionário</strong></h4>
         <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
           <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
         </p>
       </div>
+
+      <div class="col-lg-8 col-md-8" style="border-left: dashed 1px black;">
+        <h4 class="sub-header"><strong style="color: #334db7;">Informações da Ausência</strong></h4>
+        <div class="row">
+          
+          <div class="col-lg-6 col-md-6">
+            <div class="row"  style="margin-right: 0px; margin-left: 0px; color: #dd502b;">
+              <label >Caso a ausência seja de um dia, preencher apenas a Data Inicial*</label>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <label>Data Inicial</label>
+                <p class="input-group" style="margin-bottom: 10px;">
+                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+                  </span>
+                </p>
+
+                <div ng-show="dataErrorMsg" class="alert bg-danger" role="alert">
+                  <strong>Ops!</strong> {{dataErrorMsg}}
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <label>Data Final <i>(opcional)</i></label>
+                <p class="input-group" style="margin-bottom: 10px;">
+                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic2.dt" ng-change="changeDate2(datepic2.dt)" ng-readonly="true" is-open="something2.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+                  </span>
+                </p>
+
+                <div ng-show="dataErrorMsg2" class="alert bg-danger" role="alert">
+                  <strong>Ops!</strong> {{dataErrorMsg2}}
+                </div>
+              </div>
+            </div>
+            <div class="row" style="margin-right: 0px; margin-left: 0px; color: #dd502b;">
+              <label>Caso a ausência seja de apenas um dia e não contemple o turno inteiro do funcionário, preencha os horários. Exemplo: ausência de 08h às 12h*</label>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <label>Hora Inicial <i>(opcional)</i></label>
+                <input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="hora.inicio" ui-mask="99:99" style="width: 70px;">
+                <div ng-show="timeErrorMsg" class="alert bg-danger" role="alert">
+                  <strong>Ops!</strong> {{timeErrorMsg}}
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <label>Hora Final <i>(opcional)</i></label>
+                <input type="text" class="form-control table-form-control" placeholder="__:__" ng-model="hora.fim" ui-mask="99:99" style="width: 70px;">
+                <div ng-show="timeErrorMsg2" class="alert bg-danger" role="alert">
+                  <strong>Ops!</strong> {{timeErrorMsg2}}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-6 col-md-6">
+            <div class="row">
+              <div class="col-lg-12 col-md-12">
+                <label>Evento</label>
+                <div class="form-group">
+                  <ui-select ng-model="selected.item"
+                           class="btn-group bootstrap-select form-control"
+                           ng-disabled="false"
+                           append-to-body="true"
+                           search-enabled="false" 
+                           ng-required="true">
+                    <ui-select-match placeholder="Selecione um evento:">
+                      <span> {{$select.selected.nome}}</span>
+                    </ui-select-match>
+                    <ui-select-choices repeat="eventoAbono in (eventosAbono | filter: $select.search) track by eventoAbono._id">
+                      <span ng-bind-html="eventoAbono.nome"></span>
+                    </ui-select-choices>
+                  </ui-select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 col-md-12">
+                <label for="textareaDescricao">Motivo</label>
+                <textarea placeholder="É necessário escrever uma motivação, mesmo que seja igual ao evento de abono" class="form-control" id="textAreaMotivo" ng-model="justif.motivo"></textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 col-md-12">
+                <label>Anexo</label>
+                  <label style="color: red;">Em construção - Logo poderá enviar uma imagem ou documento de anexo ao abono.</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>  
     <div class="separator"></div>
     <div class="row" ng-if="hasFuncionario && !noTeamMsg">  
@@ -92,85 +176,13 @@
       </div>    
 
       <div class="row" ng-if="!hasSolicitation" style="margin: 0px;">
+        <h1 style="font-size: 13px;">Atenção: A justificativa de ausência tem prioridade sobre as marcações efetuadas pelos funcionários. Caso o funcionário tenha feito marcações dentro do período selecionado acima, elas serão desconsideradas por conta desta ausência justificada (caso seja aprovada).</h1>  
         <div class="row" style="margin: 0px;">
           <div class="col-xs-12">
             <div class="form-group" style="float: right;">
               <ul class="btn-list clearfix">
-                <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="incluir()"><i class="ion-plus-round"></i>Incluir batimento</button></li>
+                <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="criarAbono()">Enviar Solicitação</button></li>
               </ul>
-            </div>
-          </div>
-        </div>  
-
-        <div class="row" ng-if="!apontamento" style="margin: 0px;">
-            <div class="col-xs-12">
-              <div id="divMarcacoes" class="form-group">
-                <p><strong>Não há marcações nesse dia.</strong></p>
-            </div>
-          </div>
-        </div>
-
-        <div class="row" ng-if="apontamento" style="margin: 0px;">
-          <table class="table table-condensed" style="table-layout: fixed;">
-            <thead>
-              <tr style="color: #334db7;">
-                <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>E/S</b></th>
-                <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>Marcação</b></th>
-                <th class="col-xs-1 centerColSpan first" style="width: 35%;"><b>Origem</b></th>
-                <th class="col-xs-1 centerColSpan first" style="width: 35%;"><b>Motivo</b></th>
-                <th class="col-xs-1 centerColSpan first last" style="width: 10%;"><b>Ações</b></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="item in arrayES track by $index" class="editable-row" ng-class="{'batida-desc': item.desconsiderada}">
-                <td style="line-height: 40px !important; text-align: center; padding-left: 15px; overflow: hidden; width: 10%;">{{item.rDescricao}}:</td>
-                <td style="line-height: 40px !important; text-align: center; padding-left: 5px; overflow: hidden; width: 10%;">              
-                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{item.strHorario}}</label>
-                </td>
-                <td style="line-height: 40px !important; text-align: center; overflow: hidden; width: 35%;">              
-                  {{item.estadoAtual}}
-                </td>
-                <td style="line-height: 40px !important; text-align: center; overflow: hidden; width: 35%;">              
-                  {{item.motivo ? item.motivo : '-'}}
-                </td>
-                <td style="line-height: 40px !important; text-align: center; padding-right: 15px; overflow: hidden; width: 10%;">
-                  <div class="btn-group" role="group" aria-label="acoes">            
-                    <!-- <button title="Reconverter" type="button" class="btn btn-sm btn-primary" ng-disabled="item.isReconv" ng-click="reconverter($index)">
-                      <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                    </button> -->
-                    <button title="Desconsiderar" type="button" class="btn btn-sm btn-danger" ng-disabled="item.desconsiderada" ng-click="desconsiderar($index)">
-                      <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="alert bg-danger" ng-if="batidaError"><strong>Atenção: </strong> as batidas devem ser em quantidade par.</div>
-          <div class="alert bg-danger" ng-if="numerosErro"><strong>Atenção: </strong> as horas e minutos devem ter dois dígitos no padrão 24h.</div>
-          <div class="alert bg-danger" ng-if="horaErro"><strong>Atenção: </strong> as horas devem estar entre 00 e 23.</div>
-          <div class="alert bg-danger" ng-if="minutoErro"><strong>Atenção: </strong> os minutos devem estar entre 00 e 59.</div>
-          <div class="separator2"></div>            
-        </div>
-
-        <div class="row" ng-if="apontamento">
-          <div class="col-xs-12">
-            <div class="form-group">
-              <label for="textAreaMotivo">Motivo da Solicitação*</label>
-              <textarea class="form-control" id="textAreaMotivo" placeholder="Qual o motivo deste ajuste?" ng-model="ajuste.motivo" ng-required="true">
-              </textarea>
-            </div>
-          </div>
-        </div>
-
-        <div ng-show="invalidAppointMsg" class="alert bg-danger"><!--  style="position: fixed; top: 0;" -->
-          <strong>Ops!</strong> {{invalidAppointMsg}}
-        </div>
-
-        <div class="row" ng-if="apontamento">
-          <div class="col-xs-12">
-            <div class="form-group" style="float: right;">
-              <button type="submit" class="btn btn-primary" ng-disabled="ajusteForm.$invalid" ng-click="propor(ajuste)">Solicitar</button>
             </div>
           </div>
         </div>

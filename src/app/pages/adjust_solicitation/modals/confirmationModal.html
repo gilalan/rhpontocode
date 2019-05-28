@@ -4,14 +4,22 @@
   <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
 </div>
 <div class="modal-content">
-  <div class="modal-header">
+  <div class="modal-header" ng-show="!cleanModal">
     <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
       <em class="ion-ios-close-empty sn-link-close"></em>
     </button>
     <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">Confirmar Ajuste</h4>
     <div class="separator2" style="margin-bottom: 0px;"></div>
   </div>
-  <div style="padding: 0px 15px 0px 15px;">
+  <!-- SO APARECE QUANDO CONFIRMA O AJUSTE E ELE EH PROCESSADO -->
+  <div class="modal-header" ng-show="cleanModal">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">Preencher automaticamente proximo ajuste?</h4>
+    <div class="separator2" style="margin-bottom: 0px;"></div>
+  </div>
+  <div style="padding: 0px 15px 0px 15px;" ng-show="!cleanModal">
     <div class="row" style="margin: 0px;">
       <div class="row" style="border: 2px solid #676db9; margin: 0px; border-radius: 5px; padding: 5px 0px 0px 0px;">
         <div class="col-xs-12">
@@ -47,8 +55,17 @@
       </div>
     </div>
   </div>
-  <div class="modal-footer">
+  <div style="padding: 0px 15px 0px 15px;" ng-show="cleanModal">
+    <div class="row" style="margin: 0px;">
+      <p> Deseja prosseguir com ajustes para o funcionário atual? Caso positivo, clique em "SIM" e o sistema manterá os dados preenchidos para a próxima data de trabalho do funcionário, isso será feito apenas se a próxima data não contiver batimentos. </p>
+    </div>
+  </div>
+  <div class="modal-footer" ng-show="!cleanModal">
     <button type="button" class="btn btn-success" ng-click="confirma()">Confirmar</button>
     <button type="button" class="btn btn-danger" ng-click="$dismiss()">Cancelar</button>
+  </div>
+  <div class="modal-footer" ng-show="cleanModal">
+    <button type="button" class="btn btn-success" ng-click="buscarProxApontamento()">Sim</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Não</button>
   </div>
 </div>

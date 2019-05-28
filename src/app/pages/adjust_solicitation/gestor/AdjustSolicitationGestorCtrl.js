@@ -37,6 +37,9 @@
     // $scope.funcionario = Usuario.funcionario;
     $scope.arrayES = [];
     $scope.ajuste = {};
+
+    var refillObj = {};
+    $scope.refillFlag = false; //só ficará ativada se houver um pedido de manutenção do preenchimento dos dados após a confirmação de um ajuste (para otimizar) 
     // $scope.infoHorario = {};
 
     var pagePath = 'app/pages/adjust_solicitation/modals/desconsiderarModal.html'; //representa o local que vai estar o html de conteúdo da modal
@@ -83,19 +86,11 @@
     };
     //Fim do datePicker
 
+    //Seria uma especie de INIT(), pois eh daqui que inicia esse Controller.
     $scope.visualizar = function() {
-
-      //reset fields
-      arrayESOriginal = [];
-      $scope.hasSolicitation = false;
-      $scope.arrayES = [];
-      $scope.apontamento = null;
-      $scope.ajuste = {};
-      $scope.solicitacaoObtida = {};
-      //FUNÇÃO PARA TRAZER OS DADOS!
-      console.log('$scope.ArrayES: ', $scope.arrayES);
-      console.log('arrayESOriginal: ', arrayESOriginal);
-      initGetSolicitacaoOuApontamento();
+      //$scope.refillFlag = false;
+      resetFields();
+      getSolicitacaoOuApontamento();
     };
 
     $scope.changeFunc = function(funcSel){
@@ -184,6 +179,30 @@
     $scope.reprovarSolicitacaoPendente = function(){
       
       alert('Em desenvolvimento! Por enquanto você pode rejeitar essa solicitação no menu Solicitações.');
+    };
+
+    $scope.refill = function() {
+      $scope.arrayES = refillObj.batidas;
+      $scope.ajuste.motivo = refillObj.motivo;
+      $scope.apontamento = true;
+    };
+
+    function resetFields() {
+      //Parte do apontamento em si
+      arrayESOriginal = [];
+      $scope.hasSolicitation = false;
+      $scope.arrayES = [];
+      $scope.apontamento = null;
+      $scope.ajuste = {};
+      $scope.solicitacaoObtida = {};
+      //Parte do Histórico
+    };
+
+    function _visualizar() {
+      resetFields();
+      $scope.datepic.dt = refillObj.date;
+      $scope.changeDate(refillObj.date);
+      getSolicitacaoOuApontamento();
     };
 
     function isValidSearch(){
@@ -294,16 +313,30 @@
         }
       });
 
-      modalInstance.result.then(function (confirmation){
+      modalInstance.result.then(function (){
 
-        if (confirmation){
-          // $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.date.year,
-          // month: solicitacaoAjuste.date.month,
-          // day: solicitacaoAjuste.date.day}, {reload: true});
-          $state.reload();
-        }
+        console.log("confirma?");
+        $scope.refillFlag = true;
+
+        var objNextWorkDay = util.getNextWorkingDay(solicitacaoAjuste.data, solicitacaoAjuste.funcionario, 
+          $scope.funcionarioOficial.equipe, feriados, dataMaxBusca);
+
+        //$scope.datepic.dt = objNextWorkDay.date;
+        //Funcionario nao sera alterado pois nao foi efetuado nenhum reload() na tela...
+        
+        refillObj = {
+          date: objNextWorkDay.date,
+          motivo: solicitacaoAjuste.motivo,
+          batidas: solicitacaoAjuste.proposto.marcacoes            
+        };
+        
+
+        _visualizar();
+
       }, function (args) {
-        //console.log('dismissed confirmation');
+        console.log('dismissed confirmation');
+        //$scope.refillFlag = false;
+        $state.reload();
       });
     };
 
@@ -398,7 +431,7 @@
       myhitpointAPI.getFromDataFuncionario(objDataFuncionario).then(function successCallback(response){
 
         console.log('resultado da pesquisa: ', response.data);
-        if (!response.data || response.data.length <= 0){
+        if (!response.data || response.data.length <= 0){//se nao tiver solicitacao, pegar o apontamento
           
           getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, [$scope.funcionarioOficial], true, false, false);//pegando o diário
 
@@ -567,12 +600,6 @@
       minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
 
       return {hora: hoursStr, minuto: minutesStr};
-    };
-
-    function initGetSolicitacaoOuApontamento(){
-
-      getSolicitacaoOuApontamento();
-     
     };
 
     //Traz todos os employees/equipes para tela de Administrador
@@ -755,6 +782,7 @@
   function ConfirmationModalGestCtrl($uibModalInstance, $scope, $state, $filter, appointmentAPI, util, solicitacaoAjuste, gestor, feriados, equipe, apontamento){
     
     $scope.dataProcess = false;
+    $scope.cleanModal = false;
     //console.log('solicitacaoAjuste: ', solicitacaoAjuste);
     $scope.solicitacao = solicitacaoAjuste;
     $scope.dataFtd = $filter('date')(solicitacaoAjuste.rawData, 'abvFullDate');
@@ -792,6 +820,15 @@
         updateApontamento(apontamentoR);
       }
 
+      //Perguntar aqui se o usuario deseja continuar ajustando data para o atual funcionario (prosseguir para a proxima data de trabalho?)
+      //Se estiver vazia (sem apontamentos), ai ja preenche com as informacoes anterioeres (batimentos criados)
+      $scope.cleanModal = true;//remove as informacoes anteriores.
+      //Informar se foi salvo ou nao com sucesso e perguntar o que foi desrito acima...
+    };
+
+    $scope.buscarProxApontamento = function(){
+
+      $uibModalInstance.close();
     };
 
     function criarNovoApontamento(solicitacao){
@@ -823,15 +860,6 @@
       //console.log('apontamento a ser criado: ', apontamento);
       return apontamento;      
     };
-
-    //Compara dois históricos e retorna a "menor" (que bateu mais cedo no dia)
-    // function compareHist(a, b) {
-    //   if (a.id < b.id)
-    //     return -1;
-    //   if (a.id > id)
-    //     return 1;
-    //   return 0;
-    // }  
 
     function coletarHistorico(apontamento, isFirst){
 
@@ -885,11 +913,13 @@
         if (response.data.success){
           $scope.successMsg = "Registro salvo com sucesso!";
           $scope.dataProcess = false;
-          $uibModalInstance.close(response.data.success);
+          //responseData = response.data;
+          //$uibModalInstance.close(response.data.success);
         }
 
       }, function errorCallback(response){
         
+        //responseData = response.data;
         $scope.errorMsg = response.data.message;
         //console.log("Erro de registro: " + response.data.message);
         $scope.dataProcess = false;
@@ -905,17 +935,19 @@
         if (response.data.success){
           $scope.successMsg = "Registro atualizado com sucesso!";
           $scope.dataProcess = false;
-          $uibModalInstance.close(response.data.success);
+          //responseData = response.data;
+          //$uibModalInstance.close(response.data.success);
         }
 
       }, function errorCallback(response){
         
+        //responseData = response.data;
         $scope.errorMsg = response.data.message;
         //console.log("Erro de update: " + response.data.message);
         $scope.dataProcess = false;
         
       });
-    };
+    };    
 
   };
 

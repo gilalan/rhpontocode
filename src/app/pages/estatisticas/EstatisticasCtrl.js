@@ -14,7 +14,7 @@
     console.log("dentro do EstatisticasCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);
-    var arrayTestEmployees = ["0012315", "0192461", "098127615", "980157", "0009841", "0010002"] //(BLACK LIST USUARIOS)
+    var arrayTestEmployees = ["0012315", "0192461", "098127615", "980157", "0009841", "0010002", "0000000111222"] //(BLACK LIST USUARIOS)
 
     allEmployees.data.sort(function (a, b) {
       if (a.nome > b.nome) {
@@ -30,7 +30,7 @@
     $scope.equipes = equipes.data;
     $scope.rawApps = [];
     //$scope.rawApps = rawAppoints.data.rawReps;
-    //console.log("rawAppoints: ", $scope.employees);
+    console.log("Equipes: ", $scope.equipes);
 
     $scope.datepic = {
       dt: new Date()
@@ -110,13 +110,31 @@
           var dateDem = arrayFireds[arrayFireds.length-1];
           $scope.employees[i].FIRED = $filter('date')(dateDem, 'dd/MM/yyyy');
           contador++;
-        }
+        }      
 
         //$scope.employees[i].FIRED = $scope.employees[i].alocacao.gestor ? "GESTOR" : "FUNCIONARIO NORMAL";
         //$scope.employees[i].FIRED = $scope.employees[i].historico.datasDemissao.length > 0 ? true : false; 
       }
 
       console.log("Contador de demitidos: ", contador);
+
+      for (var i=0; i < $scope.equipes.length; i++){
+
+        for (var j=0; j < $scope.equipes[i].componentes.length; j++){
+
+          for (var k=0; k < $scope.employees.length; k++ ){
+
+            if ($scope.equipes[i].componentes[j].matricula == $scope.employees[k].matricula){
+              if (!$scope.employees[k].equipes){
+                $scope.employees[k].teams = [$scope.equipes[i].nome];
+              } else {
+                $scope.employees[k].teams.push($scope.equipes[i].nome);
+              }
+              break;
+            }
+          }
+        }
+      }
     };
     
     function getId (array) {

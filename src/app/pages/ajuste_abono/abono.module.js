@@ -1,6 +1,6 @@
 /**
  * @author Gilliard Lopes
- * created on 26/04/2017
+ * created on 01/05/2019
  */
 (function () {
   'use strict';
@@ -12,12 +12,12 @@
   function routeConfig($stateProvider) {
     $stateProvider
         .state('abono', {
-          url: '/ajusteabono/:userId',
+          url: '/abono/:userId/:year/:month/:day',
           templateUrl: 'app/pages/ajuste_abono/abono.html',
-          controller: 'AbonoCtrl',
-          title: 'Ajustes de Abonos',
+          controller: 'AbonoSolicitationCtrl',
+          title: 'Ausências Justificadas',
           sidebarMeta: {
-             icon: 'ion-paper',
+             icon: 'ion-clipboard',
              order: 3,
           },
           accessLevel: [1, 2, 3, 4, 6],
@@ -35,11 +35,14 @@
             currentDate: function(appointmentAPI) {
               return appointmentAPI.getCurrentDate();
             },
-            // dataSolicitada: function($stateParams) {  
-            // console.log('$stateParameters: ', $stateParams);            
-            //   if ($stateParams.year && $stateParams.month && $stateParams.day)
-            //     return new Date($stateParams.year, $stateParams.month, $stateParams.day);
-            // },
+            dataSolicitada: function($stateParams) {  
+            console.log('$stateParameters: ', $stateParams);            
+              if ($stateParams.year && $stateParams.month && $stateParams.day)
+                return new Date($stateParams.year, $stateParams.month, $stateParams.day);
+            },
+            eventosAbono: function(eventosAbonoAPI){
+              return eventosAbonoAPI.get();
+            },
             feriados: function(feriadoAPI) {
               return feriadoAPI.get();
             }
@@ -48,9 +51,9 @@
         .state('abono-gestor', {
           url: '/abono/gestor',
           templateUrl: 'app/pages/ajuste_abono/gestor/_abono.html',
-          controller: 'AbonoGestorCtrl',
-          title: 'Gerenciar Abonos de Funcionários',
-          accessLevel: [2, 3, 4, 6],
+          controller: 'AbonoSolicitationGestorCtrl',
+          title: 'Gerenciar Ausências Justificadas de Funcionários',
+          accessLevel: [2,3,4,6],
           resolve: {
             usuario: function(usersAPI, Auth){
               var user = Auth.getCurrentUser();
@@ -59,6 +62,9 @@
             },
             currentDate: function(appointmentAPI) {
               return appointmentAPI.getCurrentDate();
+            },
+            eventosAbono: function(eventosAbonoAPI){
+              return eventosAbonoAPI.get();
             },
             feriados: function(feriadoAPI) {
               return feriadoAPI.get();

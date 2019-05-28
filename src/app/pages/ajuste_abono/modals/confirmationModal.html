@@ -14,35 +14,13 @@
   <div style="padding: 0px 15px 0px 15px;">
     <div class="row" style="margin: 0px;">
       <div class="row" style="border: 2px solid #676db9; margin: 0px; border-radius: 5px; padding: 5px 0px 0px 0px;">
-        <div class="col-xs-12">
-          <h4 class="sub-header" style="color: #b9444c; margin-bottom: 4px; font-size: 14px;">Como eram os batimentos: </h4>
-          <div class="btn-toolbar-example">
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length>0">
-              <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObt in solicitacaoObtida.anterior track by $index">
-                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObt}}</label>
-              </div>
-            </div>
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.anterior.length<=0">
-              <label style="margin-left: 5px; font-size: 12px;"> Não havia batidas </label>
-            </div>
-          </div>
-        </div>
         <div class="col-xs-12" style="margin-top: 0px;">
-          <h4 class="sub-header" style="color: #5d9b4d; margin-bottom: 4px; font-size: 14px;">E como foi proposto: </h4>
-          <div class="btn-toolbar-example">
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Propostos" ng-if="solicitacaoObtida.proposto.length>0">
-              <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="solObtProp in solicitacaoObtida.proposto track by $index">
-                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{solObtProp}}</label>
-              </div>
-            </div>
-            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos Anteriores" ng-if="solicitacaoObtida.proposto.length<=0">
-                <label style="margin-left: 5px; font-size: 12px;"> Não propôs batidas </label>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-12" style="margin-top: 0px;">
-          <h4 class="sub-header" style="color: #000; margin-bottom: 5px; font-size: 14px;">Motivo:</h4>
-          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacao.motivo}} </label>
+          <label ng-show="solicitacao.message" style="color: #134fb7; margin-left: 0px; font-size: 14px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacao.message}} </label>
+          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Evento: {{solicitacao.eventoAbono.nome}} </label>
+          <label ng-if="tipoZero" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} </label>
+          <label ng-if="tipoUm" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} <br> Horário Inicial: {{solicitacao.horarioEnviado.inicial.totalMin}} <br> Horário Final: {{solicitacao.horarioEnviado.inicial.totalMin}}</label>
+          <label ng-if="tipoDois" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data Inicial: {{solicitacao.data | date:'fullDate'}} <br> Data Final: {{solicitacao.dataFinal | date:'fullDate'}} <br> Período de {{solicitacao.arrayAusAjt.length}} dias</label>
+          <label ng-if="tipoUm" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Motivo: {{solicitacao.motivo}}</label>
         </div>
       </div>
     </div>

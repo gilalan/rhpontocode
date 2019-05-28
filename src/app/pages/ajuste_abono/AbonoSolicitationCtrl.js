@@ -6,13 +6,11 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.abono')
-      .controller('AbonoCtrl', AbonoCtrl)
-      .controller('DesconsiderarCtrl', DesconsiderarCtrl)
-      .controller('IncluirBatimentoCtrl', IncluirBatimentoCtrl)
+      .controller('AbonoSolicitationCtrl', AbonoSolicitationCtrl)
       .controller('ConfirmationModalCtrl', ConfirmationModalCtrl);
 
   /** @ngInject */
-  function AbonoCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, usuario, currentDate, feriados) {
+  function AbonoSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, usuario, currentDate, feriados, eventosAbono) {
 
     var Usuario = usuario.data;
     var feriados = feriados.data;
@@ -20,51 +18,56 @@
     var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
 
-    // console.log("tem data Solicitada: ", dataSolicitada);
-
-    // if (dataSolicitada){
-    //   if (util.compareOnlyDates(dataSolicitada, dataMaxBusca) == 1)
-    //     dataSolicitada = new Date(dataMaxBusca);
-
-    //   $scope.currentDate = new Date(dataSolicitada);
-    //   $scope.currentDateFtd = $filter('date')(dataSolicitada, 'abvFullDate');
-    // } else {
-    //   $scope.currentDate = new Date(dataMaxBusca);
-    //   $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');  
-    // }
 
     console.log("Current Date para os trabalhos: ",$scope.currentDate);
 
     $scope.hasFuncionario = false; //indica se há um funcionário
     $scope.hasSolicitation = false;
     $scope.funcionario = Usuario.funcionario;
+    $scope.eventosAbono = eventosAbono.data;
     $scope.arrayES = [];
     $scope.ajuste = {};
+    $scope.justif = {};
+    $scope.hora = {};                
     // $scope.infoHorario = {};
+    
+    if ($scope.eventosAbono.length > 0)
+      $scope.selected = { item: $scope.eventosAbono[0] };
 
-    var pagePath = 'app/pages/ajuste_abono/modals/desconsiderarModal.html'; //representa o local que vai estar o html de conteúdo da modal
-    var pageIncluirPath = 'app/pages/ajuste_abono/modals/incluirBatimentoModal.html';
     var pageConfirmationPath = 'app/pages/ajuste_abono/modals/confirmationModal.html';
     var defaultSize = 'md'; //representa o tamanho da Modal
 
     //parte do datePicker
     $scope.datepic = {
       dt: $scope.currentDate
-      //dt: new Date(teste.getFullYear(), teste.getMonth(), teste.getDate())
     };
+
+    //parte do datePicker
+    $scope.datepic2 = {
+      dt: $scope.currentDate2
+    };
+
     $scope.options = {
       //minDate: $scope.datepic.dt,
       showWeeks: true
     };
     $scope.open = open;
+    $scope.open2 = open2;
     $scope.something = {
       opened: false
-    };
+    };    
+    $scope.something2 = {
+      opened: false
+    };    
     $scope.formats = ['dd-MMMM-yyyy', 'dd/MM/yyyy', 'dd.MM.yyyy', 'fullDate'];
     $scope.format = $scope.formats[1];
     function open() {
       //console.log("open function", $scope.something.opened);
       $scope.something.opened = true;
+    }
+    function open2() {
+      //console.log("open function", $scope.something.opened);
+      $scope.something2.opened = true;
     }
     $scope.changeDate = function(date) {
       console.log('já passou no changeDate no carregamento?');
@@ -86,105 +89,186 @@
       $scope.ajuste = {};
       $scope.solicitacaoObtida = {};
       console.log("infoHorario: ", $scope.infoHorario);
-      init();
+      //init(); Get Solicitacao de Abono existente...
     };
 
-    function hideDataError(seconds){
+    $scope.changeDate2 = function(date) {
+      console.log('já passou no changeDate no carregamento?');
       $scope.dataErrorMsg = null;
-    };
-    //Fim do datePicker
-
-    function hideAppointErrorMsg(seconds){
-      $scope.invalidAppointMsg = null;
-    };
-
-    $scope.propor = function(ajuste){
-      
-      if (!util.isValidBatidasSchema($scope.arrayES)) {
-        
-        $scope.invalidAppointMsg = null;
-        $scope.invalidAppointMsg = "o total de batidas deve ser em quantidade par!";
-        $timeout(hideAppointErrorMsg, 5000);
-        return $scope.invalidAppointMsg;
+      if (util.compareOnlyDates(date, dataMaxBusca) == 1){
+        $scope.datepic.dt = new Date($scope.currentDate);
+        $scope.dataErrorMsg = "Você só pode solicitar ajustes de: "+$filter('date')(dataMaxBusca, 'abvFullDate')+" para trás.";
+        $timeout(hideDataError, 8000);
+        return $scope.dataErrorMsg;
       }
+      console.log('passou por aqui!!!');
+      $scope.currentDate2 = new Date(date);
+      $scope.currentDateFtd2 = $filter('date')($scope.currentDate, 'abvFullDate');
+      //reset fields
+      arrayESOriginal = [];
+      $scope.hasSolicitation = false;
+      $scope.arrayES = [];
+      $scope.apontamento = null;
+      $scope.ajuste = {};
+      $scope.solicitacaoObtida = {};
+      console.log("infoHorario: ", $scope.infoHorario);
+      //init(); Get Solicitacao de Abono existente...
+    };
 
-      var marcacoesPropostas = reorganizarBatidasPropostas($scope.arrayES);      
+    $scope.criarAbono = function(){
+      
+      console.log("vai criar uma solicitação de abono.");
+      //console.log($scope.infoHorario);
+      var dataUnica = null;
+      var horarioUnico = null;
+      var dataRange = [];
+      //Aqui, é o caso de um abono apenas para um dia
+      if ($scope.currentDate2 == null){
+        console.log("Sem data final");
+        //Turno inteiro
+        dataUnica = util.getOnlyDate($scope.currentDate);
+        if ($scope.hora.inicio == null && $scope.hora.fim == null){
+          
+          console.log("Sem data fina, iniciall", dataUnica);
+          var dataNaFolga = false;
+          if ($scope.infoHorario.folgas){
+            for (var i = 0; i < $scope.infoHorario.folgas.length; i++) {
+              if (dataUnica.getDay() == $scope.infoHorario.folgas[i]){
+                dataNaFolga = true;
+                break;
+              }
+            }
+          }
 
-      var solicitacaoAjuste = {
-        rawData: $scope.currentDate,
-        date: {
-          year: $scope.currentDate.getFullYear(),
-          month: $scope.currentDate.getMonth(),
-          day: $scope.currentDate.getDate()
-        },
-        data: util.getOnlyDate($scope.currentDate),
-        funcionario: $scope.funcionario._id,
-        status: 0, //pendente (-1 é reprovada) e (1 é aprovada)
-        motivo: ajuste.motivo,
-        anterior: {
-          marcacoes: arrayESOriginal
-        },
-        proposto: {
-          marcacoes: marcacoesPropostas
+          if (dataNaFolga)
+            dataUnica = null;
+
+          console.log('#horario? ', $scope.hora);
+
+        } else if ($scope.hora.inicio != null && $scope.hora.inicio != "" 
+          && $scope.hora.fim != null && $scope.hora.fim != "") {
+
+          console.log('com horarios');
+          console.log('#horario? ', $scope.hora);
+
+          if ($scope.hora.inicio.length < 4){
+            $scope.timeErrorMsg = "O horário deve conter dois dígitos para hora e dois dígitos para os minutos.";
+            $timeout(hideTimeErrorMsg, 8000);
+            return $scope.timeErrorMsg;
+          }
+
+          if ($scope.hora.fim.length < 4){
+            $scope.timeErrorMsg2 = "O horário deve conter dois dígitos para hora e dois dígitos para os minutos.";
+            $timeout(hideTimeErrorMsg2, 8000);
+            return $scope.timeErrorMsg2;
+          }
+
+          horarioUnico = {
+            inicial: getTotalMinutosHorario($scope.hora.inicio),
+            final: getTotalMinutosHorario($scope.hora.fim)
+          };
         }
-      };
-      
-      openConfirmaAjuste(solicitacaoAjuste);  
-    };
+      } else {
+        console.log("com data final");
+        if ($scope.currentDate == null) {
+          $scope.dataErrorMsg = "Data Inicial precisa ser preenchida!";
+          $timeout(hideDataError, 8000);
+          return $scope.dataErrorMsg;
+        } else {
 
-    $scope.incluir = function(){
-
-      openIncluirModal($scope.currentDate, $scope.arrayES);
-    };
-
-    $scope.desconsiderar = function(index){
-      
-      openDesconsiderarModal($scope.currentDate, $scope.arrayES, index);
-    };
-
-    //Compara duas marcações e retorna a "menor" (que bateu mais cedo no dia)
-    //cuidado com as batidas pelo relógio, NSR de uma menor que a outra se for na mesma hora...
-    function compare(a, b) {
-      if (a.totalMin < b.totalMin)
-        return -1;
-      if (a.totalMin > b.totalMin)
-        return 1;
-      return 0;
-    }    
-
-    /**
-    * 1. Remove os pontos que foram descartados
-    * 2. Dá um sort pelo totalMin para organizar na sequencia as batidas
-    * 3. Cria o orderId e as Descrições e acopla aos batimentos que ja estão na ordem correta
-    */
-    function reorganizarBatidasPropostas(arrayES){
-      
-      //1.
-      var newArrayES = arrayES.filter(function( obj ) {
-        return obj.desconsiderada === false;
-      });
-      //2.
-      newArrayES.sort(compare);
-
-      //começando o index com 1.
-      for (var i=1; i<=newArrayES.length; i++){
-        newArrayES[i-1].id = i;
-        if (i == 1){
-          newArrayES[i-1].descricao = "ent1";
-          newArrayES[i-1].rDescricao = "Entrada 1";
-        } 
-        else {
-          if (i % 2 === 0){ //se for par é uma saída
-            newArrayES[i-1].descricao = "sai"+( (i/2) );
-            newArrayES[i-1].rDescricao = "Saída "+( (i/2) );
-          } else { //ímpar é uma entrada
-            newArrayES[i-1].descricao = "ent"+(Math.floor(i/2) + 1);
-            newArrayES[i-1].rDescricao = "Entrada "+(Math.floor(i/2) + 1);
+          var date1 = util.getOnlyDate($scope.currentDate);
+          var date2 = util.getOnlyDate($scope.currentDate2);
+          dataRange = util.daysCountBtwDates(date1, date2).arrayDias;
+          console.log("dataRange: ", dataRange);
+          if ($scope.infoHorario.folgas){
+            for (var i = 0; i < $scope.infoHorario.folgas.length; i++) {
+              for (var j=0; j< dataRange.length; j++){
+                if (dataRange[j].day == $scope.infoHorario.folgas[i]){
+                  //dataRange[j] = null;
+                }
+              }
+            }
           }
         }
       }
 
-      return newArrayES;
+      var solicitacaoAjuste = {
+        funcionario: $scope.funcionario._id,
+        tipo: 1, //tipo Abono
+        status: 0, //pendente (-1 é reprovada) e (1 é aprovada)
+        motivo: $scope.justif.motivo,
+        eventoAbono: $scope.selected.item
+      };
+
+      if (dataUnica != null){
+        console.log("vai ser abono de data unica",dataUnica);
+        solicitacaoAjuste.data = dataUnica;
+        if (horarioUnico != null){
+          console.log("vai ser abono de data unica + horario de turno");
+          solicitacaoAjuste.horarioEnviado = horarioUnico;
+        }
+
+      } else {
+        console.log("vai ser abono de data range", dataUnica);
+        solicitacaoAjuste.data = util.getOnlyDate($scope.currentDate);
+        solicitacaoAjuste.dataFinal = util.getOnlyDate($scope.currentDate2);
+        solicitacaoAjuste.arrayAusAjt = dataRange;
+      }
+
+      alert ('Funcionalidade em construção...');
+      /* retirei pra atualizar o servidor
+      openConfirmaAjuste(solicitacaoAjuste);
+      */
+
+      // myhitpointAPI.create(solicitacaoAjuste).then(function successCallback(response){
+
+      //   var retorno = response.data;
+      //   $uibModalInstance.close(retorno.success);
+
+      // }, function errorCallback(response){
+        
+      //   $scope.errorMsg = response.data.message;
+      //   console.log("Erro ao criar solicitação de ajuste.");
+      // });
+    };
+
+    function getTotalMinutosHorario (strHorario) {
+
+        if (strHorario.length < 4)
+            return "";
+        
+        var hoursStr = strHorario.substring(0, 2);
+        var minutesStr = strHorario.substring(2);
+        var hours = parseInt(hoursStr) * 60;
+        var minutes = parseInt(minutesStr);
+        return {
+          hora: parseInt(hoursStr),
+          minuto: parseInt(minutesStr),
+          segundo: 0,
+          totalMin: hours + minutes
+        }
+        //return (hours + minutes); 
+    };
+
+    function hideDataError(seconds){
+      $scope.dataErrorMsg = null;
+    };    
+    //Fim do datePicker
+
+    function hideDataError2(seconds){
+      $scope.dataErrorMsg2 = null;
+    };
+
+    function hideTimeError(seconds){
+      $scope.timeErrorMsg = null;
+    };
+
+    function hideTimeError2(seconds){
+      $scope.timeErrorMsg2 = null;
+    };
+
+    function hideAppointErrorMsg(seconds){
+      $scope.invalidAppointMsg = null;
     };
 
     //seria bom mostrar telinha confirmando as alterações...
@@ -213,82 +297,7 @@
       }, function (args) {
         console.log('dismissed confirmation');
       });
-    };
-
-    function openDesconsiderarModal (data, arrayES, indice) {
-
-      var objBatida = {
-        data: data,
-        array: arrayES,
-        index: indice
-      }
-
-      var modalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: pagePath,
-        size: defaultSize,
-        controller: 'DesconsiderarCtrl',
-        resolve: {
-          objBatida: function () {
-            return objBatida;
-          }
-        }
-      });
-
-      modalInstance.result.then(function (result){
-
-        console.log('Result: ', result);
-        if (result.indice >= 0){
-
-          $scope.arrayES[result.indice].desconsiderada = true;
-          $scope.arrayES[result.indice].motivo = result.motivo;
-          $scope.arrayES[result.indice].estadoAtual = util.obterStatusMarcacao($scope.arrayES[result.indice]);
-          console.log('$scope.arrayES: ', $scope.arrayES);
-        }
-
-        //console.log('array novo: ', $scope.arrayES);
-
-      }, function (args) {
-
-        //console.log('modal is dismissed or closed.', args);
-
-      });
-    };
-
-    function openIncluirModal (data, arrayES) {
-
-      var objBatida = {
-        data: data        
-      }
-
-      var modalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: pageIncluirPath,
-        size: defaultSize,
-        controller: 'IncluirBatimentoCtrl',
-        resolve: {
-          objBatida: function () {
-            return objBatida;
-          }
-        }
-      });
-
-      modalInstance.result.then(function (marcacao){
-         
-        console.log('result?.', marcacao);
-        console.log('array? ', $scope.arrayES);
-        
-        if (marcacao){
-
-          $scope.arrayES.push(marcacao);
-          if (!$scope.apontamento)
-            $scope.apontamento = true; //AJEITAR ISSO PLS
-        } 
-
-      }, function () {
-        //console.log('modal is dismissed or close.', args);
-      });
-    };
+    }; 
 
     function getSolicitacaoOuApontamento(){
 
@@ -529,102 +538,27 @@
     init();
   };
 
-  function DesconsiderarCtrl($uibModalInstance, $scope, $state, $filter, objBatida){
-    
-    //console.log('objBatida: ', objBatida);
-    $scope.algo = {};
-    $scope.objBatida = objBatida;
-    $scope.objBatida.data = $filter('date')($scope.objBatida.data, 'abvFullDate');
-    $scope.horario = objBatida.array[objBatida.index].strHorario;
-
-    $scope.confirmDes = function() {
-      
-      //$state.go('point_adjust', {obj: objAjusteParams});
-      $uibModalInstance.close({indice: $scope.objBatida.index, motivo: $scope.algo.motivo});
-    };
-
-  };
-
-  function IncluirBatimentoCtrl($uibModalInstance, $scope, $state, $filter, util, objBatida){
-   
-    $scope.algo = {};
-    $scope.errorMsg = null;
-    $scope.objBatida = objBatida;
-    $scope.objBatida.data = $filter('date')($scope.objBatida.data, 'abvFullDate');
-
-    $scope.confirmaInclusao = function(batida) {
-      
-      //$state.go('point_adjust', {obj: objAjusteParams});
-      if (batida.horario){
-        var objHorario = getObjectHorario(batida.horario);
-        if (!objHorario){
-          $scope.errorMsg = "O horário deve estar no formato 00 a 23 para as Horas e 00 a 59 para os minutos";
-        } else {
-          console.log('objHorario: ', objHorario);
-          var marcacao = {
-            incluida: true, //tem que remover na hora de enviar o objeto, é só local isso
-            id: undefined,
-            descricao: undefined,
-            hora: objHorario.hora,
-            minuto: objHorario.minutes,
-            segundo: 0,
-            totalMin: objHorario.totalMinutes,
-            strHorario: objHorario.horarioFtd,
-            tzOffset: (new Date()).getTimezoneOffset(),
-            RHWeb: false,
-            REP: false,
-            NSR: "MANUAL",
-            desconsiderada: false,
-            // itemDescricaoHorario.reconvertida = apontamentoF.marcacoes[i].reconvertida;
-            motivo: batida.motivo,
-            gerada: {created_at: new Date()}
-          };
-          marcacao.estadoAtual = util.obterStatusMarcacao(marcacao);
-          $uibModalInstance.close(marcacao);
-        }
-      } else {
-        $scope.errorMsg = "O horário deve estar no formato 00 a 23 para as Horas e 00 a 59 para os minutos";
-      }
-    };
-
-    function getObjectHorario (strHorario) {
-
-      if (strHorario.length < 4)
-        return null;
-      
-      var hoursStr = strHorario.substring(0, 2);
-      var minutesStr = strHorario.substring(2);
-      var hoursO = parseInt(hoursStr);
-      var minutes = parseInt(minutesStr);
-      
-      if (hours < 0 || hours > 23)
-        return null;
-
-      if (minutes < 0 || minutes > 59)
-        return null;
-
-      var hours = hoursO * 60;
-
-      return {
-        totalMinutes: (hours + minutes),
-        hora: hoursO,
-        minutes: minutes,
-        horarioFtd: hoursStr + ":" + minutesStr
-      };
-    };
-
-  };
-
   function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, util, myhitpointAPI, solicitacaoAjuste){
     
     console.log('solicitacaoAjuste: ', solicitacaoAjuste);
     $scope.solicitacao = solicitacaoAjuste;
-    
-    var resultArray = util.getInfoSolicitacaoAjuste(solicitacaoAjuste);
-    $scope.solicitacaoObtida = {
-      anterior: resultArray.arrayESAnterior,
-      proposto: resultArray.arrayESProposto
-    };
+    $scope.solicitacao.message = false;
+    $scope.tipoZero = false;
+    $scope.tipoUm = false;
+    $scope.tipoDois = false;
+
+    if (!$scope.solicitacao.dataFinal){
+      $scope.solicitacao.message = "Ausência de Justificativa para dia único";
+      if ($scope.solicitacao.horarioEnviado) {
+        $scope.solicitacao.message += " e período de tempo limitado";
+        $scope.tipoUm = true;
+      }
+      $scope.tipoZero = !$scope.tipoUm;
+    } else {
+      $scope.solicitacao.message = "Ausência de Justificativa para um período de dias";
+      $scope.tipoDois = true;
+    }
+
     // $scope.dataFtd = $filter('date')(solicitacaoAjuste.rawData, 'abvFullDate');
     
     $scope.confirma = function() {

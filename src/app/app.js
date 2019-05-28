@@ -67,6 +67,17 @@ angular.module('BlurAdmin', [
               } 
             }
 
+            if (toState.name == "abono"){
+              console.log('entrou no ajusteabono direto do app.js');
+              var level = Auth.getUserLevel();
+              if (level >= 2){//é no mínimo gestor, redireciona para outro state, controller e html
+                
+                e.preventDefault();
+                $state.go('abono-gestor');
+
+              }
+            }
+
           } else {//não está autorizado
             //console.log('vc não é autorizado a ver essa rota');
             $rootScope.$broadcast('authorized', false);

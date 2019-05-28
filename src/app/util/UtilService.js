@@ -46,6 +46,7 @@ angular.module('BlurAdmin').service("util", function(){
         if (escala && escala.codigo == 1) { //jornada semanal
 
         jornada = funcionario.alocacao.turno.jornada;
+        //console.log("jornadada: ", jornada);
         if (jornada && jornada.array){
           jornada.array.sort(function (a, b) { //ordena por segurança
             if (a.dia > b.dia) {
@@ -64,9 +65,12 @@ angular.module('BlurAdmin').service("util", function(){
             itemHorario.dia = weekFullDays[dia];
             if (!jornada.array[i].horarios){
               itemHorario.horario = "Descanso Semanal Remunerado";
+              itemHorario.minTrabalho = 0;
+              infoHorario.folgas == null ? infoHorario.folgas = [dia] : infoHorario.folgas.push(dia);
             }
             else {
               itemHorario.horario = jornada.array[i].horarioFtd.replace(/\//g, " às ");
+              itemHorario.minTrabalho = jornada.array[i].minutosTrabalho;
             }
             for (var j=0; j<infoHorario.length; j++){
               if (infoHorario[j].horario == itemHorario.horario){
@@ -88,6 +92,7 @@ angular.module('BlurAdmin').service("util", function(){
           if (jornada.array[0].horarios){
             itemHorario.dia = "Revezamento 12 x 36h (dia sim, dia não)";
             itemHorario.horario = jornada.array[0].horarioFtd.replace(/\//g, " às ");
+            itemHorario.minTrabalho = jornada.minutosTrabalho;
             infoHorario.push(itemHorario);
           }
         }
@@ -203,12 +208,16 @@ angular.module('BlurAdmin').service("util", function(){
 
       var current = angular.copy(d1);
       var arrayDias = [];
+      var count = 0;
       while(current <= d2){
         arrayDias.push({
+          id: count,
+          day: current.getDay(),
           date: current.getDate(), 
           month: current.getMonth()+1,
           year: current.getFullYear()
         });
+        count++;
         current = svc.addOrSubtractDays(current, 1);
       }
 
@@ -270,6 +279,32 @@ angular.module('BlurAdmin').service("util", function(){
       data.setHours(0,0,0,0); //essa data é importante zerar os segundos para que não tenha inconsistência na base
       return data;
     }; 
+
+    svc.getNextWorkingDay = function(currentDate, funcionario, equipe, feriados, maxDate){
+
+      var finded = false;
+      var nextDate = null;
+      var infoWork = {};
+      var dayCount = 1;
+      while(!finded){
+        
+        nextDate = svc.addOrSubtractDays(currentDate, dayCount);
+        console.log('nextDate: ', nextDate);
+        if (svc.compareOnlyDates(nextDate, maxDate) == 0)
+          finded = true;
+
+        infoWork = svc.getInfoTrabalho(funcionario, equipe, nextDate, feriados);
+        if (infoWork.trabalha == true)
+          finded = true;
+
+        dayCount++;
+      }
+      
+      return {
+        date: nextDate,
+        infoWork: infoWork
+      };
+    };
 
     svc.getInfoTrabalho = function(funcionario, equipe, date, feriados){
         

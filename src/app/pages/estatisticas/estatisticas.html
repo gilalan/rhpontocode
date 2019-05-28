@@ -35,7 +35,8 @@
 			      <!-- <th>Sobrenome</th> -->
 			      <th>PIS</th>
 			      <th>Matricula</th>
-			      <th>Demitido em?</th>
+			      <th>Demitido em</th>
+			      <th>Equipe(s)</th>
 			      <!-- <th>Horário</th> -->
 			    </tr>
 		    </thead>
@@ -47,6 +48,11 @@
 			        <td>{{emp.PIS}}</td>
 			        <td>{{emp.matricula}}</td>
 			        <td>{{emp.FIRED}}</td>
+			        <td>
+			        	<p ng-repeat="team in emp.teams track by $index" style="font-weight: normal;">
+      						{{team}}
+    					</p>	
+			        </td>
 			        <!--<td>
 			          {{emp.alocacao.gestor}}
 			        </td>-->

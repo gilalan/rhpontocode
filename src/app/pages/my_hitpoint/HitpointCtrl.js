@@ -929,6 +929,14 @@
     $scope.abono = function(){
 
       console.log('soliciou abono');
+      $state.go('abono', 
+        {
+          userId: objAjusteParams.usuario._id, 
+          year: objAjusteParams.date.year,
+          month: objAjusteParams.date.month,
+          day: objAjusteParams.date.day
+        });
+      $uibModalInstance.dismiss();
     };
 
   };
