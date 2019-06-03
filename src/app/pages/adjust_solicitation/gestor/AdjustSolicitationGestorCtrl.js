@@ -27,7 +27,7 @@
     $scope.equipesLiberadas = false;
     $scope.currentDate = new Date(dataMaxBusca);
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');  
-
+    $scope.flagFerias = false;
     //console.log("Current Date para os trabalhos: ",$scope.currentDate);
 
     $scope.hasFuncionario = false; //indica se há um funcionário
@@ -90,13 +90,26 @@
     $scope.visualizar = function() {
       //$scope.refillFlag = false;
       resetFields();
-      getSolicitacaoOuApontamento();
+      console.log("Ferias do funcionario: ", $scope.funcionarioOficial);
+      $scope.flagFerias = util.checkFerias($scope.currentDate, $scope.funcionarioOficial.ferias);
+      if (!$scope.flagFerias)
+        getSolicitacaoOuApontamento();
     };
 
     $scope.changeFunc = function(funcSel){
       
       $scope.funcionarioOficial = $scope.equipes[funcSel.indiceEq].componentes[funcSel.indiceComp];
       $scope.funcionarioOficial.equipe = angular.copy(funcSel.equipe);
+      console.log("funcionario ferias do INIT: ", $scope.funcionarioOficial);
+      if ($scope.funcionarioOficial.ferias){
+
+        for (var i=0; i<$scope.funcionarioOficial.ferias.length; i++){
+          $scope.funcionarioOficial.ferias[i].dataIniFtd = new Date($scope.funcionarioOficial.ferias[i].periodo.anoInicial, 
+            $scope.funcionarioOficial.ferias[i].periodo.mesInicial-1, $scope.funcionarioOficial.ferias[i].periodo.dataInicial, 0, 0, 0, 0);
+          $scope.funcionarioOficial.ferias[i].dataFinFtd = new Date($scope.funcionarioOficial.ferias[i].periodo.anoFinal, 
+            $scope.funcionarioOficial.ferias[i].periodo.mesFinal-1, $scope.funcionarioOficial.ferias[i].periodo.dataFinal, 0, 0, 0, 0);
+        }
+      }
       $scope.infoHorario = util.getInfoHorario($scope.funcionarioOficial, []);
     };
 
@@ -202,7 +215,9 @@
       resetFields();
       $scope.datepic.dt = refillObj.date;
       $scope.changeDate(refillObj.date);
-      getSolicitacaoOuApontamento();
+      $scope.flagFerias = util.checkFerias($scope.currentDate, $scope.funcionarioOficial.ferias);
+      if (!$scope.flagFerias)
+        getSolicitacaoOuApontamento();
     };
 
     function isValidSearch(){
@@ -669,7 +684,7 @@
       //////console.log('employees: ', $scope.employeesNames);
     };
 
-    function init(allEmployees, allEquipes) {
+    function init(allEmployees, allEquipes) {      
 
       if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
         

@@ -3,13 +3,14 @@
     <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
       <em class="ion-ios-close-empty sn-link-close"></em>
     </button>
-    <h4 class="modal-title" id="myModalLabel">{{solicitacao.funcionario.nome}} {{solicitacao.funcionario.sobrenome}}</h4>
+    <h4 class="modal-title" id="myModalLabel">{{solicitacao.tipoStr}} - {{solicitacao.funcionario.nome}} {{solicitacao.funcionario.sobrenome}}</h4>
     <br>
-    <h4 class="sub-header"><strong style="color: #334db7;">{{solicitacao.data | date:'abvFullDate'}}</strong></h4>
+    <h4 class="sub-header" ng-if="!solicitacao.isAbono"><strong style="color: #334db7;">{{solicitacao.data | date:'abvFullDate'}}</strong></h4>
+    <h4 class="sub-header" ng-if="solicitacao.isAbono"><strong style="color: #334db7;">{{solicitacao.dataAbonoStr}}</strong></h4>
   </div>
   <div class="modal-body" style="padding: 2px 15px 10px 15px;">
     <div class="row" style="margin: 0px;">
-      <div class="row" style="border: 2px solid #676db9; margin: 0px; border-radius: 5px; padding: 5px 0px 0px 0px;">
+      <div class="row" ng-if="!solicitacao.isAbono" style="border: 2px solid #676db9; margin: 0px; border-radius: 5px; padding: 5px 0px 0px 0px;">
         <div class="col-xs-12">
           <h4 class="sub-header" style="color: #b9444c; margin-bottom: 4px; font-size: 14px;">Como eram os batimentos: </h4>
           <div class="btn-toolbar-example">
@@ -41,6 +42,16 @@
           <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacao.motivo}} </label>
         </div>
       </div>
+
+      <div class="row" ng-if="solicitacao.isAbono" style="border: 2px solid #676db9; margin: 0px; border-radius: 5px; padding: 5px 0px 0px 0px;">
+        <label ng-show="solicitacao.message" style="color: #134fb7; margin-left: 0px; font-size: 14px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacao.message}} </label>
+          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Evento: {{solicitacao.eventoAbono.nome}} </label>
+          <label ng-if="solicitacao.tipoZero" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} </label>
+          <label ng-if="solicitacao.tipoUm" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} <br> Horário Inicial: {{solicitacao.horarioEnviado.inicial.horarioFtd}} <br> Horário Final: {{solicitacao.horarioEnviado.final.horarioFtd}}</label>
+          <label ng-if="solicitacao.tipoDois" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data Inicial: {{solicitacao.data | date:'fullDate'}} <br> Data Final: {{solicitacao.dataFinal | date:'fullDate'}} <br> Período de {{solicitacao.arrayAusAjt.length}} dias</label>
+          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Motivo: {{solicitacao.motivo}}</label>
+      </div>
+
     </div> 
   </div>
   <div class="separator2"></div>

@@ -17,7 +17,7 @@
         template: '<ui-view></ui-view>',
         title: 'Eventos de Abono',
         sidebarMeta: {
-          icon: 'ion-ios-calendar',
+          icon: 'ion-star',
           order: 61,
         },
         accessLevel: [3,4,5,6]

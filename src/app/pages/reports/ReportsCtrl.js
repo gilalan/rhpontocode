@@ -66,7 +66,7 @@
     }
 
     $scope.clickEmployeeCB = function(){
-      console.log('clicou employee', $scope.checkboxModel.funcionario);
+      //console.log('clicou employee', $scope.checkboxModel.funcionario);
       if ($scope.checkboxModel.funcionario){
           $scope.checkboxModel.equipe = false;
           $scope.textoBotao = "Visualizar";
@@ -77,7 +77,7 @@
     };
 
     $scope.clickTeamCB = function(){
-      console.log('clicou equipe', $scope.checkboxModel.equipe);
+      //console.log('clicou equipe', $scope.checkboxModel.equipe);
       if($scope.checkboxModel.equipe){
         $scope.checkboxModel.funcionario = false;
         $scope.textoBotao = "Salvar Relatório de Equipe em PDF";
@@ -132,7 +132,7 @@
 
       if ($scope.checkboxModel.equipe) {
 
-        console.log('Selected Equipe: ', $scope.selectedEquipe.item);
+        //console.log('Selected Equipe: ', $scope.selectedEquipe.item);
         //vou ter que calcular os totais para cada employee da equipe e depois gerar o PDF para concatenar num documento so
       }      
       
@@ -215,7 +215,7 @@
       var docDefinition = utilReports.gerarEspelhoPonto($scope.funcionario.selected, 
         $scope.infoHorario, periodoStr, diasRelatorio, totais);
       
-      console.log('Funcionario selecionado para relatorio: ', $scope.funcionario.selected);
+      //console.log('Funcionario selecionado para relatorio: ', $scope.funcionario.selected);
 
       docDefinition.footer = function(currentPage, pageCount) { 
         return { 
@@ -568,6 +568,9 @@
 
       var ferias = funcionario.ferias;
 
+      //console.log("#ReportsCtrl Funcionario oficioal: ", funcionario);
+      //console.log("#ReportsCtrl Funcionario.ferias oficioal: ", funcionario.ferias);
+
       //Tivemos que fazer um workaround para funcionar a obtenção dos apontamentos da data final no servidor
       //agora nós 'removemos' esse workaround:
       endDate = addOrSubtractDays(endDate, -1);
@@ -604,7 +607,7 @@
           itemApontamento.arrayEntSai = objEntradasSaidas.arrayEntSai;
           //na função getSaldoPresente temos as horas a trabalhar e trabalhadas
           itemApontamento.saldo = getSaldoPresente(apontamentoF);
-          console.log('itemApontamento: ', itemApontamento);
+          //console.log('itemApontamento: ', itemApontamento);
           if (itemApontamento.saldo.saldoDiario > 0) {
             saldoFinalPositivo += itemApontamento.saldo.saldoDiario;
           } else {
@@ -634,7 +637,7 @@
           //itemApontamento.observacao = "Sem Batidas";
           setInfoAusencia(itemApontamento, current, false); //injeta as informações de ausencia no apontamento
           var teste = itemApontamento.saldo.horasFtd;
-          //////console.log('itemApontamento sem apontamento: ', teste);
+          //console.log('SEM apontamento: ');
 
           if (itemApontamento.ocorrencia.statusCodeString == "AUS"){ //Ausente quando deveria ter trabalhado
             $scope.diasParaTrabalhar++;
@@ -1109,12 +1112,13 @@
       var codigoEscala = funcionarioAlocacao.turno.escala.codigo; 
       var ignoraFeriados =  funcionarioAlocacao.turno.ignoraFeriados;
       var objFeriadoRet = isFeriado(dataDesejada);
+      //console.log('#ReportsCtrl: objeto de férias do Funcionario: ', funcionario.ferias);
       var objFerias = util.checkFerias(dataDesejada, funcionario.ferias);
-      console.log('está de férias ?', objFerias);
+      //console.log('está de férias ?', objFerias);
 
       if (objFerias){
         
-        console.log("funcionários de férias na data", dataDesejada);
+        //console.log("funcionários de férias na data", dataDesejada);
         return {code: "FER", string: "Férias!", imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};
 
       } else {
@@ -1371,13 +1375,13 @@
       } else if (Usuario.perfil.accessLevel == 4) {
          
          $scope.isAdmin = true;
-        //////console.log('allEmployees: ', allEmployees.data);
+        //console.log('allEmployees: ', allEmployees.data);
         getAllEmployees(allEmployees, allEquipes);
 
       } else if (Usuario.perfil.accessLevel >= 5) {
 
         $scope.isAdmin = true;
-        //////console.log('allEmployees: ', allEmployees.data);
+        //console.log('allEmployees: ', allEmployees.data);
         getAllEmployees(allEmployees, allEquipes);
 
       } else {

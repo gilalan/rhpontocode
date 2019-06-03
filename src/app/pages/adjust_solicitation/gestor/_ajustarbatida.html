@@ -97,7 +97,7 @@
     <div class="row" ng-if="!hasSolicitation" style="margin: 0px;">
       <div class="row" style="margin: 0px;">
         <div class="col-xs-12">
-          <div class="form-group" style="float: right;">
+          <div class="form-group" style="float: right;" ng-if="!flagFerias">
             <ul class="btn-list clearfix">
               <li><button type="button" class="btn btn-primary btn-with-icon" ng-disabled="!funcionario.selected" ng-click="incluir()"><i class="ion-plus-round"></i>Incluir batimento</button></li>
             </ul>
@@ -106,16 +106,25 @@
       </div>  
 
       <div class="row" ng-if="!apontamento" style="margin: 0px;">
-          <div class="col-xs-12">
-            <div id="divMarcacoes" class="form-group">
+        <div class="col-xs-12">
+          <div id="divMarcacoes" ng-if="!flagFerias" class="form-group">
               <p><strong>Não há marcações nesse dia.</strong></p>
               <button type="button" class="btn btn-warning btn-with-icon" ng-if="refillFlag" ng-click="refill()"><i class="ion-arrow-return-left"></i>Preencher igual ao ajuste anterior</button>
+          </div>
+          <div id="divMarcacoes" ng-if="flagFerias" class="form-group">
+              <p><strong>O Funcionário está de férias nesse dia e não pode ter seu ponto ajustado manualmente. Consultar o RH da empresa para maiores informações.</strong></p>
+              <div class="form-group" style="float: left;">
+                <p style="margin-bottom: 0px; color: #334db7; font-weight: normal;"> Períodos de Férias: </p>
+                <ul class="btn-list clearfix" style="color: #ff00ff; font-weight: normal;" ng-repeat="item in funcionarioOficial.ferias track by $index">
+                  <li>{{item.dataIniFtd | date:'dd/MM/yyyy'}} até {{item.dataFinFtd | date:'dd/MM/yyyy'}}</li>
+                </ul>
+              </div>
           </div>
         </div>
       </div>
 
       <div class="row" ng-if="apontamento" style="margin: 0px;">
-        <table class="table table-condensed" style="table-layout: fixed;">
+        <table class="table table-condensed" style="table-layout: fixed;" ng-f>
           <thead>
             <tr style="color: #334db7;">
               <th class="col-xs-1 centerColSpan first" style="width: 10%;"><b>E/S</b></th>

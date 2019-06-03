@@ -33,7 +33,7 @@
   <div class="row" style="margin: 0px;">
     <table class="table" st-table="solicitacoes">
       <thead>
-      <tr class="sortable">
+      <tr class="sortable" style="color: red;">
         <!-- <th><strong>Criada em</strong></th> -->
         <th style="width: 25%; text-align: left;"><strong>Funcionário</strong></th>
         <th style="width: 8%;"><strong>Tipo de Solicitação</strong></th>
@@ -43,10 +43,10 @@
       </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="solicitacao in solicitacoes track by $index" style="color: #666666;">
+        <tr ng-repeat="solicitacao in solicitacoes track by $index" ng-class="{'solicitacao-ajuste': solicitacao.classAjuste, 'solicitacao-abono': !solicitacao.classAjuste}">
           <!-- <td>{{solicitacao.createdAt | date: 'shortDT'}}</td> -->
           <td style="line-height: 19px !important; text-align: left;">{{solicitacao.funcionario.nome}} {{solicitacao.funcionario.sobrenome}}</td>
-          <td style="line-height: 19px !important;">Ajuste</td>
+          <td style="line-height: 19px !important;">{{solicitacao.tipoStr}}</td>
           <td style="line-height: 19px !important;">{{solicitacao.data | date: 'abvFullDate'}}</td>
           <td style="line-height: 19px !important;">{{solicitacao.motivo}}</td>
           <td style="line-height: 19px !important;">

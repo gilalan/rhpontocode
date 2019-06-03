@@ -96,7 +96,7 @@
           <div class="col-xs-12">
             <div class="form-group" style="float: right;">
               <ul class="btn-list clearfix">
-                <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="incluir()"><i class="ion-plus-round"></i>Incluir batimento</button></li>
+                <li><button type="button" class="btn btn-primary btn-with-icon" ng-click="incluir()" ng-if="!flagFerias"><i class="ion-plus-round"></i>Incluir batimento</button></li>
               </ul>
             </div>
           </div>
@@ -104,9 +104,18 @@
 
         <div class="row" ng-if="!apontamento" style="margin: 0px;">
             <div class="col-xs-12">
-              <div id="divMarcacoes" class="form-group">
+              <div id="divMarcacoes" class="form-group" ng-if="!flagFerias">
                 <p><strong>Não há marcações nesse dia.</strong></p>
-            </div>
+              </div>
+              <div id="divMarcacoes" ng-if="flagFerias" class="form-group">
+                  <p><strong>Você está de férias na data selecionada e não pode solicitar ajuste de ponto. Consulte o RH da empresa para maiores informações.</strong></p>
+                  <div class="form-group" style="float: left;">
+                    <p style="margin-bottom: 0px; color: #334db7; font-weight: normal;"> Períodos de Férias: </p>
+                    <ul class="btn-list clearfix" style="color: #ff00ff; font-weight: normal;" ng-repeat="item in funcionario.ferias track by $index">
+                      <li>{{item.dataIniFtd | date:'dd/MM/yyyy'}} até {{item.dataFinFtd | date:'dd/MM/yyyy'}}</li>
+                    </ul>
+                  </div>
+              </div>
           </div>
         </div>
 

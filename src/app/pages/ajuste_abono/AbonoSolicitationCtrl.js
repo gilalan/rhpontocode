@@ -117,13 +117,15 @@
 
     $scope.criarAbono = function(){
       
+      //FAZER UM FIND para saber se já tem uma solicitação com essa data e abrir uma dialog perguntando se deseja assim mesmo
+
       console.log("vai criar uma solicitação de abono.");
       //console.log($scope.infoHorario);
       var dataUnica = null;
       var horarioUnico = null;
       var dataRange = [];
       //Aqui, é o caso de um abono apenas para um dia
-      if ($scope.currentDate2 == null){
+      if ($scope.currentDate2 == null){ 
         console.log("Sem data final");
         //Turno inteiro
         dataUnica = util.getOnlyDate($scope.currentDate);
@@ -163,10 +165,33 @@
             return $scope.timeErrorMsg2;
           }
 
-          horarioUnico = {
-            inicial: getTotalMinutosHorario($scope.hora.inicio),
-            final: getTotalMinutosHorario($scope.hora.fim)
-          };
+          var horario1 = util.isValidHorarioField($scope.hora.inicio);
+          var horario2 = util.isValidHorarioField($scope.hora.fim);
+
+          if (!horario1 || !horario2){
+            $scope.timeErrorMsg = "O horário deve conter dois dígitos para hora e dois dígitos para os minutos e deve estar entre 00 e 23 horas e 00 e 59 minutos.";
+            $timeout(hideTimeErrorMsg, 8000);
+            return $scope.timeErrorMsg;
+          }
+          else {
+            horarioUnico = {
+              inicial: {
+                hora: horario1.hora,
+                minuto: horario1.minutes,
+                segundo: 0,
+                totalMin: horario1.totalMinutes,
+                horarioFtd: horario1.horarioFtd 
+              }, 
+              final: {
+                hora: horario2.hora,
+                minuto: horario2.minutes,
+                segundo: 0,
+                totalMin: horario2.totalMinutes,
+                horarioFtd: horario2.horarioFtd
+              },
+              diff: horario2.totalMinutes - horario1.totalMinutes
+            };
+          }
         }
       } else {
         console.log("com data final");
@@ -206,6 +231,8 @@
         if (horarioUnico != null){
           console.log("vai ser abono de data unica + horario de turno");
           solicitacaoAjuste.horarioEnviado = horarioUnico;
+          //Tenho que ter as marcacoes se for apenas por horário e seguir o método igual ao de ajuste...
+          //solicitacaoAjuste.proposto.marcacoes = _criarMarcacoesManuaisAbono(horarioUnico);
         }
 
       } else {
@@ -215,10 +242,9 @@
         solicitacaoAjuste.arrayAusAjt = dataRange;
       }
 
-      alert ('Funcionalidade em construção...');
-      /* retirei pra atualizar o servidor
+      //retirei pra atualizar o servidor
       openConfirmaAjuste(solicitacaoAjuste);
-      */
+      
 
       // myhitpointAPI.create(solicitacaoAjuste).then(function successCallback(response){
 
@@ -230,24 +256,46 @@
       //   $scope.errorMsg = response.data.message;
       //   console.log("Erro ao criar solicitação de ajuste.");
       // });
-    };
+    };   
 
-    function getTotalMinutosHorario (strHorario) {
+    function criarMarcacoesManuaisAbono(horarioUnico) {
 
-        if (strHorario.length < 4)
-            return "";
-        
-        var hoursStr = strHorario.substring(0, 2);
-        var minutesStr = strHorario.substring(2);
-        var hours = parseInt(hoursStr) * 60;
-        var minutes = parseInt(minutesStr);
-        return {
-          hora: parseInt(hoursStr),
-          minuto: parseInt(minutesStr),
-          segundo: 0,
-          totalMin: hours + minutes
-        }
-        //return (hours + minutes); 
+      var marcacao1 = {
+        id: 1,
+        descricao: "ent1",
+        hora: horarioUnico.inicial.hora,
+        minuto: horarioUnico.inicial.minuto,
+        segundo: horarioUnicio.inicial.segundo,
+        totalMin: horarioUnico.inicial.totalMin,
+        strHorario: horarioUnico.inicial.horarioFtd,
+        tzOffset: (new Date()).getTimezoneOffset(),
+        RHWeb: false,
+        REP: false,
+        NSR: "MANUAL",
+        desconsiderada: false,
+        motivo: "ABONO",
+        gerada: {created_at: new Date()}
+      };
+
+      var marcacao2 = {
+        id: 2,
+        descricao: "sai1",
+        hora: horarioUnico.final.hora,
+        minuto: horarioUnico.final.minuto,
+        segundo: horarioUnicio.final.segundo,
+        totalMin: horarioUnico.final.totalMin,
+        strHorario: horarioUnico.final.horarioFtd,
+        tzOffset: (new Date()).getTimezoneOffset(),
+        RHWeb: false,
+        REP: false,
+        NSR: "MANUAL",
+        desconsiderada: false,
+        motivo: "ABONO",
+        gerada: {created_at: new Date()}
+      };
+
+      var arrayMarcacoes = [marcacao1, marcacao2];
+      return arrayMarcacoes;
     };
 
     function hideDataError(seconds){
@@ -289,10 +337,10 @@
       modalInstance.result.then(function (confirmation){
 
         if (confirmation){
-          $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.date.year,
-          month: solicitacaoAjuste.date.month,
-          day: solicitacaoAjuste.date.day}, {reload: true});
-          // $state.reload({});
+           $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.data.getFullYear(),
+           month: solicitacaoAjuste.data.getMonth(),
+           day: solicitacaoAjuste.data.getDate()}, {reload: true});
+          //$state.reload({});
         }
       }, function (args) {
         console.log('dismissed confirmation');

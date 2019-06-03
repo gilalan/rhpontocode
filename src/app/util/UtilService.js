@@ -26,9 +26,9 @@ angular.module('BlurAdmin').service("util", function(){
     svc.createNewDate = function (date) {
 
         var newDate = new Date(date);
-        // console.log('newDate from Util: ', newDate);
+        // //console.log('newDate from Util: ', newDate);
         // newDate.setTime( newDate.getTime() + newDate.getTimezoneOffset()*60*1000 );
-        // console.log('Após inc: newDate from Util: ', newDate);
+        // //console.log('Após inc: newDate from Util: ', newDate);
         return newDate;
     };
 
@@ -46,7 +46,7 @@ angular.module('BlurAdmin').service("util", function(){
         if (escala && escala.codigo == 1) { //jornada semanal
 
         jornada = funcionario.alocacao.turno.jornada;
-        //console.log("jornadada: ", jornada);
+        ////console.log("jornadada: ", jornada);
         if (jornada && jornada.array){
           jornada.array.sort(function (a, b) { //ordena por segurança
             if (a.dia > b.dia) {
@@ -235,13 +235,13 @@ angular.module('BlurAdmin').service("util", function(){
       //como a passagem é por referência, devemos criar uma cópia do objeto
       var d1 = angular.copy(date1); 
       var d2 = angular.copy(date2);
-      // console.log('date1', d1);
-      // console.log('date2', d2);
+      // //console.log('date1', d1);
+      // //console.log('date2', d2);
       d1.setHours(0,0,0,0);
       d2.setHours(0,0,0,0);
 
-      // console.log('date1 time', d1.getTime());
-      // console.log('date2 time', d2.getTime());
+      // //console.log('date1 time', d1.getTime());
+      // //console.log('date2 time', d2.getTime());
 
       if (d1.getTime() < d2.getTime())
         return -1;
@@ -289,7 +289,7 @@ angular.module('BlurAdmin').service("util", function(){
       while(!finded){
         
         nextDate = svc.addOrSubtractDays(currentDate, dayCount);
-        console.log('nextDate: ', nextDate);
+        //console.log('nextDate: ', nextDate);
         if (svc.compareOnlyDates(nextDate, maxDate) == 0)
           finded = true;
 
@@ -306,6 +306,8 @@ angular.module('BlurAdmin').service("util", function(){
       };
     };
 
+
+    //Tem que levar em consideração se está de Férias, Licença, Abono, etc. E aí sim olhar se ele trabalhou.
     svc.getInfoTrabalho = function(funcionario, equipe, date, feriados){
         
         var turno = funcionario.alocacao.turno;
@@ -313,11 +315,11 @@ angular.module('BlurAdmin').service("util", function(){
         var infoTrabalho = {};        
 
         var flagFeriado = this.isFeriado(date, feriados, equipe);
-        console.log('flagFeriado: ', flagFeriado);
+        //console.log('flagFeriado: ', flagFeriado);
 
         if (escala) {
         
-            console.log('entrou no if de criar informações extra de Escala');
+            //console.log('entrou no if de criar informações extra de Escala');
             var ignoraFeriados = turno.ignoraFeriados;
             var minutos_trabalhados = undefined;
             if (escala.codigo == 1) {//escala tradicional na semana
@@ -354,7 +356,7 @@ angular.module('BlurAdmin').service("util", function(){
             } else if (escala.codigo == 2) { //escala 12x36
 
               //dia de trabalho
-              //console.log('new date from isWorkingDayRotationScale: ', new Date($scope.funcionario.alocacao.dataInicioEfetivo));
+              ////console.log('new date from isWorkingDayRotationScale: ', new Date($scope.funcionario.alocacao.dataInicioEfetivo));
               if (this.isWorkingDayRotationScale(date, new Date(funcionario.alocacao.dataInicioEfetivo)) && !flagFeriado){
                 
                 infoTrabalho.trabalha = true; 
@@ -407,7 +409,7 @@ angular.module('BlurAdmin').service("util", function(){
           if (feriado.fixo){
           
             if (tempDate.getMonth() === month && tempDate.getDate() === date){
-              //console.log("É Feriado (fixo)!", tempDate);
+              ////console.log("É Feriado (fixo)!", tempDate);
               flagFeriado = checkFeriadoSchema(feriado, equipe);
               return feriado;
             }
@@ -415,14 +417,14 @@ angular.module('BlurAdmin').service("util", function(){
           } else {//se não é fixo
 
             if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
-              //console.log("É Feriado (variável)!", tempDate);
+              ////console.log("É Feriado (variável)!", tempDate);
               flagFeriado = checkFeriadoSchema(feriado, equipe);
               return feriado;
             }
           }
         }
       });
-      // console.log('FlagFeriado: ', flagFeriado);
+      // //console.log('FlagFeriado: ', flagFeriado);
       return flagFeriado;//no futuro retornar o flag de Feriado e a descrição do mesmo!
 
     };
@@ -434,22 +436,22 @@ angular.module('BlurAdmin').service("util", function(){
 
       if (feriado.abrangencia == abrangencias[0]){
 
-        console.log('Feriado Nacional!');
+        //console.log('Feriado Nacional!');
         flagFeriado = true;
 
       } else  if (feriado.abrangencia == abrangencias[1]){
         
-        console.log('Feriado Estadual!');
+        //console.log('Feriado Estadual!');
         if (equipe.setor.local.estado == feriado.local.estado._id){
-          console.log('Feriado Estadual no Estado correto!');
+          //console.log('Feriado Estadual no Estado correto!');
           flagFeriado = true;
         }
 
       } else if (feriado.abrangencia == abrangencias[2]){
         
-        console.log('Feriado Municipal!');
+        //console.log('Feriado Municipal!');
         if (equipe.setor.local.municipio == feriado.local.municipio._id){
-          console.log('No municipio correto!');
+          //console.log('No municipio correto!');
           flagFeriado = true;
         }
       }
@@ -464,14 +466,17 @@ angular.module('BlurAdmin').service("util", function(){
       var year = data.getFullYear();//      
       var estaFerias = false;
 
+      //console.log("Data Desejada: " + date +"-" +month +"-"+ year);
+      //console.log("Objeto Ferias: ", objFerias);
+
       if(objFerias){
 
         objFerias.forEach(function(ferias){
       
           for (var i = 0; i < ferias.arrayDias.length; i++) {
-                                    
+            //console.log("Data Comparada: ", ferias.arrayDias[i].date +"-" + ferias.arrayDias[i].month +"-" + ferias.arrayDias[i].year);                                    
             if ( (ferias.arrayDias[i].year === year) && (ferias.arrayDias[i].month === month) && (ferias.arrayDias[i].date === date) ){
-              console.log("Está de ferias!", ferias.arrayDias[i]);
+              //console.log("Está de ferias!", ferias.arrayDias[i]);
               estaFerias = true;
               return estaFerias;
             }
@@ -539,6 +544,32 @@ angular.module('BlurAdmin').service("util", function(){
       }
       
       return minutosTrabalhados;
+    };
+
+    svc.isValidHorarioField = function(strHorario) {      
+
+      if (strHorario.length < 4)
+        return null;
+      
+      var hoursStr = strHorario.substring(0, 2);
+      var minutesStr = strHorario.substring(2);
+      var hoursO = parseInt(hoursStr);
+      var minutes = parseInt(minutesStr);
+      
+      if (hours < 0 || hours > 23)
+        return null;
+
+      if (minutes < 0 || minutes > 59)
+        return null;
+
+      var hours = hoursO * 60;
+
+      return {
+        totalMinutes: (hours + minutes),
+        hora: hoursO,
+        minutes: minutes,
+        horarioFtd: hoursStr + ":" + minutesStr
+      };
     };
 
     /*

@@ -18,9 +18,9 @@
           <label ng-show="solicitacao.message" style="color: #134fb7; margin-left: 0px; font-size: 14px; padding: 5px 5px 5px 5px; width: 100%;"> {{solicitacao.message}} </label>
           <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Evento: {{solicitacao.eventoAbono.nome}} </label>
           <label ng-if="tipoZero" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} </label>
-          <label ng-if="tipoUm" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} <br> Horário Inicial: {{solicitacao.horarioEnviado.inicial.totalMin}} <br> Horário Final: {{solicitacao.horarioEnviado.inicial.totalMin}}</label>
+          <label ng-if="tipoUm" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} <br> Horário Inicial: {{solicitacao.horarioEnviado.inicial.horarioFtd}} <br> Horário Final: {{solicitacao.horarioEnviado.final.horarioFtd}}</label>
           <label ng-if="tipoDois" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data Inicial: {{solicitacao.data | date:'fullDate'}} <br> Data Final: {{solicitacao.dataFinal | date:'fullDate'}} <br> Período de {{solicitacao.arrayAusAjt.length}} dias</label>
-          <label ng-if="tipoUm" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Motivo: {{solicitacao.motivo}}</label>
+          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Motivo: {{solicitacao.motivo}}</label>
         </div>
       </div>
     </div>

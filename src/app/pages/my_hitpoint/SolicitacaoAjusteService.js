@@ -42,6 +42,21 @@ angular.module('BlurAdmin.pages.myhitpoint').service("myhitpointAPI", function($
 		return $http.post(_urlBaseHitpoint+'/solicitationappoint', objSolicitacaoApontamento);
 	};
 
+	svc.createSolicitationAndApontamento = function(objSolicitacaoApontamento){
+
+		return $http.post(_urlBaseHitpoint+'/createsolicitationappoint', objSolicitacaoApontamento);
+	};
+
+	svc.insertAndUpdateManyApontamentos = function (objSolicitacaoArrayApontamentos){
+
+		return $http.post(_urlBaseHitpoint+'/insertAndUpdateMany', objSolicitacaoArrayApontamentos);
+	};
+
+	svc.createAndUpdateManyApontamentos = function (objSolicitacaoArrayApontamentos){
+
+		return $http.post(_urlBaseHitpoint+'/createAndUpdateMany', objSolicitacaoArrayApontamentos);
+	};
+
 	svc.getByStatus = function(objStatus){
 
 		return $http.post(_urlBaseHitpoint+'/getbystatus', objStatus);

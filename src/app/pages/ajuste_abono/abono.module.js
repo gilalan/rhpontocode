@@ -15,9 +15,9 @@
           url: '/abono/:userId/:year/:month/:day',
           templateUrl: 'app/pages/ajuste_abono/abono.html',
           controller: 'AbonoSolicitationCtrl',
-          title: 'Ausências Justificadas',
+          title: 'Abonos',
           sidebarMeta: {
-             icon: 'ion-clipboard',
+             icon: 'ion-asterisk',
              order: 3,
           },
           accessLevel: [1, 2, 3, 4, 6],
@@ -52,7 +52,7 @@
           url: '/abono/gestor',
           templateUrl: 'app/pages/ajuste_abono/gestor/_abono.html',
           controller: 'AbonoSolicitationGestorCtrl',
-          title: 'Gerenciar Ausências Justificadas de Funcionários',
+          title: 'Gerenciar Abonos de Funcionários',
           accessLevel: [2,3,4,6],
           resolve: {
             usuario: function(usersAPI, Auth){
@@ -69,11 +69,11 @@
             feriados: function(feriadoAPI) {
               return feriadoAPI.get();
             },
-            allEmployees: function(employeeAPI, Auth){
-              var user = Auth.getCurrentUser();              
-              if (user.acLvl >= 4)
-                return employeeAPI.get();              
-            },
+            // allEmployees: function(employeeAPI, Auth){
+            //   var user = Auth.getCurrentUser();              
+            //   if (user.acLvl >= 4)
+            //     return employeeAPI.get();              
+            // },
             allEquipes: function(teamAPI, Auth){
 
               var user = Auth.getCurrentUser();

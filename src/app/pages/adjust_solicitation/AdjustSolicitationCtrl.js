@@ -20,7 +20,7 @@
     var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
 
-    console.log("tem data Solicitada: ", dataSolicitada);
+    //console.log("tem data Solicitada: ", dataSolicitada);
 
     if (dataSolicitada){
       if (util.compareOnlyDates(dataSolicitada, dataMaxBusca) == 1)
@@ -33,19 +33,31 @@
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');  
     }
 
-    console.log("Current Date para os trabalhos: ",$scope.currentDate);
+    //console.log("Current Date para os trabalhos: ",$scope.currentDate);
 
     $scope.hasFuncionario = false; //indica se há um funcionário
     $scope.hasSolicitation = false;
     $scope.funcionario = Usuario.funcionario;
     $scope.arrayES = [];
     $scope.ajuste = {};
+    $scope.flagFerias = false;
     // $scope.infoHorario = {};
 
     var pagePath = 'app/pages/adjust_solicitation/modals/desconsiderarModal.html'; //representa o local que vai estar o html de conteúdo da modal
     var pageIncluirPath = 'app/pages/adjust_solicitation/modals/incluirBatimentoModal.html';
     var pageConfirmationPath = 'app/pages/adjust_solicitation/modals/confirmationModal.html';
     var defaultSize = 'md'; //representa o tamanho da Modal
+
+    if ($scope.funcionario.ferias){
+      for (var i=0; i<$scope.funcionario.ferias.length; i++){
+        $scope.funcionario.ferias[i].dataIniFtd = new Date($scope.funcionario.ferias[i].periodo.anoInicial, 
+          $scope.funcionario.ferias[i].periodo.mesInicial-1, $scope.funcionario.ferias[i].periodo.dataInicial, 0, 0, 0, 0);
+        $scope.funcionario.ferias[i].dataFinFtd = new Date($scope.funcionario.ferias[i].periodo.anoFinal, 
+          $scope.funcionario.ferias[i].periodo.mesFinal-1, $scope.funcionario.ferias[i].periodo.dataFinal, 0, 0, 0, 0);
+      }
+    }
+
+    console.log("funcionario: ", $scope.funcionario);
 
     //parte do datePicker
     $scope.datepic = {
@@ -63,11 +75,11 @@
     $scope.formats = ['dd-MMMM-yyyy', 'dd/MM/yyyy', 'dd.MM.yyyy', 'fullDate'];
     $scope.format = $scope.formats[1];
     function open() {
-      //console.log("open function", $scope.something.opened);
+      ////console.log("open function", $scope.something.opened);
       $scope.something.opened = true;
     }
     $scope.changeDate = function(date) {
-      console.log('já passou no changeDate no carregamento?');
+      //console.log('já passou no changeDate no carregamento?');
       $scope.dataErrorMsg = null;
       if (util.compareOnlyDates(date, dataMaxBusca) == 1){
         $scope.datepic.dt = new Date($scope.currentDate);
@@ -75,7 +87,7 @@
         $timeout(hideDataError, 8000);
         return $scope.dataErrorMsg;
       }
-      console.log('passou por aqui!!!');
+      //console.log('passou por aqui!!!');
       $scope.currentDate = new Date(date);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
       //reset fields
@@ -85,7 +97,7 @@
       $scope.apontamento = null;
       $scope.ajuste = {};
       $scope.solicitacaoObtida = {};
-      console.log("infoHorario: ", $scope.infoHorario);
+
       init();
     };
 
@@ -205,13 +217,13 @@
       modalInstance.result.then(function (confirmation){
 
         if (confirmation){
-          $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.date.year,
-          month: solicitacaoAjuste.date.month,
-          day: solicitacaoAjuste.date.day}, {reload: true});
-          // $state.reload({});
+          $state.go($state.current, {userId: Usuario._id, year: solicitacaoAjuste.data.getFullYear(),
+           month: solicitacaoAjuste.data.getMonth(),
+           day: solicitacaoAjuste.data.getDate()}, {reload: true});
+          //$state.reload({});
         }
       }, function (args) {
-        console.log('dismissed confirmation');
+        //console.log('dismissed confirmation');
       });
     };
 
@@ -237,20 +249,20 @@
 
       modalInstance.result.then(function (result){
 
-        console.log('Result: ', result);
+        //console.log('Result: ', result);
         if (result.indice >= 0){
 
           $scope.arrayES[result.indice].desconsiderada = true;
           $scope.arrayES[result.indice].motivo = result.motivo;
           $scope.arrayES[result.indice].estadoAtual = util.obterStatusMarcacao($scope.arrayES[result.indice]);
-          console.log('$scope.arrayES: ', $scope.arrayES);
+          //console.log('$scope.arrayES: ', $scope.arrayES);
         }
 
-        //console.log('array novo: ', $scope.arrayES);
+        ////console.log('array novo: ', $scope.arrayES);
 
       }, function (args) {
 
-        //console.log('modal is dismissed or closed.', args);
+        ////console.log('modal is dismissed or closed.', args);
 
       });
     };
@@ -275,8 +287,8 @@
 
       modalInstance.result.then(function (marcacao){
          
-        console.log('result?.', marcacao);
-        console.log('array? ', $scope.arrayES);
+        //console.log('result?.', marcacao);
+        //console.log('array? ', $scope.arrayES);
         
         if (marcacao){
 
@@ -286,7 +298,7 @@
         } 
 
       }, function () {
-        //console.log('modal is dismissed or close.', args);
+        ////console.log('modal is dismissed or close.', args);
       });
     };
 
@@ -305,7 +317,7 @@
 
       myhitpointAPI.getFromDataFuncionario(objDataFuncionario).then(function successCallback(response){
 
-        console.log('response de solicitacaoAjuste: ', response.data);
+        //console.log('response de solicitacaoAjuste: ', response.data);
         if (!response.data || response.data.length <= 0){
 
           getApontamentosByDateRangeAndEquipe($scope.currentDate, {dias: 1}, [$scope.funcionario], true, false, false);//pegando o diário
@@ -321,21 +333,21 @@
               motivo: response.data[0].motivo
             };
             $scope.hasSolicitation = true;
-            console.log('vc já tem uma solicitação PENDENTE para esta data!', $scope.solicitacaoObtida);
+            //console.log('vc já tem uma solicitação PENDENTE para esta data!', $scope.solicitacaoObtida);
           }
         }
 
       }, function errorCallback(response){
 
         $errorMsg = response.data.message;
-        console.log('response error : ', response.data.message);
+        //console.log('response error : ', response.data.message);
       });
     };
 
     function getApontamentosByDateRangeAndEquipe(beginDate, intervaloDias, componentes) {
 
-      ////console.log('beginDate? ', beginDate);
-      ////console.log('intervaloDias? ', intervaloDias);
+      //////console.log('beginDate? ', beginDate);
+      //////console.log('intervaloDias? ', intervaloDias);
       var dateAux = new Date(beginDate);
 
       var objDateEquipe = {
@@ -351,7 +363,7 @@
         equipe: componentes
       };
 
-      console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
+      //console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
 
       appointmentAPI.getApontamentosByDateRangeAndEquipe(objDateEquipe).then(function successCallback(response){
 
@@ -359,7 +371,7 @@
         var apontamentosResponse = response.data;
         var itemApontamento = {};
         var objEntradasSaidas = {};
-        console.log("!@# Apontamentos Recebidos: ", apontamentosResponse);
+        //console.log("!@# Apontamentos Recebidos: ", apontamentosResponse);
         if (apontamentosResponse.length > 0){
           $scope.apontamento = response.data[0];          
           itemApontamento.rawDate = new Date($scope.currentDate);
@@ -373,7 +385,7 @@
       }, function errorCallback(response){
         
         $errorMsg = response.data.message;
-        ////console.log("Erro ao obter apontamentos por um range de data e equipe");
+        //////console.log("Erro ao obter apontamentos por um range de data e equipe");
       });
     };
 
@@ -410,7 +422,7 @@
       var objHoraMinuto = {};
 
       arrayESOriginal = angular.copy(apontamentoF.marcacoes);
-      console.log('ArrayES do apontamentoF');
+      //console.log('ArrayES do apontamentoF');
 
       for (var i=0; i<apontamentoF.marcacoes.length; i++){
 
@@ -475,55 +487,62 @@
      
     };
 
-    function init() {
+    function init() {      
 
-      if (Usuario.perfil.accessLevel == 1){
+        if (Usuario.perfil.accessLevel == 1){
 
-        if ($scope.funcionario){
+          if ($scope.funcionario){
 
-          $scope.hasFuncionario = true;
-          
-          if (!$scope.infoHorario){
-            $scope.infoHorario = util.getInfoHorario($scope.funcionario, []);
-          }
-
-          employeeAPI.getEquipe($scope.funcionario._id).then(function successCallback(response){
-
-            $scope.noTeamMsg = null;
-            equipe = response.data;
-            console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);
-            if (!equipe){
-              $scope.noTeamMsg = "Você não está associado(a) a nenhuma EQUIPE no sistema e consequentemente não é possível ajustar seus batimentos. Verifique junto ao seu fiscal/gestor a sua associação a uma EQUIPE.";
-              return $scope.noTeamMsg;
-            } else {
-
-              initGetSolicitacaoOuApontamento();
+            $scope.hasFuncionario = true;
+            
+            if (!$scope.infoHorario){
+              $scope.infoHorario = util.getInfoHorario($scope.funcionario, []);
             }
 
-          }, function errorCallback(response){
-            
-            $scope.errorMsg = response.data.message;
-          });        
+            $scope.flagFerias = util.checkFerias($scope.currentDate, $scope.funcionario.ferias);
+            if ($scope.flagFerias){
+              $scope.noTeamMsg = null;
+            }
+            else {
+
+              employeeAPI.getEquipe($scope.funcionario._id).then(function successCallback(response){
+
+                $scope.noTeamMsg = null;
+                equipe = response.data;
+                //console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);
+                if (!equipe){
+                  $scope.noTeamMsg = "Você não está associado(a) a nenhuma EQUIPE no sistema e consequentemente não é possível ajustar seus batimentos. Verifique junto ao seu fiscal/gestor a sua associação a uma EQUIPE.";
+                  return $scope.noTeamMsg;
+                } else {
+
+                  initGetSolicitacaoOuApontamento();
+                }
+
+              }, function errorCallback(response){
+                
+                $scope.errorMsg = response.data.message;
+              });
+            }
+          }
+          
+        } else if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
+          
+          $scope.gestor = Usuario.funcionario;
+          // getEquipesByGestor();
+
+        } else if (Usuario.perfil.accessLevel == 4) {
+           
+           $scope.gestor = Usuario.funcionario;
+           $scope.isGestorGeral = true;
+           // getEquipesByGestor();
+
+        } else if (Usuario.perfil.accessLevel >= 5) {
+
+          $scope.isAdmin = true;
+          ////console.log('allEmployees: ', allEmployees.data);
+          // getAllEmployees();
+
         }
-        
-      } else if (Usuario.perfil.accessLevel == 2 || Usuario.perfil.accessLevel == 3) {
-        
-        $scope.gestor = Usuario.funcionario;
-        // getEquipesByGestor();
-
-      } else if (Usuario.perfil.accessLevel == 4) {
-         
-         $scope.gestor = Usuario.funcionario;
-         $scope.isGestorGeral = true;
-         // getEquipesByGestor();
-
-      } else if (Usuario.perfil.accessLevel >= 5) {
-
-        $scope.isAdmin = true;
-        //console.log('allEmployees: ', allEmployees.data);
-        // getAllEmployees();
-
-      }
     };
 
     init();
@@ -531,7 +550,7 @@
 
   function DesconsiderarCtrl($uibModalInstance, $scope, $state, $filter, objBatida){
     
-    //console.log('objBatida: ', objBatida);
+    ////console.log('objBatida: ', objBatida);
     $scope.algo = {};
     $scope.objBatida = objBatida;
     $scope.objBatida.data = $filter('date')($scope.objBatida.data, 'abvFullDate');
@@ -556,11 +575,11 @@
       
       //$state.go('point_adjust', {obj: objAjusteParams});
       if (batida.horario){
-        var objHorario = getObjectHorario(batida.horario);
+        var objHorario = util.isValidHorarioField(batida.horario);
         if (!objHorario){
           $scope.errorMsg = "O horário deve estar no formato 00 a 23 para as Horas e 00 a 59 para os minutos";
         } else {
-          console.log('objHorario: ', objHorario);
+          //console.log('objHorario: ', objHorario);
           var marcacao = {
             incluida: true, //tem que remover na hora de enviar o objeto, é só local isso
             id: undefined,
@@ -585,39 +604,13 @@
       } else {
         $scope.errorMsg = "O horário deve estar no formato 00 a 23 para as Horas e 00 a 59 para os minutos";
       }
-    };
-
-    function getObjectHorario (strHorario) {
-
-      if (strHorario.length < 4)
-        return null;
-      
-      var hoursStr = strHorario.substring(0, 2);
-      var minutesStr = strHorario.substring(2);
-      var hoursO = parseInt(hoursStr);
-      var minutes = parseInt(minutesStr);
-      
-      if (hours < 0 || hours > 23)
-        return null;
-
-      if (minutes < 0 || minutes > 59)
-        return null;
-
-      var hours = hoursO * 60;
-
-      return {
-        totalMinutes: (hours + minutes),
-        hora: hoursO,
-        minutes: minutes,
-        horarioFtd: hoursStr + ":" + minutesStr
-      };
-    };
+    };    
 
   };
 
   function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, util, myhitpointAPI, solicitacaoAjuste){
     
-    console.log('solicitacaoAjuste: ', solicitacaoAjuste);
+    //console.log('solicitacaoAjuste: ', solicitacaoAjuste);
     $scope.solicitacao = solicitacaoAjuste;
     
     var resultArray = util.getInfoSolicitacaoAjuste(solicitacaoAjuste);
@@ -637,7 +630,7 @@
       }, function errorCallback(response){
         
         $scope.errorMsg = response.data.message;
-        console.log("Erro ao criar solicitação de ajuste.");
+        //console.log("Erro ao criar solicitação de ajuste.");
       });
     };
 
