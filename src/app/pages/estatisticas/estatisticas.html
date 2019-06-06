@@ -24,27 +24,49 @@
 	        </p>
 	        <label>Format: <span class="muted-text">(manual alternate <em>{{altInputFormats[0]}}</em>)</span></label> <select class="form-control" ng-model="format" ng-options="f for f in formats"><option></option></select>
 	    </div>
-	</div> -->
+	</div> -->	
 
+	<div class="row">
+        <label for="fileToUpload" style="border: 1px solid black; border-radius:5px; padding:5px;">Selecione um arquivo PDF ou uma imagem para anexar. A limitação de tamanho por arquivo é de 2mb.</label><br />
+        <input id="fileToUpload" style="visibility:hidden;" type="file" ng-model-instant id="fileToUpload" multiple onchange="angular.element(this).scope().onUploadSelect(this)" />
+    </div>
+
+    <div class="row" ng-if="files.length > 0">
+	    <table class="table">
+		    <thead>
+		    	<tr>
+			      <th>Nome do arquivo</th>
+			      <th>Tamanho</th>
+			  	</tr>
+			</thead>
+			<tbody>
+		      	<tr ng-repeat="file in files track by $index">
+		        	<td>{{file.name}}</td>
+		        	<td>{{file.sizeFtd}}</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</div>
+
+	<button type="button" class="btn btn-primary btn-with-icon" ng-click="makeUpload()">Upload</button>
+
+	<!--
 	<div class="row">
 		<table class="table">
 		    <thead>
 			    <tr>
 			      <th>#</th>
 			      <th>Nome</th>
-			      <!-- <th>Sobrenome</th> -->
 			      <th>PIS</th>
 			      <th>Matricula</th>
 			      <th>Demitido em</th>
 			      <th>Equipe(s)</th>
-			      <!-- <th>Horário</th> -->
 			    </tr>
 		    </thead>
 		    <tbody>
 		      <tr ng-repeat="emp in employees track by $index" ng-class="{'funcionario-demitido': !emp.active}">
 		        	<td>{{$index}}</td>
 		        	<td>{{emp.name}}</td>
-			        <!-- <td></td> -->
 			        <td>{{emp.PIS}}</td>
 			        <td>{{emp.matricula}}</td>
 			        <td>{{emp.FIRED}}</td>
@@ -53,22 +75,24 @@
       						{{team}}
     					</p>	
 			        </td>
-			        <!--<td>
-			          {{emp.alocacao.gestor}}
-			        </td>-->
-			        <!-- <td>
-			        	<div class="col-lg-6 col-md-6">
-        					<h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
-        					<p ng-repeat="itemHorario in emp.infoHorario track by $index" style="font-weight: normal;">
-          						<strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
-        					</p>
-      					</div>
-      				</td> -->
+			        
 		      </tr>
 		    </tbody>
 		  </table>
 	</div>
+	-->
 
+	<!--<td>
+	{{emp.alocacao.gestor}}
+	</td>-->
+	<!-- <td>
+	<div class="col-lg-6 col-md-6">
+		<h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
+		<p ng-repeat="itemHorario in emp.infoHorario track by $index" style="font-weight: normal;">
+				<strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+		</p>
+		</div>
+	</td> -->
 
 	<!-- <div class="row">
 		<table class="table">

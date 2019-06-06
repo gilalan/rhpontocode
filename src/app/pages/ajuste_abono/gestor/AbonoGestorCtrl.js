@@ -18,6 +18,7 @@
     var arrayESOriginal = [];
     var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
+    var resourcesFiles = [];
 
     $scope.employees = [];
     $scope.employeesNames = [];
@@ -35,6 +36,8 @@
     $scope.justif = {};
     $scope.hora = {};                
     // $scope.infoHorario = {};
+    $scope.files = [];
+
     
     if ($scope.eventosAbono.length > 0)
       $scope.selected = { item: $scope.eventosAbono[0] };
@@ -272,6 +275,7 @@
           solicitacaoAjuste.arrayAusAjt = dataRange;
         }
 
+        solicitacaoAjuste.anexo = resourcesFiles;
         //retirei pra atualizar o servidor
         openConfirmaAjuste(solicitacaoAjuste);
       }
@@ -281,6 +285,88 @@
       }
       
     }; 
+
+    $scope.onUploadSelect = function(element){
+      //console.log("clicou para upload". file);
+      $scope.$apply(function(scope) {
+        console.log('files:', element.files);
+        var countErrors = 0;
+        for (var i = 0; i < element.files.length; i++) {
+          if(validateFile(element.files[i])){
+            element.files[i].sizeFtd = (Math.round(element.files[i].size)/1000000).toFixed(2) + "MB";
+            $scope.files.push(element.files[i]);
+            getBase64(element.files[i]);
+          } else {
+            countErrors++;
+          }
+        }
+
+        if(countErrors>0){
+          
+          if (countErrors == 1)
+            $scope.fileErrorMsg = "Um arquivo não passou no critério de tipo ou tamanho.";
+          else
+            $scope.fileErrorMsg = "O total de " + countErrors + " arquivos não passaram no critério de tipo ou tamanho.";
+
+          $timeout(hideFileError, 8000);
+          return $scope.fileErrorMsg;
+        }
+        //var matches = element.files.match(/data:([A-Za-z-+\/].+);base64,(.+)/);
+        console.log("resourcesFiles ", resourcesFiles);
+      });
+    };  
+
+    $scope.deletar = function(index){
+      console.log("elemento: " , $scope.files[index]);
+      for (var i=0; i < resourcesFiles.length; i++){
+        if(resourcesFiles[i].name == $scope.files[index].name){
+          resourcesFiles.splice(i, 1);
+          break;
+        }
+      }
+      $scope.files.splice(index, 1);
+    }; 
+
+    function validateFile(file) {
+      
+      if (file.size > 2048000)
+        return false;
+
+      var typeFile = file.type.split('/');
+      if(typeFile.length == 2) {
+
+        if (typeFile[0] === "application") {
+          if (typeFile[1] !== "pdf")
+            return false;
+        } else {
+          if (typeFile[0] !== "image")
+            return false;
+        }
+
+      } 
+      else 
+        return false;      
+
+      return true;
+    };
+
+    function getBase64(file) {
+      var resourceObj = {        
+        matr: $scope.funcionarioOficial.matricula,//$scope.funcionario.matricula,
+        name: file.name,
+        size: file.size
+      };
+      var reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        //console.log("Reader Result: ", reader.result);
+        resourceObj.data = reader.result;
+        resourcesFiles.push(resourceObj);
+      };
+      reader.onerror = function (error) {
+        console.log('Error: ', error);
+      };
+    };
 
     function _isValidFields() {
       if ($scope.currentDate && $scope.justif.motivo && $scope.justif.motivo != ""){
@@ -374,6 +460,10 @@
 
     function hideAppointErrorMsg(seconds){
       $scope.invalidAppointMsg = null;
+    };
+
+    function hideFileError(seconds){
+      $scope.fileErrorMsg = null;
     };
 
     //seria bom mostrar telinha confirmando as alterações...
@@ -624,7 +714,7 @@
     };
 
     //Traz todos os employees/equipes para tela de Administrador
-    function getAllEmployees(allEmployees, allEquipes) {
+    function getAllEmployees() {
       
       $scope.equipes = allEquipes.data;
       fillEquipes();

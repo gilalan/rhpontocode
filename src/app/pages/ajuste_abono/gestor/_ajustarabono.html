@@ -128,10 +128,37 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-lg-12 col-md-12" style="margin-top: 10px;">
-              <label>Anexo</label>
-                <label style="color: red;">Em construção - Logo poderá enviar uma imagem ou documento de anexo ao abono.</label>
-            </div>
+            <div class="col-lg-12 col-md-12">
+                <label>Anexo</label>
+                <div class="row" style="margin-right: 0px; margin-left: 0px;">
+                    <label for="fileToUpload" style="border: 2px solid black; color: #ffffff; background-color: #1187ef; border-radius:5px; padding:5px;">Clique para selecionar um arquivo PDF ou uma imagem.</label> <span style="font-style: italic;">obs: A limitação de tamanho por arquivo é de 2MB.</span>
+                    <input id="fileToUpload" style="visibility:hidden;" type="file" ng-model-instant id="fileToUpload" multiple onchange="angular.element(this).scope().onUploadSelect(this)" />
+                </div>
+                <div ng-show="fileErrorMsg" class="alert bg-danger" role="alert">
+                  <strong>Ops!</strong> {{fileErrorMsg}}
+                </div>
+                <div class="row" ng-if="files.length > 0" style="margin-right: 0px; margin-left: 0px; border: 1px dotted; border-radius: 5px;">
+                  <table class="table">
+                    <thead>
+                      <tr style="color: #020202";>
+                        <th style="text-align: left;">Nome do arquivo</th>
+                        <th style="text-align: left;">Tamanho</th>
+                        <th style="text-align: left;">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="file in files track by $index">
+                          <td style="text-align: left; color: #545151">{{file.name}}</td>
+                          <td style="text-align: left; color: #989494;">{{file.sizeFtd}}</td>
+                          <td style="text-align: left; color: #989494;"><button title="Excluir anexo" type="button" class="btn btn-xs btn-danger" ng-click="deletar($index)">
+                              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  
+                            </button>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
           </div>
         </div>
       </div>

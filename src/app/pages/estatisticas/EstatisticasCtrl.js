@@ -9,23 +9,28 @@
       .controller('EstatisticasCtrl', EstatisticasCtrl);
 
   /** @ngInject */
-  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, util, utilReports, Auth, usuario, equipes, allEmployees){//, rawAppoints) {
+  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, myhitpointAPI, util, utilReports, Auth, usuario, equipes, allEmployees){//, rawAppoints) {
 
     console.log("dentro do EstatisticasCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);
     var arrayTestEmployees = ["0012315", "0192461", "098127615", "980157", "0009841", "0010002", "0000000111222"] //(BLACK LIST USUARIOS)
+    $scope.newResource = {};
+    $scope.files = [];
+    var resourcesFiles = [];
 
-    allEmployees.data.sort(function (a, b) {
-      if (a.nome > b.nome) {
-        return 1;
-      }
-      if (a.nome < b.nome) {
-        return -1;
-      }
-      // a must be equal to b
-      return 0;
-    });
+    if (allEmployees.data){
+      allEmployees.data.sort(function (a, b) {
+        if (a.nome > b.nome) {
+          return 1;
+        }
+        if (a.nome < b.nome) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
+    }
     $scope.employees = allEmployees.data;
     $scope.equipes = equipes.data;
     $scope.rawApps = [];
@@ -47,12 +52,88 @@
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
     $scope.format = $scope.formats[0];  
 
+    $scope.onUploadSelect = function(element){
+      //console.log("clicou para upload". file);
+      $scope.$apply(function(scope) {
+        console.log('files:', element.files);
+        for (var i = 0; i < element.files.length; i++) {
+          if(validateFile(element.files[i])){
+            element.files[i].sizeFtd = (Math.round(element.files[i].size)/1000000).toFixed(2) + "MB";
+            $scope.files.push(element.files[i]);
+            getBase64(element.files[i]);
+          }
+        }
+
+        //var matches = element.files.match(/data:([A-Za-z-+\/].+);base64,(.+)/);
+        //console.log("Matches? ", matches);
+      });
+    };
+
+    $scope.makeUpload = function() {
+      console.log("$scope.files: ", $scope.files);
+      console.log("respirces files: ", resourcesFiles);
+      var obj = {
+        array: resourcesFiles//$scope.files
+      };
+      myhitpointAPI.uploadImage(obj).then(function successCallback(response){
+
+        console.log("Response.data: ", response.data);
+
+      }, function errorCallback(response){
+
+        $scope.errorMsg = response.data.message;
+        console.log('response error : ', response.data.message);
+      });      
+    };
+
+    function validateFile(file) {
+      
+      if (file.size > 2048000)
+        return false;
+
+      var typeFile = file.type.split('/');
+      if(typeFile.length == 2) {
+
+        if (typeFile[0] === "application") {
+          if (typeFile[1] !== "pdf")
+            return false;
+        } else {
+          if (typeFile[0] !== "image")
+            return false;
+        }
+
+      } 
+      else 
+        return false;      
+
+      return true;
+    };
+
+    function getBase64(file) {
+      var resourceObj = {
+        matr: "012345",//$scope.funcionario.matricula,
+        name: file.name,
+        size: file.size
+      };
+      var reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        //console.log("Reader Result: ", reader.result);
+        resourceObj.data = reader.result;
+        resourcesFiles.push(resourceObj);
+      };
+      reader.onerror = function (error) {
+        console.log('Error: ', error);
+      };
+    };
+
+
     function open() {
         console.log("open function", $scope.something.opened);
         $scope.something.opened = true;
-    }
+    };
 
-    init();
+    //init();
     
     function getAllEquipesEstatistica (equipesArray) {
 

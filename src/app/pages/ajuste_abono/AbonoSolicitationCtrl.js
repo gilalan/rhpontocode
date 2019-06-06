@@ -17,6 +17,7 @@
     var arrayESOriginal = [];
     var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
+    var resourcesFiles = [];
 
 
     console.log("Current Date para os trabalhos: ",$scope.currentDate);
@@ -30,6 +31,7 @@
     $scope.justif = {};
     $scope.hora = {};                
     // $scope.infoHorario = {};
+    $scope.files = [];
     
     if ($scope.eventosAbono.length > 0)
       $scope.selected = { item: $scope.eventosAbono[0] };
@@ -242,6 +244,7 @@
         solicitacaoAjuste.arrayAusAjt = dataRange;
       }
 
+      solicitacaoAjuste.anexo = resourcesFiles;
       //retirei pra atualizar o servidor
       openConfirmaAjuste(solicitacaoAjuste);
       
@@ -257,6 +260,94 @@
       //   console.log("Erro ao criar solicitação de ajuste.");
       // });
     };   
+
+    $scope.onUploadSelect = function(element){
+      //console.log("clicou para upload". file);
+      $scope.$apply(function(scope) {
+        console.log('files:', element.files);
+        var countErrors = 0;
+        for (var i = 0; i < element.files.length; i++) {
+          if(validateFile(element.files[i])){
+            element.files[i].sizeFtd = (Math.round(element.files[i].size)/1000000).toFixed(2) + "MB";
+            $scope.files.push(element.files[i]);
+            getBase64(element.files[i]);
+          } else {
+            countErrors++;
+          }
+        }
+
+        if(countErrors>0){
+          
+          if (countErrors == 1)
+            $scope.fileErrorMsg = "Um arquivo não passou no critério de tipo ou tamanho.";
+          else
+            $scope.fileErrorMsg = "O total de " + countErrors + " arquivos não passaram no critério de tipo ou tamanho.";
+
+          $timeout(hideFileError, 8000);
+          return $scope.fileErrorMsg;
+        }
+        //var matches = element.files.match(/data:([A-Za-z-+\/].+);base64,(.+)/);
+        //console.log("Matches? ", matches);
+      });
+    };
+
+    $scope.makeUpload = function() {
+      console.log("$scope.files: ", $scope.files);
+      console.log("respirces files: ", resourcesFiles);
+      var obj = {
+        array: resourcesFiles//$scope.files
+      };
+      myhitpointAPI.uploadImage(obj).then(function successCallback(response){
+
+        console.log("Response.data: ", response.data);
+
+      }, function errorCallback(response){
+
+        $scope.errorMsg = response.data.message;
+        console.log('response error : ', response.data.message);
+      });      
+    };
+
+    function validateFile(file) {
+      
+      if (file.size > 2048000)
+        return false;
+
+      var typeFile = file.type.split('/');
+      if(typeFile.length == 2) {
+
+        if (typeFile[0] === "application") {
+          if (typeFile[1] !== "pdf")
+            return false;
+        } else {
+          if (typeFile[0] !== "image")
+            return false;
+        }
+
+      } 
+      else 
+        return false;      
+
+      return true;
+    };
+
+    function getBase64(file) {
+      var resourceObj = {
+        matr: $scope.funcionario.matricula,
+        name: file.name,
+        size: file.size
+      };
+      var reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        //console.log("Reader Result: ", reader.result);
+        resourceObj.data = reader.result;
+        resourcesFiles.push(resourceObj);
+      };
+      reader.onerror = function (error) {
+        console.log('Error: ', error);
+      };
+    };
 
     function criarMarcacoesManuaisAbono(horarioUnico) {
 
@@ -318,6 +409,10 @@
     function hideAppointErrorMsg(seconds){
       $scope.invalidAppointMsg = null;
     };
+
+    function hideFileError(seconds){
+      $scope.fileErrorMsg = null;
+    };    
 
     //seria bom mostrar telinha confirmando as alterações...
     function openConfirmaAjuste(solicitacaoAjuste) {

@@ -71,4 +71,8 @@ angular.module('BlurAdmin.pages.myhitpoint').service("myhitpointAPI", function($
 		console.log('vai chamar o getbycomponents');
 		return $http.post(_urlBaseHitpoint+'/getbycomponents', objPassed);
 	};
+
+	svc.uploadImage = function(obj){
+		return $http.post(_urlBaseHitpoint+'/uploadImage', obj);
+	};
 });
