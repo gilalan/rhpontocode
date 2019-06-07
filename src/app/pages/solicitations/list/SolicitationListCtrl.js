@@ -371,7 +371,7 @@
               modificarSolicitacao(solicitacao); 
               //console.log("Enviaria o seguinte apontamento: ", apontamento);
               //console.log("enviaria a seguinte solicitacao: ", solicitacao);     
-              saveSolicitacaoApontamento({solicitacao: solicitacao, apontamento: apontamento, isNew: isNewApontamento});
+              saveSolicitacaoApontamento({solicitacao: solicitacao, apontamento: apontamento, isNew: isNewApontamento, uploaded: true});
 
             } else { //caso de período de dias para abono...
               console.log("Modificiar apontamento com período de itens");  
@@ -384,7 +384,7 @@
             apontamento = criarNovoApontamento(solicitacao);
             isNewApontamento = true;
             modificarSolicitacao(solicitacao);      
-            saveSolicitacaoApontamento({solicitacao: solicitacao, apontamento: apontamento, isNew: isNewApontamento});
+            saveSolicitacaoApontamento({solicitacao: solicitacao, apontamento: apontamento, isNew: isNewApontamento, uploaded: true});
           }
         } else { //Caso de mais um dia para o (somente para o Abono)
 
@@ -393,7 +393,8 @@
           console.log("Array de apontamentos para envio: ", apontamentosToSend);
           saveSolicitacaoAndPeriodoApontamentos({
             solicitacao: solicitacao, 
-            apontamentos: apontamentosToSend
+            apontamentos: apontamentosToSend,
+            uploaded: true
           });
         }
 

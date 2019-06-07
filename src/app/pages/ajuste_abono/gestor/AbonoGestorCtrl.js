@@ -19,6 +19,7 @@
     var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
     var resourcesFiles = [];
+    var ident = 0;
 
     $scope.employees = [];
     $scope.employeesNames = [];
@@ -294,8 +295,10 @@
         for (var i = 0; i < element.files.length; i++) {
           if(validateFile(element.files[i])){
             element.files[i].sizeFtd = (Math.round(element.files[i].size)/1000000).toFixed(2) + "MB";
+            element.files[i].ident = ident;
             $scope.files.push(element.files[i]);
             getBase64(element.files[i]);
+            ident++;
           } else {
             countErrors++;
           }
@@ -319,12 +322,14 @@
     $scope.deletar = function(index){
       console.log("elemento: " , $scope.files[index]);
       for (var i=0; i < resourcesFiles.length; i++){
-        if(resourcesFiles[i].name == $scope.files[index].name){
+        if(resourcesFiles[i].ident == $scope.files[index].ident){
           resourcesFiles.splice(i, 1);
           break;
         }
       }
       $scope.files.splice(index, 1);
+      console.log("files: ", $scope.files);
+      console.log("resources: ", resourcesFiles);
     }; 
 
     function validateFile(file) {
@@ -354,7 +359,8 @@
       var resourceObj = {        
         matr: $scope.funcionarioOficial.matricula,//$scope.funcionario.matricula,
         name: file.name,
-        size: file.size
+        size: file.size,
+        ident: file.ident
       };
       var reader = new FileReader();
       reader.readAsDataURL(file);

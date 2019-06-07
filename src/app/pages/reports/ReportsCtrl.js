@@ -146,8 +146,6 @@
       var dateAux = new Date(beginDate);
       var endDateAux = new Date(endDate);
 
-      //var equipeIds = $scope.employees.map(a => a._id);
-
       var objDateWorker = {
         date: {
           raw: beginDate,
@@ -165,21 +163,19 @@
             hour: endDateAux.getHours(),
             minute: endDateAux.getMinutes()
           }
-        },
-        equipe: equipeIds        
+        }
       };
 
-      reportsAPI.getEspelhoPontoFuncionarios(objDateWorker).then(function successCallback(response){
+      reportsAPI.getEspelhoPontoAll(objDateWorker).then(function successCallback(response){
 
         var arrayFuncAppoints = response.data;
-        ////console.log("##*## Funcionários e apontamentos: ", arrayFuncAppoints);
-        //$scope.periodoApontamento = createArrayRangeDate(dateAux, endDateAux, 1, apontamentosResponse);
+        console.log("##*## Funcionários e apontamentos: ", arrayFuncAppoints);
         generateSuperPDF(dateAux, endDateAux, 1, arrayFuncAppoints);
 
       }, function errorCallback(response){
         
         $scope.errorMsg = response.data.message;
-        ////////console.log("Erro ao obter apontamentos por um range de data e equipe");
+        console.log("Erro ao obter apontamentos por um range de data e equipe");
       });
     };
 

@@ -7,7 +7,7 @@
 
   angular.module('BlurAdmin.pages.abono')
       .controller('AbonoSolicitationCtrl', AbonoSolicitationCtrl)
-      .controller('ConfirmationModalCtrl', ConfirmationModalCtrl);
+      .controller('ConfirmationModalEmpCtrl', ConfirmationModalEmpCtrl);
 
   /** @ngInject */
   function AbonoSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, usuario, currentDate, feriados, eventosAbono) {
@@ -18,6 +18,7 @@
     var equipe = {};
     var dataMaxBusca = util.addOrSubtractDays(new Date(currentDate.data.date), -1); //dia anterior
     var resourcesFiles = [];
+    var ident = 0;
 
 
     console.log("Current Date para os trabalhos: ",$scope.currentDate);
@@ -32,6 +33,8 @@
     $scope.hora = {};                
     // $scope.infoHorario = {};
     $scope.files = [];
+
+    console.log("FuncionarioÇ ", $scope.funcionario);
     
     if ($scope.eventosAbono.length > 0)
       $scope.selected = { item: $scope.eventosAbono[0] };
@@ -269,8 +272,10 @@
         for (var i = 0; i < element.files.length; i++) {
           if(validateFile(element.files[i])){
             element.files[i].sizeFtd = (Math.round(element.files[i].size)/1000000).toFixed(2) + "MB";
+            element.files[i].ident = ident;
             $scope.files.push(element.files[i]);
             getBase64(element.files[i]);
+            ident++;
           } else {
             countErrors++;
           }
@@ -335,7 +340,8 @@
       var resourceObj = {
         matr: $scope.funcionario.matricula,
         name: file.name,
-        size: file.size
+        size: file.size,
+        ident: file.ident
       };
       var reader = new FileReader();
       reader.readAsDataURL(file);
@@ -421,7 +427,7 @@
         animation: true,
         templateUrl: pageConfirmationPath,
         size: defaultSize,
-        controller: 'ConfirmationModalCtrl',
+        controller: 'ConfirmationModalEmpCtrl',
         resolve: {
           solicitacaoAjuste: function () {
             return solicitacaoAjuste;
@@ -681,9 +687,10 @@
     init();
   };
 
-  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, util, myhitpointAPI, solicitacaoAjuste){
+  function ConfirmationModalEmpCtrl($uibModalInstance, $scope, $state, $filter, util, myhitpointAPI, solicitacaoAjuste){
     
     console.log('solicitacaoAjuste: ', solicitacaoAjuste);
+    $scope.dataProcess = false;
     $scope.solicitacao = solicitacaoAjuste;
     $scope.solicitacao.message = false;
     $scope.tipoZero = false;
@@ -705,6 +712,8 @@
     // $scope.dataFtd = $filter('date')(solicitacaoAjuste.rawData, 'abvFullDate');
     
     $scope.confirma = function() {
+
+      $scope.dataProcess = true;
       
       myhitpointAPI.create(solicitacaoAjuste).then(function successCallback(response){
 
@@ -715,6 +724,7 @@
         
         $scope.errorMsg = response.data.message;
         console.log("Erro ao criar solicitação de ajuste.");
+        $scope.dataProcess = false;
       });
     };
 

@@ -50,6 +50,8 @@
           <label ng-if="solicitacao.tipoUm" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data: {{solicitacao.data | date:'fullDate'}} <br> Horário Inicial: {{solicitacao.horarioEnviado.inicial.horarioFtd}} <br> Horário Final: {{solicitacao.horarioEnviado.final.horarioFtd}}</label>
           <label ng-if="solicitacao.tipoDois" style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Data Inicial: {{solicitacao.data | date:'fullDate'}} <br> Data Final: {{solicitacao.dataFinal | date:'fullDate'}} <br> Período de {{solicitacao.arrayAusAjt.length}} dias</label>
           <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Motivo: {{solicitacao.motivo}}</label>
+          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;"> Anexo: {{solicitacao.anexo.length}} arquivo(s)</label>
+          <label style="margin-left: 0px; font-size: 12px; border: 1px solid #bcbcbc; border-radius: 5px; padding: 5px 5px 5px 5px; width: 100%;" ng-if="solicitacao.anexo.length > 0"> Atenção: a confirmação pode demorar alguns minutos (a depender do tamanho do(s) anexo(s)).</label>
       </div>
 
     </div> 
