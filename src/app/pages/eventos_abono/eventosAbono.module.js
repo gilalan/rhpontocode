@@ -20,7 +20,7 @@
           icon: 'ion-star',
           order: 61,
         },
-        accessLevel: [3,4,5,6]
+        accessLevel: [2,3,4,5,6]
       })
       .state('eventosabono.list', {
         url: '/list',
@@ -32,7 +32,7 @@
             return eventosAbonoAPI.get();
           }
         },
-        accessLevel: [3,4,5,6]
+        accessLevel: [2,3,4,5,6]
       })
       .state('eventosabono.new', {
         url: '/new',
@@ -44,7 +44,7 @@
             return eventosAbonoAPI.get();
           }
         },
-        accessLevel: [3,4,5,6]
+        accessLevel: [2,3,4,5,6]
       })
       .state('eventosabono.edit', {
         url: '/edit/:id',
@@ -59,7 +59,7 @@
             return eventosAbonoAPI.get();
           }
         },
-        accessLevel: [3,4,5,6]
+        accessLevel: [2,3,4,5,6]
       });
   }
 })();

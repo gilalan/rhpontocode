@@ -32,6 +32,7 @@
     'BlurAdmin.pages.admadjsol',
     'BlurAdmin.pages.eventosabono',
     'BlurAdmin.pages.abono',
+    'BlurAdmin.pages.hours',
   ])
       .config(routeConfig);
 

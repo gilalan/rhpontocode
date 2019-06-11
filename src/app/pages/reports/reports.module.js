@@ -18,7 +18,7 @@
           vm: '$ctrl',
           title: 'Relatórios',
           sidebarMeta: {
-             icon: 'ion-clock',
+             icon: 'ion-document-text',
              order: 4,
           },
           access: 'fiscal',

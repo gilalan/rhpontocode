@@ -77,12 +77,12 @@
     $scope.changeDate = function(date) {
       console.log('já passou no changeDate no carregamento?');
       $scope.dataErrorMsg = null;
-      if (util.compareOnlyDates(date, dataMaxBusca) == 1){
-        $scope.datepic.dt = new Date($scope.currentDate);
-        $scope.dataErrorMsg = "Você só pode solicitar ajustes de: "+$filter('date')(dataMaxBusca, 'abvFullDate')+" para trás.";
-        $timeout(hideDataError, 8000);
-        return $scope.dataErrorMsg;
-      }
+      // if (util.compareOnlyDates(date, dataMaxBusca) == 1){
+      //   $scope.datepic.dt = new Date($scope.currentDate);
+      //   $scope.dataErrorMsg = "Você só pode solicitar ajustes de: "+$filter('date')(dataMaxBusca, 'abvFullDate')+" para trás.";
+      //   $timeout(hideDataError, 8000);
+      //   return $scope.dataErrorMsg;
+      // }
       console.log('passou por aqui!!!');
       $scope.currentDate = new Date(date);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
@@ -100,12 +100,12 @@
     $scope.changeDate2 = function(date) {
       console.log('já passou no changeDate no carregamento?');
       $scope.dataErrorMsg = null;
-      if (util.compareOnlyDates(date, dataMaxBusca) == 1){
-        $scope.datepic.dt = new Date($scope.currentDate);
-        $scope.dataErrorMsg = "Você só pode solicitar ajustes de: "+$filter('date')(dataMaxBusca, 'abvFullDate')+" para trás.";
-        $timeout(hideDataError, 8000);
-        return $scope.dataErrorMsg;
-      }
+      // if (util.compareOnlyDates(date, dataMaxBusca) == 1){
+      //   $scope.datepic.dt = new Date($scope.currentDate);
+      //   $scope.dataErrorMsg = "Você só pode solicitar ajustes de: "+$filter('date')(dataMaxBusca, 'abvFullDate')+" para trás.";
+      //   $timeout(hideDataError, 8000);
+      //   return $scope.dataErrorMsg;
+      // }
       console.log('passou por aqui!!!');
       $scope.currentDate2 = new Date(date);
       $scope.currentDateFtd2 = $filter('date')($scope.currentDate, 'abvFullDate');
