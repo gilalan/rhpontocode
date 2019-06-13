@@ -8,26 +8,30 @@
   angular.module('BlurAdmin.pages.myhitpoint')
       .controller('HitpointCtrl', HitpointCtrl)
       .controller('ModalBatidasDiaCtrl', ModalBatidasDiaCtrl)
-      .controller('ModalSolicitacoesCtrl', ModalSolicitacoesCtrl);
+      .controller('ModalSolicitacoesCtrl', ModalSolicitacoesCtrl)
+      .controller('ModalHistEmployeeCtrl', ModalHistEmployeeCtrl);
 
   /** @ngInject */
-  function HitpointCtrl($scope, $filter, $state, $uibModal, appointmentAPI, employeeAPI, Auth, usuario, currentDate, feriados, util) {
+  function HitpointCtrl($scope, $filter, $state, $uibModal, appointmentAPI, myhitpointAPI, employeeAPI, Auth, usuario, currentDate, feriados, util) {
 
     $scope.smartTablePageSize = 15;
-    console.log("dentro do HitpointCtrl, USUARIO: ", usuario);
+    //console.log("dentro do HitpointCtrl, USUARIO: ", usuario);
     var Usuario = usuario.data;
     $scope.funcionario = usuario.data.funcionario;
-    console.log('Funcionário: ', $scope.funcionario);
+    //console.log('Funcionário: ', $scope.funcionario);
     $scope.currentDate = currentDate.data.date;
     $scope.currentDateFtd = $filter('date')($scope.currentDate, 'dd/MM/yyyy');
     $scope.funcionario.alocacao.dataAdmissaoFtd = $filter('date')($scope.funcionario.alocacao.dataAdmissao, 'fullDate');
     $scope.periodo = {};
-    console.log('Current Date: ', $scope.currentDate);
+    var ferias = $scope.funcionario.ferias;
+    //console.log('Current Date: ', $scope.currentDate);
     var feriados = feriados.data;
     var weekFullDays = ["Domingo","Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
     var pagePath = 'app/pages/my_hitpoint/modals/batidasDiaModal.html'; //representa o local que vai estar o html de conteúdo da modal
     var pageSolicitarPath = 'app/pages/my_hitpoint/modals/solicitacoesModal.html';
+    var pageHistoricoPath = 'app/pages/my_hitpoint/modals/historicoAppoint.html';
     var defaultSize = 'md'; //representa o tamanho da Modal
+
 
     $scope.periodoApontamento = [];
 
@@ -62,9 +66,9 @@
 
     function checkFormatDatesUiDateDirective(date){
 
-      console.log(typeof date);
+      //console.log(typeof date);
       if (typeof date == "string"){
-        console.log('É uma String!', date);
+        //console.log('É uma String!', date);
         var dateArray = date.split("/");
         return new Date(dateArray[2], dateArray[1]-1, dateArray[0]).getTime();
       } 
@@ -86,6 +90,11 @@
     $scope.solicitar = function(itemApontamento){
 
       openSolicitacoes(pageSolicitarPath, defaultSize, itemApontamento.rawDate, itemApontamento.arrayEntSai);
+    };
+
+    $scope.historico = function (itemApontamento){
+
+      openHistorico(pageHistoricoPath, 'lg', itemApontamento);
     };
 
     function openBatidasDia (page, size, data, arrayEntSai) {
@@ -110,7 +119,7 @@
       modalInstance.result.then(function (){
         
       }, function () {
-        console.log('modal is dismissed or close.');
+        //console.log('modal is dismissed or close.');
       });
     };
 
@@ -161,7 +170,28 @@
       modalInstance.result.then(function (){
         
       }, function () {
-        console.log('modal is dismissed or close.');
+        //console.log('modal is dismissed or close.');
+      });
+    };
+
+    function openHistorico (page, size, itemApontamento) {
+
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: page,
+        size: size,
+        controller: 'ModalHistEmployeeCtrl',
+        resolve: {
+          itemApontamento: function () {
+            return itemApontamento;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (){
+        
+      }, function () {
+        //console.log('modal is dismissed or close.');
       });
     };
 
@@ -172,9 +202,6 @@
     **/
     function getApontamentosByDateRangeAndEquipe(beginDate, endDate, funcionario) {
 
-      console.log('beginDate? ', beginDate);
-      console.log('endDate? ', endDate);
-      console.log('funcionario ', funcionario);
       var dateAux = new Date(beginDate);
       var endDateAux = new Date(endDate);
 
@@ -203,43 +230,46 @@
       $scope.periodo.dataInicial = $filter('date')($scope.periodo.dataInicial, 'dd/MM/yyyy');
       $scope.periodo.dataFinal = $filter('date')($scope.periodo.dataFinal, 'dd/MM/yyyy');
       $scope.periodoApontamento = [];
-      console.log("objDateWorker Enviado: ", objDateWorker);
+      //console.log("objDateWorker Enviado: ", objDateWorker);
 
-      appointmentAPI.getApontamentosByDateRangeAndFuncionario(objDateWorker).then(function successCallback(response){
+      //busca apenas as solicitações pendentes junto com os apontamentos
+      myhitpointAPI.getAllByEmployee(objDateWorker).then(function successCallback(response){
 
-        var apontamentosResponse = response.data;
-        console.log("!@# Apontamentos do funcionário: ", apontamentosResponse);
-        $scope.periodoApontamento = createArrayRangeDate(dateAux, endDateAux, 1, apontamentosResponse);
-        //createTableApontamentos(arrayDatas, apontamentosResponse);
+        var apontamentosResponse = response.data.apontamentos;
+        var solicitacoesResponse = response.data.solicitacoes;
+        console.log("!@# Recebidos do servidor: ", response.data);
+        $scope.periodoApontamento = createArrayRangeDate(dateAux, endDateAux, 1, apontamentosResponse, solicitacoesResponse);
 
       }, function errorCallback(response){
         
         $scope.errorMsg = response.data.message;
-        //////console.log("Erro ao obter apontamentos por um range de data e equipe");
-      });
+      });     
     };
 
-    function createArrayRangeDate (startDate, endDate, interval, apontamentosSemanais) {
+    function createArrayRangeDate (startDate, endDate, interval, apontamentosSemanais, solicitacoes) {
       
       var interval = interval || 1;
       var retVal = [];
       var current = new Date(startDate);
       var endDate = new Date(endDate);
       var itemApontamento = {};
-      //console.log('current ', current);
-      //console.log('endDate ', endDate);
+      ////console.log('current ', current);
+      ////console.log('endDate ', endDate);
       var i = 0;
       var apontamentoF = null;
+      var solicitationF = null;
       var objEntradasSaidas = {};
       
       while (current <= endDate) {
 
         itemApontamento = {};
         objEntradasSaidas = {};
-        console.log('itemApontamento antes: ', itemApontamento);
+        //console.log('itemApontamento antes: ', itemApontamento);
         apontamentoF = getApontamentoFromSpecificDate(apontamentosSemanais, current);
+        solicitationF = getSolicitationFromSpecificDate(solicitacoes, current);
         console.log('currentDate: ', current);
         console.log('apontamento? ', apontamentoF);
+        console.log('solicitation? ', solicitationF);
         itemApontamento.order = i;
         itemApontamento.rawDate = new Date(current);
         itemApontamento.data = $filter('date')(new Date(current), 'abvFullDate2');
@@ -251,6 +281,10 @@
           itemApontamento.arrayEntSai = objEntradasSaidas.arrayEntSai;
           itemApontamento.ocorrencia = getOcorrenciaStatus(apontamentoF, current);
           itemApontamento.saldo = getSaldoPresente(apontamentoF);
+          itemApontamento.historico = apontamentoF.historico;
+
+          if(itemApontamento.ocorrencia.observacao) 
+            itemApontamento.observacao = itemApontamento.ocorrencia.observacao;
 
         } else {
 
@@ -261,13 +295,18 @@
           setInfoAusencia(itemApontamento, current); //injeta as informações de ausencia no apontamento
         }
 
-        console.log('itemApontamento depois: ', itemApontamento);
+        if (solicitationF) {
+
+          itemApontamento.ocorrencia = updateOcorrenciaStatus(solicitationF, itemApontamento);
+        }
+
+        //console.log('itemApontamento depois: ', itemApontamento);
         retVal.push(itemApontamento);
         current = addOrSubtractDays(current, interval);
         i++;
       }
 
-      //console.log('rangeDate calculado:', retVal);
+      ////console.log('rangeDate calculado:', retVal);
       // retVal.sort(function(a, b){//ordena o array de datas criadas
       //   return a.order < b.order;
       // });
@@ -281,7 +320,7 @@
         // a must be equal to b
         return 0;
       });
-      //console.log('rangeDate calculado e ordenado decresc:', retVal);
+      ////console.log('rangeDate calculado e ordenado decresc:', retVal);
       return retVal;  
     };
 
@@ -290,13 +329,13 @@
       //como a passagem é por referência, devemos criar uma cópia do objeto
       var d1 = angular.copy(date1); 
       var d2 = angular.copy(date2);
-      //console.log('date1', d1);
-      //console.log('date2', d2);
+      ////console.log('date1', d1);
+      ////console.log('date2', d2);
       d1.setHours(0,0,0,0);
       d2.setHours(0,0,0,0);
 
-      //console.log('date1 time', d1.getTime());
-      //console.log('date2 time', d2.getTime());
+      ////console.log('date1 time', d1.getTime());
+      ////console.log('date2 time', d2.getTime());
 
       if (d1.getTime() < d2.getTime())
         return -1;
@@ -327,6 +366,21 @@
       }
 
       return apontamentoByDate;
+    };
+
+    function getSolicitationFromSpecificDate(solicitacoes, dataAtual){
+
+      var solicitationByDate = null;
+
+      for (var i=0; i<solicitacoes.length; i++){
+
+        if (compareOnlyDates(dataAtual, new Date(solicitacoes[i].data)) == 0) {
+
+          solicitationByDate = solicitacoes[i];
+        }
+      }
+
+      return solicitationByDate;
     };
 
     /*
@@ -420,9 +474,38 @@
           ocorrencia.statusCodeString = "JUS";
           ocorrencia.statusString = "Apontamento Justificado - ajustado manualmente";
           ocorrencia.statusImgUrl = "assets/img/app/todo/mypoint_justified16.png";
+          ocorrencia.observacao = "Ponto Justificado Manualmente";
+
+        } else if (apontamento.status.id == 4) {
+
+          ocorrencia.statusCodeString = "ABO";
+          ocorrencia.statusString = "Abonado";
+          ocorrencia.statusImgUrl = "assets/img/app/todo/watch-16px.png";
+          ocorrencia.observacao = "Ponto Abonado";
         }
       }
 
+      return ocorrencia;
+    };
+
+    function updateOcorrenciaStatus(solicitacao, apontamento){
+      
+      var ocorrencia = {};
+
+      //Ajuste é TIPO = 0
+      if (solicitacao.tipo === 0){
+
+        //ocorrencia.statusCodeString = "COR";
+        ocorrencia.statusString = "AJU PEN";
+        ocorrencia.statusImgUrl = "assets/img/app/todo/asterisk_16.png";
+        apontamento.observacao += " (possui AJUSTE pendente)*";
+
+      } else if (solicitacao.tipo === 1) {
+
+        ocorrencia.statusString = "ABO PEN";
+        ocorrencia.statusImgUrl = "assets/img/app/todo/asterisk_16.png";
+        apontamento.observacao += " (possui ABONO pendente)*";
+      }
       return ocorrencia;
     };
 
@@ -469,11 +552,11 @@
       var saldoDiarioFormatado = {};
 
       //pode não ter expediente iniciado, ser feriado, estar atrasado, de folga ou faltante mesmo
-      var expedienteObj = updateAbsenceStatus($scope.funcionario.alocacao, currentDate);
+      var expedienteObj = updateAbsenceStatus($scope.funcionario, currentDate);
       apontamento.ocorrencia.statusCodeString = expedienteObj.code;
       apontamento.ocorrencia.statusString = expedienteObj.string;
       apontamento.ocorrencia.statusImgUrl = expedienteObj.imgUrl;
-      //console.log('expedienteObj returned: ', expedienteObj);
+      ////console.log('expedienteObj returned: ', expedienteObj);
 
       if (expedienteObj.code == "FRD"){
         saldoFlag = true;
@@ -497,6 +580,13 @@
         
         saldoDiarioFormatado = converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
         apontamento.observacao = "Falta";
+
+      } else if (expedienteObj.code == "FER") {
+
+        saldoFlag = true;
+        sinalFlag = '';
+        saldoDiarioFormatado = converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
+        apontamento.observacao = "Férias";
       }
 
       apontamento.saldo = {
@@ -507,34 +597,45 @@
     };
 
      /*
-     * São 5 possíveis casos para ausência:
+     * São 6 possíveis casos para ausência:
      * 1- Feriado
      * 2- ENI - Expediente Não Iniciado
      * 3- Folga solicitada e aceita / Licença
      * 4- DSR - Descanso Semanal Remunerado 
      * 5- Ausência de fato
+     * 6- Férias!
     */
-    function updateAbsenceStatus(funcionarioAlocacao, dataDesejada) {
+    function updateAbsenceStatus(funcionario, dataDesejada) {
       
+      var funcionarioAlocacao = funcionario.alocacao;
       var codigoEscala = funcionarioAlocacao.turno.escala.codigo; 
       var ignoraFeriados =  funcionarioAlocacao.turno.ignoraFeriados;
+      var objFeriadoRet = isFeriado(dataDesejada);
+      var objFerias = util.checkFerias(dataDesejada, funcionario.ferias);
 
-      if (isFeriado(dataDesejada) && !ignoraFeriados){//Caso 1 - feriado
+      if (objFerias){
         
-        return {code: "FRD", string: "Feriado!", imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};//getSaldoDiaFrd(funcionarioAlocacao)};
+        return {code: "FER", string: "Férias!", imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};
 
-      } else if (hasFolgaSolicitada() || hasLicenca()){ //Caso 3 - Folgas/Licenças
+      } else {
 
-        //console.log('Caso 3 - checar');
+        if (objFeriadoRet.flag && !ignoraFeriados){ //Caso 1 - feriado
 
-      } else { //Caso 2, 4 ou 5
-        
-        if (codigoEscala == 1) {
-          return checkJornadaSemanal(funcionarioAlocacao, dataDesejada);
+          return {code: "FRD", string: objFeriadoRet.name, imgUrl: "assets/img/app/todo/mypoint_correct16.png", saldoDia: 0};
+
+        } else if (hasFolgaSolicitada() || hasLicenca()){ //Caso 3 - Folgas/Licenças
+
+          //////////console.log('Caso 3 - checar');
+
+        } else { //Caso 2, 4 ou 5
+          
+          if (codigoEscala == 1) {
+            return checkJornadaSemanal(funcionarioAlocacao, dataDesejada);
+          }
+
+          else if (codigoEscala == 2)
+            return checkJornadaRevezamento(funcionarioAlocacao, dataDesejada);
         }
-
-        else if (codigoEscala == 2)
-          return checkJornadaRevezamento(funcionarioAlocacao, dataDesejada);
       }
     };
 
@@ -542,18 +643,19 @@
       
       var data = dataDesejada;
 
-      console.log('Data Desejada: ', data);
-      //console.log('Setor.local: ', $scope.equipe);
+      //console.log('Data Desejada: ', data);
+      ////console.log('Setor.local: ', $scope.equipe);
 
       var date = data.getDate();//1 a 31
       var month = data.getMonth();//0 a 11
       var year = data.getFullYear();//
       var flagFeriado = false;
+      var feriadoName = "";
       var tempDate;      
 
       feriados.forEach(function(feriado){
         
-        //console.log('feriado atual: ', feriado);        
+        ////console.log('feriado atual: ', feriado);        
 
         for (var i = 0; i < feriado.array.length; i++) {
           
@@ -561,23 +663,25 @@
           if (feriado.fixo){
           
             if (tempDate.getMonth() === month && tempDate.getDate() === date){
-              console.log("É Feriado (fixo)!", tempDate);
+              //console.log("É Feriado (fixo)!", tempDate);
               flagFeriado = checkFeriadoSchema(feriado);
+              feriadoName = feriado.nome;
               return feriado;
             }
 
           } else {//se não é fixo
 
             if ( (tempDate.getFullYear() === year) && (tempDate.getMonth() === month) && (tempDate.getDate() === date) ){
-              console.log("É Feriado (variável)!", tempDate);
+              //console.log("É Feriado (variável)!", tempDate);
               flagFeriado = checkFeriadoSchema(feriado);
+              feriadoName = feriado.nome;
               return feriado;
             }
           }
         }
       });
-      console.log('FlagFeriado: ', flagFeriado);
-      return flagFeriado;//no futuro retornar o flag de Feriado e a descrição do mesmo!
+      //console.log('FlagFeriado: ', flagFeriado);
+      return {flag: flagFeriado, name: feriadoName};//no futuro retornar o flag de Feriado e a descrição do mesmo!
     };
 
     function checkFeriadoSchema(feriado){
@@ -587,22 +691,22 @@
 
       if (feriado.abrangencia == abrangencias[0]){
 
-        console.log('Feriado Nacional!');
+        //console.log('Feriado Nacional!');
         flagFeriado = true;
 
       } else  if (feriado.abrangencia == abrangencias[1]){
         
-        console.log('Feriado Estadual!');
+        //console.log('Feriado Estadual!');
         if (equipe.setor.local.estado == feriado.local.estado._id){
-          console.log('Feriado Estadual no Estado correto!');
+          //console.log('Feriado Estadual no Estado correto!');
           flagFeriado = true;
         }
 
       } else if (feriado.abrangencia == abrangencias[2]){
         
-        console.log('Feriado Municipal!');
+        //console.log('Feriado Municipal!');
         if (equipe.setor.local.municipio == feriado.local.municipio._id){
-          console.log('No municipio correto!');
+          //console.log('No municipio correto!');
           flagFeriado = true;
         }
       }
@@ -624,9 +728,9 @@
       var dataAtual = dataDesejada;
 
       var jornadaArray = funcionarioAlocacao.turno.jornada.array; //para ambas as escalas
-      console.log('Dentro de Jornada Semanal: funcionarioAlocacao', funcionarioAlocacao);
+      //console.log('Dentro de Jornada Semanal: funcionarioAlocacao', funcionarioAlocacao);
       var objDay = getDayInArrayJornadaSemanal(dataAtual.getDay(), jornadaArray);
-      console.log('objDay', objDay);
+      //console.log('objDay', objDay);
       
       if (!objDay || !objDay.minutosTrabalho || objDay.minutosTrabalho <= 0) { //Caso 4 - DSR
         
@@ -637,32 +741,32 @@
         var codDate = compareOnlyDates(dataAtual, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          //////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
+          ////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
           var ENT1 = objDay.horarios.ent1;
-          //console.log("Total de minutos da hora atual: ", totalMinutesAtual);
-          //console.log("Entrada 1: ", ENT1);
+          ////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
+          ////console.log("Entrada 1: ", ENT1);
 
           if (totalMinutesAtual < ENT1) {
           
-            //////console.log("Ainda não iniciou o expediente");
+            ////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            //////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
+            ////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
           }
 
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          //////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
+          ////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
 
         } else { //Navegando em dias futuros
 
-          //////console.log("Navegando em dias futuros, expediente não iniciado!");
+          ////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
       } 
@@ -678,7 +782,7 @@
       var dataComparacao = dataDesejada;
       var dataHoje = new Date();
 
-      console.log('dataComparacao: ', dataComparacao);
+      //console.log('dataComparacao: ', dataComparacao);
       var trabalha = isWorkingDay(dataComparacao, 
         new Date(funcionarioAlocacao.dataInicioEfetivo));
       
@@ -688,28 +792,28 @@
         var codDate = compareOnlyDates(dataComparacao, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          //////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
+          ////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
-          //////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
+          ////////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
 
           if (totalMinutesAtual < ENT1) {
           
-            //////console.log("Ainda não iniciou o expediente");
+            ////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            //////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
+            ////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
           }
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          //////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
+          ////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
         } else { //Navegando em dias futuros
 
-          //////console.log("Navegando em dias futuros, expediente não iniciado!");
+          ////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
 
@@ -728,7 +832,7 @@
           return diaRetorno;
         }
       });
-      ////console.log("DIA RETORNO NO getDayInArrayJornadaSemanal: ", diaRetorno);
+      //////console.log("DIA RETORNO NO getDayInArrayJornadaSemanal: ", diaRetorno);
       return diaRetorno;
     };
 
@@ -742,7 +846,7 @@
       d2.setHours(0,0,0,0);
 
       var diffDays = Math.round(Math.abs((d1.getTime() - d2.getTime())/(oneDay)));
-      //////console.log("diffDays: ", diffDays);
+      ////////console.log("diffDays: ", diffDays);
       
       return (diffDays % 2 == 0) ? true : false;
     };
@@ -757,7 +861,7 @@
 
     function createTableApontamentos(arrayDatas, apontamentos){
 
-      console.log('criar a tabble de apontamentos');
+      //console.log('criar a tabble de apontamentos');
 
       $scope.periodoApontamento = arrayDatas;
     };
@@ -768,7 +872,7 @@
 
         $scope.noTeamMsg = null;
         equipe = response.data;
-        console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);
+        //console.log("!@#EQUIPE OBTIDA DO FUNCIONARIO: ", equipe);
         if (!equipe){
           $scope.noTeamMsg = "Você não está associado(a) a nenhuma EQUIPE no sistema e consequentemente não é possível calcular seus batimentos. Verifique junto ao seu fiscal/gestor a sua associação a uma EQUIPE.";
           return $scope.noTeamMsg;
@@ -889,7 +993,7 @@
       initHeader();
       initGetEquipe(); //dentro de get equipe -> initSearch();
 
-      console.log("infoHorario: " , $scope.infoHorario);
+      //console.log("infoHorario: " , $scope.infoHorario);
     };
 
     init();
@@ -897,14 +1001,14 @@
 
   function ModalBatidasDiaCtrl($uibModalInstance, $scope, objBatidasDiaria){
     
-    console.log('objBatidasDiaria: ', objBatidasDiaria);
+    //console.log('objBatidasDiaria: ', objBatidasDiaria);
     $scope.objBatidasDiaria = objBatidasDiaria;
 
   };
 
   function ModalSolicitacoesCtrl($uibModalInstance, $scope, $state, objBatidasDiaria){
     
-    console.log('objBatidasDiaria: ', objBatidasDiaria);
+    //console.log('objBatidasDiaria: ', objBatidasDiaria);
     $scope.objBatidasDiaria = objBatidasDiaria;
 
     var objAjusteParams = {
@@ -915,7 +1019,7 @@
 
     $scope.ajuste = function() {
 
-      console.log('solicitou ajuste de ponto, obj enviado: ', objAjusteParams);
+      //console.log('solicitou ajuste de ponto, obj enviado: ', objAjusteParams);
       $state.go('adjustsolicitation', 
         {
           userId: objAjusteParams.usuario._id, 
@@ -928,7 +1032,7 @@
 
     $scope.abono = function(){
 
-      console.log('soliciou abono');
+      //console.log('soliciou abono');
       $state.go('abono', 
         {
           userId: objAjusteParams.usuario._id, 
@@ -938,6 +1042,12 @@
         });
       $uibModalInstance.dismiss();
     };
+
+  };
+
+  function ModalHistEmployeeCtrl($uibModalInstance, $scope, itemApontamento){
+    
+    $scope.apontamento = itemApontamento;    
 
   };
 

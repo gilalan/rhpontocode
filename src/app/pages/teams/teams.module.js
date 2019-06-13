@@ -87,7 +87,8 @@
             return teamAPI.getEquipe($stateParams.id);
           },
           funcionarios: function(employeeAPI){
-            return employeeAPI.getActives();
+            //return employeeAPI.getActives();
+            return employeeAPI.get();
           }
         },
         accessLevel: [3,4,5,6]

@@ -36,6 +36,7 @@
     $scope.rawApps = [];
     //$scope.rawApps = rawAppoints.data.rawReps;
     console.log("Equipes: ", $scope.equipes);
+    console.log("employees: ", $scope.employees);
 
     $scope.datepic = {
       dt: new Date()
@@ -52,88 +53,12 @@
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
     $scope.format = $scope.formats[0];  
 
-    $scope.onUploadSelect = function(element){
-      //console.log("clicou para upload". file);
-      $scope.$apply(function(scope) {
-        console.log('files:', element.files);
-        for (var i = 0; i < element.files.length; i++) {
-          if(validateFile(element.files[i])){
-            element.files[i].sizeFtd = (Math.round(element.files[i].size)/1000000).toFixed(2) + "MB";
-            $scope.files.push(element.files[i]);
-            getBase64(element.files[i]);
-          }
-        }
-
-        //var matches = element.files.match(/data:([A-Za-z-+\/].+);base64,(.+)/);
-        //console.log("Matches? ", matches);
-      });
-    };
-
-    $scope.makeUpload = function() {
-      console.log("$scope.files: ", $scope.files);
-      console.log("respirces files: ", resourcesFiles);
-      var obj = {
-        array: resourcesFiles//$scope.files
-      };
-      myhitpointAPI.uploadImage(obj).then(function successCallback(response){
-
-        console.log("Response.data: ", response.data);
-
-      }, function errorCallback(response){
-
-        $scope.errorMsg = response.data.message;
-        console.log('response error : ', response.data.message);
-      });      
-    };
-
-    function validateFile(file) {
-      
-      if (file.size > 2048000)
-        return false;
-
-      var typeFile = file.type.split('/');
-      if(typeFile.length == 2) {
-
-        if (typeFile[0] === "application") {
-          if (typeFile[1] !== "pdf")
-            return false;
-        } else {
-          if (typeFile[0] !== "image")
-            return false;
-        }
-
-      } 
-      else 
-        return false;      
-
-      return true;
-    };
-
-    function getBase64(file) {
-      var resourceObj = {
-        matr: "012345",//$scope.funcionario.matricula,
-        name: file.name,
-        size: file.size
-      };
-      var reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = function () {
-        //console.log("Reader Result: ", reader.result);
-        resourceObj.data = reader.result;
-        resourcesFiles.push(resourceObj);
-      };
-      reader.onerror = function (error) {
-        console.log('Error: ', error);
-      };
-    };
-
-
     function open() {
         console.log("open function", $scope.something.opened);
         $scope.something.opened = true;
     };
 
-    //init();
+    init();
     
     function getAllEquipesEstatistica (equipesArray) {
 
@@ -224,7 +149,7 @@
 
     function init () {
       indicateFiredEmployees();
-      //getAllEquipesEstatistica($scope.equipes);
+      getAllEquipesEstatistica($scope.equipes);
     };
   }   
 

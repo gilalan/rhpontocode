@@ -34,12 +34,12 @@
             },
             allEmployees: function(employeeAPI, Auth){
                           
-              //return employeeAPI.getOnlyFuncionarios();
-              return [];
+              return employeeAPI.getOnlyFuncionarios();
+              //return [];
             },
             equipes: function(teamAPI) {
-              //return teamAPI.get(); //ARRAY VAZIO PARA AGILIZAR OS OUTROS TESTES
-              return [];
+              return teamAPI.get(); //ARRAY VAZIO PARA AGILIZAR OS OUTROS TESTES
+              //return [];
             }
             // ,
 

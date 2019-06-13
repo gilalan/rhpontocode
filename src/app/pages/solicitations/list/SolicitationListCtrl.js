@@ -366,7 +366,7 @@
             if (apontamentoArray.length == 1){
               console.log("Modificiar apontamento com único item");  
               apontamento = apontamentoArray[0];
-              coletarHistorico(apontamento);
+              coletarHistorico(apontamento, false);
               modificarApontamento(apontamento);
               modificarSolicitacao(solicitacao); 
               //console.log("Enviaria o seguinte apontamento: ", apontamento);
@@ -382,6 +382,7 @@
           } else {
             console.log("Criar Apontamento, pois veio vazio");
             apontamento = criarNovoApontamento(solicitacao);
+            coletarHistorico(apontamento, true);
             isNewApontamento = true;
             modificarSolicitacao(solicitacao);      
             saveSolicitacaoApontamento({solicitacao: solicitacao, apontamento: apontamento, isNew: isNewApontamento, uploaded: true});
@@ -407,29 +408,33 @@
       });
     };    
 
-    function coletarHistorico(apontamento){
+    function coletarHistorico(apontamento, isNew){
       console.log("coletar historico");
       var historicoArray = apontamento.historico;
       var itemId = 1;
       if (historicoArray.length > 0){
         
-        //historicoArray.sort(compareHist);
-        //itemId = historicoArray[historicoArray.length-1].itemId + 1;
         itemId = historicoArray.length + 1;
-
       }
 
       var justificativaStr = "";
       if ($scope.solicitacao.tipo === 0)
-        justificativaStr = "Ajuste de batimento aceito pelo Gestor";
+        justificativaStr = "Ajuste de batimento confirmado e aprovado pelo Gestor";
       else
-        justificativaStr = "Abono aceito pelo Gestor";
+        justificativaStr = "Abono confirmado e aprovado pelo Gestor";
+
+      var marcacoesArr = [];
+      var marcacoesFtdArr = [];
+      if (!isNew){
+        marcarcoesArr = angular.copy(apontamento.marcacoes);
+        marcacoesFtdArr = angular.copy(apontamento.marcacoesFtd);
+      }
 
       var nextItemHistorico = {
         id: itemId,
         infoTrabalho: angular.copy(apontamento.infoTrabalho),
-        marcacoes: angular.copy(solicitacao.anterior.marcacoes),
-        marcacoesFtd: angular.copy(apontamento.marcacoesFtd),
+        marcacoes: marcacoesArr,
+        marcacoesFtd: marcacoesFtdArr,
         justificativa: justificativaStr,
         gerencial: {
           dataAlteracao: new Date(),
@@ -592,7 +597,7 @@
           if (util.compareOnlyDates(current, new Date(currentApont.data)) === 0){
             console.log("Encontrou uma data que tem apontamento");
             findedDate = true;
-            coletarHistorico(currentApont);
+            coletarHistorico(currentApont, false);
             modificarApontamento(currentApont);
             apontamentosAntigos.push(currentApont);
             break;
@@ -601,6 +606,7 @@
 
         if (!findedDate){
           currentApont = criarNovoApontamento(solicitacao, current);
+          coletarHistorico(currentApont, true);
           apontamentosNovos.push(currentApont);
         }
 

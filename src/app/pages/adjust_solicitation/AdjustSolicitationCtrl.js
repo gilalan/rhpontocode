@@ -9,7 +9,7 @@
       .controller('AdjustSolicitationCtrl', AdjustSolicitationCtrl)
       .controller('DesconsiderarCtrl', DesconsiderarCtrl)
       .controller('IncluirBatimentoCtrl', IncluirBatimentoCtrl)
-      .controller('ConfirmationModalCtrl', ConfirmationModalCtrl);
+      .controller('ConfirmationModalEmpAdjCtrl', ConfirmationModalEmpAdjCtrl);
 
   /** @ngInject */
   function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, feriados) {
@@ -206,7 +206,7 @@
         animation: true,
         templateUrl: pageConfirmationPath,
         size: defaultSize,
-        controller: 'ConfirmationModalCtrl',
+        controller: 'ConfirmationModalEmpAdjCtrl',
         resolve: {
           solicitacaoAjuste: function () {
             return solicitacaoAjuste;
@@ -608,7 +608,7 @@
 
   };
 
-  function ConfirmationModalCtrl($uibModalInstance, $scope, $state, $filter, util, myhitpointAPI, solicitacaoAjuste){
+  function ConfirmationModalEmpAdjCtrl($uibModalInstance, $scope, $state, $filter, util, myhitpointAPI, solicitacaoAjuste){
     
     //console.log('solicitacaoAjuste: ', solicitacaoAjuste);
     $scope.solicitacao = solicitacaoAjuste;

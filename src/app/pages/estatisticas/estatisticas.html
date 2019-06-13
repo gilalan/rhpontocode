@@ -26,31 +26,8 @@
 	    </div>
 	</div> -->	
 
-	<div class="row">
-        <label for="fileToUpload" style="border: 1px solid black; border-radius:5px; padding:5px;">Selecione um arquivo PDF ou uma imagem para anexar. A limitação de tamanho por arquivo é de 2mb.</label><br />
-        <input id="fileToUpload" style="visibility:hidden;" type="file" ng-model-instant id="fileToUpload" multiple onchange="angular.element(this).scope().onUploadSelect(this)" />
-    </div>
-
-    <div class="row" ng-if="files.length > 0">
-	    <table class="table">
-		    <thead>
-		    	<tr>
-			      <th>Nome do arquivo</th>
-			      <th>Tamanho</th>
-			  	</tr>
-			</thead>
-			<tbody>
-		      	<tr ng-repeat="file in files track by $index">
-		        	<td>{{file.name}}</td>
-		        	<td>{{file.sizeFtd}}</td>
-		        </tr>
-		    </tbody>
-		</table>
-	</div>
-
 	<button type="button" class="btn btn-primary btn-with-icon" ng-click="makeUpload()">Upload</button>
 
-	<!--
 	<div class="row">
 		<table class="table">
 		    <thead>
@@ -80,7 +57,6 @@
 		    </tbody>
 		  </table>
 	</div>
-	-->
 
 	<!--<td>
 	{{emp.alocacao.gestor}}

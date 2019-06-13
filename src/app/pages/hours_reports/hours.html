@@ -1,143 +1,152 @@
-<div ba-panel ba-panel-title="Elaboração de Relatórios" ba-panel-class="with-scroll">
+<div ba-panel ba-panel-title="Informações do Banco de Horas" ba-panel-class="with-scroll">
     
     <div id="loaderDiv" loader>
 	  <p class="ajax-loader title-loader"> Carregando... </p>
 	  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
 	  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
 	</div>
-    <div class="row">
-		<div class="col-lg-8 col-md-8" ng-if="filtroPonto">
-			<h4 class="sub-header"><strong style="color: #334db7;">Escolha o Filtro</strong></h4>
-			
-			<div class="form-group" ng-disabled="!checkboxModel.equipe">
-		        <label for="inputEquipe" style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.equipe" ng-change="clickTeamCB()">Equipe:</label>
-		         <ui-select ng-model="selectedEquipe.item"
-		               class="btn-group bootstrap-select form-control"
-		               ng-disabled="false"
-		               ng-change="fillEmployees(selectedEquipe.item)"
-		               append-to-body="true"
-		               search-enabled="false"
-		               ng-required="false">
-		          <ui-select-match placeholder="Selecione uma Equipe">
-		            <span> {{$select.selected.nome}}</span>
-		          </ui-select-match>
-		          <ui-select-choices repeat="equipe in (equipes | filter: $select.search) track by equipe._id">
-		            <span ng-bind-html="equipe.nome"></span>
-		          </ui-select-choices>
-		        </ui-select>
-	        </div>
-	        
-	        <i> ou </i>
+	<div class="row" style="border: 1px dashed #948e8e; padding: 7px; border-radius: 10px;">    
+	    <div class="row">
+			<div class="col-lg-7 col-md-7" ng-if="filtroPonto">
+				<h4 class="sub-header"><strong style="color: #334db7;">Escolha o Filtro</strong></h4>
+				
+				<div class="form-group" ng-disabled="!checkboxModel.equipe">
+			        <label for="inputEquipe" style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.equipe" ng-change="clickTeamCB()">Equipe:</label>
+			         <ui-select ng-model="selectedEquipe.item"
+			               class="btn-group bootstrap-select form-control"
+			               ng-disabled="false"
+			               ng-change="fillEmployees(selectedEquipe.item)"
+			               append-to-body="true"
+			               search-enabled="false"
+			               ng-required="false">
+			          <ui-select-match placeholder="Selecione uma Equipe">
+			            <span> {{$select.selected.nome}}</span>
+			          </ui-select-match>
+			          <ui-select-choices repeat="equipe in (equipes | filter: $select.search) track by equipe._id">
+			            <span ng-bind-html="equipe.nome"></span>
+			          </ui-select-choices>
+			        </ui-select>
+		        </div>
+		        
+		        <i> ou </i>
 
-	        <label style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.funcionario" ng-change="clickEmployeeCB()">Funcionário:</label>
-		    <!-- <pre>Model: {{funcionario.selected | json}}</pre> -->
-		    
-	    	<input type="text"  ng-disabled="!checkboxModel.funcionario" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
-	    	
+		        <label style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.funcionario" ng-change="clickEmployeeCB()">Funcionário:</label>
+		    	<input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control" typeahead-on-select="changeFunc(funcionario.selected)" ng-blur="isEmptyFunc()">
+		    	
+			</div>
+
+			<div class="col-lg-5 col-md-5">
+	            <h4 class="sub-header"><strong style="color: #334db7;">Escolha o Período</strong></h4>
+	            <div class="row">
+	              <div class="col-lg-6 col-md-6">
+	                <label>Data Inicial</label>
+	                <p class="input-group" style="margin-bottom: 10px;">
+	                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+	                  <span class="input-group-btn">
+	                    <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+	                  </span>
+	                </p>
+
+	                <div ng-show="dataErrorMsg" class="alert bg-danger" role="alert">
+	                  <strong>Ops!</strong> {{dataErrorMsg}}
+	                </div>
+	              </div>
+	              <div class="col-lg-6 col-md-6">
+	                <label>Data Final</label>
+	                <p class="input-group" style="margin-bottom: 10px;">
+	                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic2.dt" ng-change="changeDate2(datepic2.dt)" ng-readonly="true" is-open="something2.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
+	                  <span class="input-group-btn">
+	                    <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+	                  </span>
+	                </p>
+
+	                <div ng-show="dataErrorMsg2" class="alert bg-danger" role="alert">
+	                  <strong>Ops!</strong> {{dataErrorMsg2}}
+	                </div>
+	              </div>
+	            </div>
+			</div>
+	    </div>
+	    <br/>
+	    <div class="row" style="padding-left: 20px;"> 
+	    	<label style="color: #33aab7; margin-top: 5px;" ng-if="funcionario.selected">Equipe: <strong style="color: #000;">{{funcionario.selected.equipe.nome}}</strong></label>
+	    	<h4 class="sub-header" ng-if="funcionario.selected" style="margin-top: 5px; font-size: 16px;"><strong style="color: #334db7;">Horário:</strong></h4>
+		      <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
+		        <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+		      </p>
+	    </div>
+	    <div class="row">
+		    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+		      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		      <strong>Ops!</strong> {{errorMsg}}
+		    </div>
 		</div>
+	</div>
+	<br/>
+	<div class="row" style="border: 1px dashed #948e8e; padding: 7px; border-radius: 10px;">
+	</div>
+	<br/>
+    <div class="row" style="border: 1px dashed #948e8e; padding: 7px; border-radius: 10px;">
+    
+	    <div class="row" ng-if="!periodoApontamento || periodoApontamento.length==0">
+	    	<div class="col-xs-12">
+		    	<div class="form-group">
+		    		<p><strong>A busca não retornou dados para este período de data.</strong></p>
+				</div>
+			</div>
+	    </div>
+	    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
+	    	<table class="table table-striped" st-table="periodoApontamento">
+			    <thead>
+				    <tr class="sortable">
+				      <!-- <th st-sort="itemApontamento.data.order">Data</th> ta bugando , aparecem outras imgs na tabela-->
+				      <th>Data</th>
+				      <th>Entradas e Saídas</th>
+				      <th>Saldo</th>
+				      <th>Observações</th>
+				      <!-- <th>Ações</th> -->
+				    </tr>
+			    </thead>
+			    <tbody>
+			      <tr ng-repeat="itemApontamento in periodoApontamento track by $index">
+			        <td style="line-height: 45px !important;">{{itemApontamento.data}}</td>
+			        <td style="line-height: 45px !important; color: #1166e8">{{itemApontamento.entradasSaidasTodas}}</td>
+			        <td style="line-height: 45px !important;" ng-class="{'bh-positivo': itemApontamento.saldo.horasPosit, 'bh-negativo': itemApontamento.saldo.horasNegat}">{{itemApontamento.saldo.horasFtd}}</td>
+			        <td style="line-height: 45px !important;">{{itemApontamento.observacao}}</td>
+			      </tr>
+			    </tbody>
+			    <tfoot>
+			    <tr>
+			      <td colspan="6" class="text-center">
+			        <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
+			      </td>
+			    </tr>
+			    </tfoot>
+			</table>		
+	    </div>
+	    <div class="separator"></div>
+	    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
 
-		<div class="col-lg-4 col-md-4">
-            <div class="row">
-              <div class="col-lg-6 col-md-6">
-                <label>Data Inicial</label>
-                <p class="input-group" style="margin-bottom: 10px;">
-                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic.dt" ng-change="changeDate(datepic.dt)" ng-readonly="true" is-open="something.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
-                  <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
-                  </span>
-                </p>
-
-                <div ng-show="dataErrorMsg" class="alert bg-danger" role="alert">
-                  <strong>Ops!</strong> {{dataErrorMsg}}
-                </div>
-              </div>
-              <div class="col-lg-6 col-md-6">
-                <label>Data Final <i>(opcional)</i></label>
-                <p class="input-group" style="margin-bottom: 10px;">
-                    <input type="text" class="form-control" uib-datepicker-popup="{{format}}" datepicker-options="options" ng-model="datepic2.dt" ng-change="changeDate2(datepic2.dt)" ng-readonly="true" is-open="something2.opened" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" show-button-bar="false" style="color: #c0c0c0;" />
-                  <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
-                  </span>
-                </p>
-
-                <div ng-show="dataErrorMsg2" class="alert bg-danger" role="alert">
-                  <strong>Ops!</strong> {{dataErrorMsg2}}
-                </div>
-              </div>
-            </div>
-		</div>
-    </div>
-    <div class="separator"></div>
-    <div class="row"> 
-    	
-    </div>
-    <div class="row">
-	    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
-	      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	      <strong>Ops!</strong> {{errorMsg}}
+	    	<div class="col-md-offset-3 col-md-6 col-md-offset-3"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
+		    	<h4 class="sub-header"><strong style="color: #334db7;">RESUMO GERAL</strong></h4>
+			    <h5 class="sub-header" style="color: #7c267d;">{{diasParaTrabalhar}} <strong>dias de trabalho</strong>, ou seja, {{minutosParaTrabalharFtd}} horas a trabalhar.</h5>
+			    <h5 class="sub-header" style="color: #253b80;">{{diasTrabalho}} dias trabalhados com o total de {{minutosTrabalhadosFtd}} horas de trabalho.</h5>
+			    <h5 class="sub-header" style="color: #008641;">Saldo Positivo: {{saldoFinalPositivoFtd}}</h5>
+			    <h5 class="sub-header" style="color: #c3000d;">Saldo Negativo: -{{saldoFinalNegativoFtd}}</h5>
+			    <h5 class="sub-header" style="color: #464646;">Saldo Final do Mês: {{saldoFinalMesFtd}}</h5>
+		    </div>
+	    </div>
+	    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
+	    	<div class="col-md-offset-3 col-md-6 col-md-offset-3"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
+		    	<div class="form-group">
+						<div style="margin-bottom: 25px;"></div>
+						<button id="idBtnGerarPDF" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="gerarPDF()">
+							<i class="ion-report"></i> Gerar PDF
+						</button>
+						<button id="idBtnCorrigirPontoEscalaRevezamento" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin" ng-click="corrigirEscalaRevezamento()">
+							<i class="ion-report"></i> Corrigir Pontos da Escala 12x36h
+						</button>
+					</div>
+		    </div>
 	    </div>
 	</div>
-    <div class="separator"></div>
-    
-    <div class="row" ng-if="!periodoApontamento || periodoApontamento.length==0">
-    	<div class="col-xs-12">
-	    	<div class="form-group">
-	    		<p><strong>A busca não retornou dados para este período de data.</strong></p>
-			</div>
-		</div>
-    </div>
-    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
-    	<table class="table table-striped" st-table="periodoApontamento">
-		    <thead>
-			    <tr class="sortable">
-			      <!-- <th st-sort="itemApontamento.data.order">Data</th> ta bugando , aparecem outras imgs na tabela-->
-			      <th>Data</th>
-			      <th>Entradas e Saídas</th>
-			      <th>Saldo</th>
-			      <th>Observações</th>
-			      <!-- <th>Ações</th> -->
-			    </tr>
-		    </thead>
-		    <tbody>
-		      <tr ng-repeat="itemApontamento in periodoApontamento track by $index">
-		        <td style="line-height: 45px !important;">{{itemApontamento.data}}</td>
-		        <td style="line-height: 45px !important; color: #1166e8">{{itemApontamento.entradasSaidasTodas}}</td>
-		        <td style="line-height: 45px !important;" ng-class="{'bh-positivo': itemApontamento.saldo.horasPosit, 'bh-negativo': itemApontamento.saldo.horasNegat}">{{itemApontamento.saldo.horasFtd}}</td>
-		        <td style="line-height: 45px !important;">{{itemApontamento.observacao}}</td>
-		      </tr>
-		    </tbody>
-		    <tfoot>
-		    <tr>
-		      <td colspan="6" class="text-center">
-		        <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
-		      </td>
-		    </tr>
-		    </tfoot>
-		</table>		
-    </div>
-    <div class="separator"></div>
-    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
-
-    	<div class="col-md-offset-3 col-md-6 col-md-offset-3"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
-	    	<h4 class="sub-header"><strong style="color: #334db7;">RESUMO GERAL</strong></h4>
-		    <h5 class="sub-header" style="color: #7c267d;">{{diasParaTrabalhar}} <strong>dias de trabalho</strong>, ou seja, {{minutosParaTrabalharFtd}} horas a trabalhar.</h5>
-		    <h5 class="sub-header" style="color: #253b80;">{{diasTrabalho}} dias trabalhados com o total de {{minutosTrabalhadosFtd}} horas de trabalho.</h5>
-		    <h5 class="sub-header" style="color: #008641;">Saldo Positivo: {{saldoFinalPositivoFtd}}</h5>
-		    <h5 class="sub-header" style="color: #c3000d;">Saldo Negativo: -{{saldoFinalNegativoFtd}}</h5>
-		    <h5 class="sub-header" style="color: #464646;">Saldo Final do Mês: {{saldoFinalMesFtd}}</h5>
-	    </div>
-    </div>
-    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
-    	<div class="col-md-offset-3 col-md-6 col-md-offset-3"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
-	    	<div class="form-group">
-					<div style="margin-bottom: 25px;"></div>
-					<button id="idBtnGerarPDF" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="gerarPDF()">
-						<i class="ion-report"></i> Gerar PDF
-					</button>
-					<button id="idBtnCorrigirPontoEscalaRevezamento" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin" ng-click="corrigirEscalaRevezamento()">
-						<i class="ion-report"></i> Corrigir Pontos da Escala 12x36h
-					</button>
-				</div>
-	    </div>
-    </div>
-</div>

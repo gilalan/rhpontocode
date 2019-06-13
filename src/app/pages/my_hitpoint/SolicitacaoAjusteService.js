@@ -72,6 +72,10 @@ angular.module('BlurAdmin.pages.myhitpoint').service("myhitpointAPI", function($
 		return $http.post(_urlBaseHitpoint+'/getbycomponents', objPassed);
 	};
 
+	svc.getAllByEmployee = function(objDataFuncionario){
+		return $http.post(_urlBaseHitpoint+'/getallbyemployee', objDataFuncionario);	
+	};
+
 	svc.uploadImage = function(obj){
 		return $http.post(_urlBaseHitpoint+'/uploadImage', obj);
 	};

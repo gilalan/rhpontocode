@@ -24,7 +24,7 @@
      };
 
     console.log('$scope.equipe', $scope.equipe);
-    //console.log('$scope.funcionarios ', $scope.funcionarios);
+    console.log('$scope.funcionarios ', $scope.funcionarios.length);
 
     $scope.associar = function (usuario) {
 
