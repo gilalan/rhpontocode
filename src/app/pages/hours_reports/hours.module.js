@@ -32,6 +32,9 @@
               
               return feriadoAPI.get();
             },
+            currentDate: function(appointmentAPI) {
+              return appointmentAPI.getCurrentDate();
+            },
             allEmployees: function(employeeAPI, Auth){
 
               var user = Auth.getCurrentUser();

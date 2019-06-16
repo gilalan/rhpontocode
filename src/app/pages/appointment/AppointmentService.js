@@ -32,6 +32,11 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 		return $http.get(_urlBaseApontamentos+'/'+id);
 	};
 
+	svc.getAllByFunc = function(funcionario){
+
+		return $http.post(_urlBaseApontamentos+'/allbyemployee', funcionario);
+	};
+
 	svc.getApontamentosByDate = function(date) {
 
 		return $http.post(_urlBaseApontamentos+'/date', date);

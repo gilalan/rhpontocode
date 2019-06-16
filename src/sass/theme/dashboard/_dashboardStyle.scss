@@ -111,3 +111,48 @@
  .vertAlignMid td {
     vertical-align: middle;
  }
+
+ .bancoHoras-square-pos {
+    background: #34af23;
+    color: #fff; 
+    width: 250px;
+    height: 100px;
+    font-size: 60px;
+    font-family: cursive;
+    padding: 38px 0px 0px 38px;   
+ }
+
+ .bancoHoras-square-neg {
+    background: #c3000d;
+    color: #fff;  
+    width: 250px;
+    height: 100px;
+    font-size: 60px;
+    font-family: cursive;
+    padding: 38px 0px 0px 20px;  
+ }
+
+ .bancoHoras-square-nto {
+    background: #f47a20;
+    color: #fff;  
+    width: 250px;
+    height: 100px;
+    font-size: 60px;
+    font-family: cursive;
+    padding: 38px 0px 0px 38px;  
+ }
+
+  .bancoHoras-square-trb {
+    background: #0054a6;
+    color: #fff;  
+    width: 250px;
+    height: 100px;
+    font-size: 60px;
+    font-family: cursive;
+    padding: 38px 0px 0px 38px;  
+ }
+ .bh-label{
+    display: inherit; 
+    width: 250px; 
+    text-align: center;
+ }
