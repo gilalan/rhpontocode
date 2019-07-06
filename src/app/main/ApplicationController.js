@@ -7,10 +7,11 @@
   'use strict';
 
   angular.module('BlurAdmin')
-      .controller('ApplicationController', AppCtrl);
+      .controller('ApplicationController', AppCtrl)
+      .controller('ModalTimeoutCtrl', ModalTimeoutCtrl);
 
   /** @ngInject */
-  function AppCtrl($scope, $window, $state, Auth) {
+  function AppCtrl($scope, $window, $state, $uibModal, Idle, Keepalive, Auth) {
 
     //console.log("#################Passa no APPLICATION controller!");
 	$scope.logged = false;
@@ -18,6 +19,15 @@
 	$scope.resetForgotPass = false;
 	$scope.recoveryPass = false;
 	//TENHO QUE CORRIGIR ESSA QUESTÃO DE QUEM É PERMITIDO PARA USAR O QUẼ
+
+	var pagePath = 'app/main/modals/timeoutModal.html';
+    var defaultSize = 'md';
+
+    $window.onunload = function()
+	{
+	    _logout();
+	    //return false;
+	};
 
 	$scope.$on('login', function (_, token, firstAccess, baterPonto) {
 		
@@ -54,11 +64,7 @@
 
 	$scope.$on('logout', function (_) {
 	  	
-		Auth.logout();
-		//$rootScope.currentUser = null;
-		//console.log("LOGOUT FROM APPCtrl");
-		$scope.logged = false;
-		$window.location.href = "/index.html";
+		_logout();
 	});
 
 	//Emite evento para atualizar as variáveis
@@ -94,6 +100,48 @@
 		var userC = user ? user : Auth.getCurrentUser();
 		redirectState(userC);
 	});
+
+	$scope.$on('IdleStart', function() {
+       
+    	console.log('idle start');
+  	});
+
+  	$scope.$on('IdleEnd', function() {
+	    
+	    console.log('idle end');
+  	});
+
+  	$scope.$on('IdleTimeout', function() {
+    	
+  		var modalInstance = $uibModal.open({
+	        animation: true,
+	        templateUrl: pagePath,
+	        size: defaultSize,
+	        controller: 'ModalTimeoutCtrl'
+      	});
+
+  		modalInstance.result.then(function (){
+        
+        	console.log('entrou na 1a function de ModalTimeoutCtrl');
+        	_logout();
+       
+      	}, function () {
+
+	        console.log('entrou na 2a function de ModalTimeoutCtrl');
+	        _logout();
+  		});
+    	
+    	console.log('idle timeout!');
+  	});
+  	
+  	function _logout(){
+
+  		Auth.logout();
+		//$rootScope.currentUser = null;
+		//console.log("LOGOUT FROM APPCtrl");
+		$scope.logged = false;
+		$window.location.href = "/index.html";
+  	};
 
 	function redirectState(user){
 
@@ -146,6 +194,17 @@
 	};
 
 	init();
-  }
+  };
+
+  function ModalTimeoutCtrl($uibModalInstance, $scope){
+    
+    //console.log('test: ', objInfo);
+    //$scope.info = objInfo;
+    
+    $scope.okay = function() {
+      
+      $uibModalInstance.close();
+    };     
+  };
 
 })();

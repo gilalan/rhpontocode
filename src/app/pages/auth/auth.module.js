@@ -8,6 +8,7 @@
   angular.module('BlurAdmin.auth', [
     'ui.router',
     'ngStorage',
+    'ngIdle',
     'angular-jwt'
   ]).
 

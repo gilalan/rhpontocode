@@ -221,18 +221,12 @@
     };
 
     function isValidSearch(){
-      //console.log('lastSearch: ', lastSearch);
+
       if (lastSearch){
-        
-        //console.log('$scope.funcionario: ', $scope.funcionarioOficial._id);
-        //console.log('last.funcionario: ', lastSearch.func);
-        //console.log('date: ', $scope.currentDate.getTime());
-        //console.log('last date: ', lastSearch.date);
         
         if ($scope.funcionarioOficial._id != lastSearch.func || 
           $scope.currentDate.getTime() != lastSearch.date) {
 
-          //console.log('mudou funcionário ou data');
           return false;
 
         } else {
@@ -507,7 +501,7 @@
           itemApontamento.rawDate = new Date($scope.currentDate);
           itemApontamento.data = $filter('date')(itemApontamento.rawDate, 'abvFullDate2');
 
-          objEntradasSaidas = getEntradasSaidas($scope.apontamento);
+          objEntradasSaidas = getEntradasSaidasCompletas($scope.apontamento);
           itemApontamento.entradaSaidaFinal = objEntradasSaidas.esFinal;
           $scope.arrayES = objEntradasSaidas.arrayEntSai;
         }
@@ -531,7 +525,7 @@
     ** A variável arrayEntSai possui 1 objeto para cada batida, esse objeto informa por extenso 
     ** qual a entrada/saída junto com o valor da hora:minuto referente à batida. Ex.: descricao: 1a Entrada, horario: 08:05
     */
-    function getEntradasSaidas(apontamentoF){
+    function getEntradasSaidasCompletas(apontamentoF){
 
       var esFinal = "";
       
@@ -587,7 +581,7 @@
           itemDescricaoHorario.strHorario = apontamentoF.marcacoes[i].strHorario;  
         } else {
           totalMinutes = (apontamentoF.marcacoes[i].hora * 60) + apontamentoF.marcacoes[i].minuto;
-          objHoraMinuto = converteParaHoraMinutoSeparados(totalMinutes);
+          objHoraMinuto = util.converteParaHoraMinutoSeparados(totalMinutes);
           itemDescricaoHorario.strHorario = objHoraMinuto.hora + ":" + objHoraMinuto.minuto;
         }
 
@@ -601,20 +595,6 @@
         esFinal: esFinal
       };
       return objetoEntradasSaidas;
-    };
-
-    function converteParaHoraMinutoSeparados(totalMinutes) {
-      
-      var hours = Math.floor(totalMinutes/60);
-      var minutes = totalMinutes % 60;
-
-      var hoursStr = "";
-      var minutesStr = "";
-
-      hoursStr = (hours >= 0 && hours <= 9) ? "0"+hours : ""+hours;           
-      minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
-
-      return {hora: hoursStr, minuto: minutesStr};
     };
 
     //Traz todos os employees/equipes para tela de Administrador

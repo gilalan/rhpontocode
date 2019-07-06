@@ -346,8 +346,6 @@
 
     function getApontamentosByDateRangeAndEquipe(beginDate, intervaloDias, componentes) {
 
-      //////console.log('beginDate? ', beginDate);
-      //////console.log('intervaloDias? ', intervaloDias);
       var dateAux = new Date(beginDate);
 
       var objDateEquipe = {
@@ -377,7 +375,7 @@
           itemApontamento.rawDate = new Date($scope.currentDate);
           itemApontamento.data = $filter('date')(itemApontamento.rawDate, 'abvFullDate2');
 
-          objEntradasSaidas = getEntradasSaidas($scope.apontamento);
+          objEntradasSaidas = getEntradasSaidasCompletas($scope.apontamento);
           itemApontamento.entradaSaidaFinal = objEntradasSaidas.esFinal;
           $scope.arrayES = objEntradasSaidas.arrayEntSai;
         } 
@@ -395,7 +393,7 @@
     ** A variável arrayEntSai possui 1 objeto para cada batida, esse objeto informa por extenso 
     ** qual a entrada/saída junto com o valor da hora:minuto referente à batida. Ex.: descricao: 1a Entrada, horario: 08:05
     */
-    function getEntradasSaidas(apontamentoF){
+    function getEntradasSaidasCompletas(apontamentoF){
 
       var esFinal = "";
       
@@ -451,7 +449,7 @@
           itemDescricaoHorario.strHorario = apontamentoF.marcacoes[i].strHorario;  
         } else {
           totalMinutes = (apontamentoF.marcacoes[i].hora * 60) + apontamentoF.marcacoes[i].minuto;
-          objHoraMinuto = converteParaHoraMinutoSeparados(totalMinutes);
+          objHoraMinuto = util.converteParaHoraMinutoSeparados(totalMinutes);
           itemDescricaoHorario.strHorario = objHoraMinuto.hora + ":" + objHoraMinuto.minuto;
         }
 
@@ -465,21 +463,7 @@
         esFinal: esFinal
       };
       return objetoEntradasSaidas;
-    };
-
-    function converteParaHoraMinutoSeparados(totalMinutes) {
-      
-      var hours = Math.floor(totalMinutes/60);
-      var minutes = totalMinutes % 60;
-
-      var hoursStr = "";
-      var minutesStr = "";
-
-      hoursStr = (hours >= 0 && hours <= 9) ? "0"+hours : ""+hours;           
-      minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
-
-      return {hora: hoursStr, minuto: minutesStr};
-    };
+    };   
 
     function initGetSolicitacaoOuApontamento(){
 

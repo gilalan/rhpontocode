@@ -28,9 +28,11 @@
     'BlurAdmin.pages.users',
     'BlurAdmin.pages.estatisticas',
     'BlurAdmin.pages.reports',
+    'BlurAdmin.pages.points',
     'BlurAdmin.pages.adjustsolicitation',
     'BlurAdmin.pages.admadjsol',
     'BlurAdmin.pages.eventosabono',
+    'BlurAdmin.pages.motivosajuste',
     'BlurAdmin.pages.abono',
     'BlurAdmin.pages.hours',
   ])

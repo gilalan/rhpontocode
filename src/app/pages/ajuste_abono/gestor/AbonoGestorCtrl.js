@@ -683,7 +683,7 @@
           itemDescricaoHorario.strHorario = apontamentoF.marcacoes[i].strHorario;  
         } else {
           totalMinutes = (apontamentoF.marcacoes[i].hora * 60) + apontamentoF.marcacoes[i].minuto;
-          objHoraMinuto = converteParaHoraMinutoSeparados(totalMinutes);
+          objHoraMinuto = util.converteParaHoraMinutoSeparados(totalMinutes);
           itemDescricaoHorario.strHorario = objHoraMinuto.hora + ":" + objHoraMinuto.minuto;
         }
 
@@ -698,21 +698,7 @@
       };
       return objetoEntradasSaidas;
     };
-
-    function converteParaHoraMinutoSeparados(totalMinutes) {
-      
-      var hours = Math.floor(totalMinutes/60);
-      var minutes = totalMinutes % 60;
-
-      var hoursStr = "";
-      var minutesStr = "";
-
-      hoursStr = (hours >= 0 && hours <= 9) ? "0"+hours : ""+hours;           
-      minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
-
-      return {hora: hoursStr, minuto: minutesStr};
-    };
-
+    
     function initGetSolicitacaoOuApontamento(){
 
       getSolicitacaoOuApontamento();

@@ -22,7 +22,7 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
         sinalFlag = '';
       }
 
-      var saldoDiarioFormatado = svc.converteParaHoraMinutoSeparados(Math.abs(saldoDia));
+      var saldoDiarioFormatado = util.converteParaHoraMinutoSeparados(Math.abs(saldoDia));
 
       var objBHDiario = {
         trabalha: apontamento.infoTrabalho.trabalha,
@@ -34,29 +34,7 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
       };
 
       return objBHDiario;
-    };
-
-    /*
-    *
-    * Pega o total de minutos e retorna um objeto com o formato de hh:mm
-    *      
-    */
-    svc.converteParaHoraMinutoSeparados = function(totalMinutes) {
-      
-      var hours = Math.floor(totalMinutes/60);
-      var minutes = totalMinutes % 60;
-
-      //hours = util.formatNumber(hours);
-      //minutes = util.formatNumber(minutes);
-
-      var hoursStr = "";
-      var minutesStr = "";
-
-      hoursStr = (hours >= 0 && hours <= 9) ? "0"+hours : ""+hours;           
-      minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
-
-      return {hora: hoursStr, minuto: minutesStr};
-    };
+    };    
 
     /*
     *
@@ -86,65 +64,65 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
 
     svc.setInfoAusencia = function(apontamento, currentDate, funcionarioParam, feriados, equipe){
 
-      	var saldoFlag = false;
-      	var sinalFlag = '-';
-      	var saldoDiarioFormatado = {};
+    	var saldoFlag = false;
+    	var sinalFlag = '-';
+    	var saldoDiarioFormatado = {};
 
-      	//pode não ter expediente iniciado, ser feriado, estar atrasado, de folga ou faltante mesmo
-      	var expedienteObj;	
+    	//pode não ter expediente iniciado, ser feriado, estar atrasado, de folga ou faltante mesmo
+    	var expedienteObj;	
       
    	 	expedienteObj = svc.updateAbsenceStatus(funcionarioParam, currentDate, feriados, equipe);
     	//console.log("setInfoAusencia, expedienteObj: ", expedienteObj);
 
-      	apontamento.ocorrencia.statusCodeString = expedienteObj.code;
-      	apontamento.ocorrencia.minutosDevidos = expedienteObj.minutosDia;
-      	apontamento.ocorrencia.statusString = expedienteObj.string;
-      	apontamento.ocorrencia.statusImgUrl = expedienteObj.imgUrl;
+    	apontamento.ocorrencia.statusCodeString = expedienteObj.code;
+    	apontamento.ocorrencia.minutosDevidos = expedienteObj.minutosDia;
+    	apontamento.ocorrencia.statusString = expedienteObj.string;
+    	apontamento.ocorrencia.statusImgUrl = expedienteObj.imgUrl;
 
-      	if (expedienteObj.code == "FER"){
+    	if (expedienteObj.code == "FER"){
 
-        	saldoFlag = true;
-        	sinalFlag = '';
-        	saldoDiarioFormatado = svc.converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
-        	apontamento.observacao = expedienteObj.string;
-        	apontamento.saldo.horasPosit = saldoFlag;
-        	apontamento.saldo.horasNegat = !saldoFlag;
+      	saldoFlag = true;
+      	sinalFlag = '';
+      	saldoDiarioFormatado = util.converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
+      	apontamento.observacao = expedienteObj.string;
+      	apontamento.saldo.horasPosit = saldoFlag;
+      	apontamento.saldo.horasNegat = !saldoFlag;
 
-      	} else if (expedienteObj.code == "FRD"){
-        	saldoFlag = true;
-	        sinalFlag = '';
-	        saldoDiarioFormatado = svc.converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
-	        apontamento.observacao = expedienteObj.string;
-	        apontamento.saldo.horasPosit = saldoFlag;
-	        apontamento.saldo.horasNegat = !saldoFlag;
+    	} else if (expedienteObj.code == "FRD"){
+      	saldoFlag = true;
+        sinalFlag = '';
+        saldoDiarioFormatado = util.converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
+        apontamento.observacao = expedienteObj.string;
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = !saldoFlag;
 
-	      } else if (expedienteObj.code == "ENI") {
+      } else if (expedienteObj.code == "ENI") {
 
-	        saldoFlag = true;
-	        sinalFlag = '';
-	        saldoDiarioFormatado = {hora: '-', minuto: '-'};
-	        apontamento.observacao = expedienteObj.string;
-	        apontamento.saldo.horasPosit = saldoFlag;
-	        apontamento.saldo.horasNegat = saldoFlag;
+        saldoFlag = true;
+        sinalFlag = '';
+        saldoDiarioFormatado = {hora: '-', minuto: '-'};
+        apontamento.observacao = expedienteObj.string;
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = saldoFlag;
 
-	      } else if (expedienteObj.code == "DSR") {
+      } else if (expedienteObj.code == "DSR") {
 
-	        saldoFlag = true;
-	        sinalFlag = '';
-	        saldoDiarioFormatado = {hora: '-', minuto: '-'};
-	        apontamento.observacao = expedienteObj.string;
-	        apontamento.saldo.horasPosit = saldoFlag;
-	        apontamento.saldo.horasNegat = saldoFlag;
+        saldoFlag = true;
+        sinalFlag = '';
+        saldoDiarioFormatado = {hora: '-', minuto: '-'};
+        apontamento.observacao = expedienteObj.string;
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = saldoFlag;
 
-	      } else if (expedienteObj.code == "AUS") {
-        
-	        saldoDiarioFormatado = svc.converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
-	        apontamento.observacao = "Falta";
-	        apontamento.saldo.horasPosit = saldoFlag;
-	        apontamento.saldo.horasNegat = !saldoFlag;
-      	}
+      } else if (expedienteObj.code == "AUS") {
+      
+        saldoDiarioFormatado = util.converteParaHoraMinutoSeparados(Math.abs(expedienteObj.saldoDia));
+        apontamento.observacao = "Falta";
+        apontamento.saldo.horasPosit = saldoFlag;
+        apontamento.saldo.horasNegat = !saldoFlag;
+    	}
 
-      	apontamento.saldo.horasFtd = sinalFlag + saldoDiarioFormatado.hora + ':' + saldoDiarioFormatado.minuto;
+    	apontamento.saldo.horasFtd = sinalFlag + saldoDiarioFormatado.hora + ':' + saldoDiarioFormatado.minuto;
     };
 
 
@@ -188,9 +166,6 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
             return checkJornadaRevezamento(funcionarioAlocacao, dataDesejada);
         }
       }
-
-      // //console.log("#UpdateABsenceStatus: Data desejada ", dataDesejada);
-      // //console.log("#UpdateABsenceStatus: Data desejada ", dataDesejada);
     };
 
     function hasFolgaSolicitada() {
@@ -207,9 +182,7 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
       var dataAtual = dataDesejada;
 
       var jornadaArray = funcionarioAlocacao.turno.jornada.array; //para ambas as escalas
-      //////////console.log('Dentro de Jornada Semanal: funcionarioAlocacao', funcionarioAlocacao);
       var objDay = getDayInArrayJornadaSemanal(dataAtual.getDay(), jornadaArray);
-      //////////console.log('objDay', objDay);
       
       if (!objDay || !objDay.minutosTrabalho || objDay.minutosTrabalho <= 0) { //Caso 4 - DSR
         
@@ -220,32 +193,25 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
         var codDate = util.compareOnlyDates(dataAtual, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          ////////////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
           var ENT1 = objDay.horarios.ent1;
-          ////////////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
-          ////////////console.log("Entrada 1: ", ENT1);
 
           if (totalMinutesAtual < ENT1) {
           
-            ////////////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            ////////////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", minutosDia: objDay.minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
           }
 
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          ////////////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", minutosDia: objDay.minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: objDay.minutosTrabalho};
 
         } else { //Navegando em dias futuros
 
-          ////////////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
       } 
@@ -262,7 +228,6 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
       var dataComparacao = dataDesejada;
       var dataHoje = new Date();
 
-      //////////console.log('dataComparacao: ', dataComparacao);
       var trabalha = isWorkingDay(dataComparacao, 
         new Date(funcionarioAlocacao.dataInicioEfetivo));
       
@@ -272,28 +237,22 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
         var codDate = util.compareOnlyDates(dataComparacao, dataHoje);
 
         if (codDate === 0) { //é o próprio dia de hoje
-          ////////////////console.log("Olhando para o dia de hoje! Pode estar Ausente ou ENI");
           //HORA ATUAL é menor que ENT1 ? caso sim, sua jornada ainda não começou
           var totalMinutesAtual = converteParaMinutosTotais(dataHoje.getHours(), 
           dataHoje.getMinutes());
-          ////////////////console.log("Total de minutos da hora atual: ", totalMinutesAtual);
 
           if (totalMinutesAtual < ENT1) {
           
-            ////////////////console.log("Ainda não iniciou o expediente");
             return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
 
           } else {
-            ////////////////console.log("Já passou o tempo da batida dele , então está ausente, ainda não bateu!");
             return {code: "AUS", minutosDia: minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
           }
         } else if (codDate === -1) {//Navegando em dia passado 
 
-          ////////////////console.log("Navegando em dias anteriores e sem valor de apontamento, ou seja, faltante");
           return {code: "AUS", minutosDia: minutosTrabalho, string: "Ausente", imgUrl: "assets/img/app/todo/mypoint_wrong16.png", saldoDia: funcionarioAlocacao.turno.jornada.minutosTrabalho};
         } else { //Navegando em dias futuros
 
-          ////////////////console.log("Navegando em dias futuros, expediente não iniciado!");
           return {code: "ENI", string: "Expediente Não Iniciado", imgUrl: "assets/img/app/todo/bullet-blue.png"};
         }
 
@@ -341,9 +300,6 @@ angular.module('BlurAdmin').service("utilBancoHoras", function(util){
     function isFeriado(dataDesejada, feriados, equipe) {
       
       var data = dataDesejada;
-
-      //////////console.log('Data Desejada: ', data);
-      //////////console.log('Setor.local: ', $scope.equipe);
 
       var date = data.getDate();//1 a 31
       var month = data.getMonth();//0 a 11

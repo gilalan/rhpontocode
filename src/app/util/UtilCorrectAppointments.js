@@ -46,6 +46,19 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
   	});
 	};
 
+  svc.changeBaseDate = function(newDate, apontamentos){
+
+    reportsAPI.setNewBaseDate({newDate: newDate, apontamentos: apontamentos}).then(function successCallback(response){
+          
+      console.log('message returned: ', response.data);
+
+    }, function errorCallback(response){
+      
+      console.log('message returned: ', response.data);
+    });
+
+  };
+
   svc.putFeriasAppoints = function(apontamentos){
     
     var arrayApps = [];

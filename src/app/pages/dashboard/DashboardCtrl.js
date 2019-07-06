@@ -120,7 +120,7 @@
         if (button.value == 7 || button.value == 15 || button.value == 30) {
           
           //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
-          var dataInicial = new Date(addOrSubtractDays(dataHoje, -button.value));                    
+          var dataInicial = new Date(util.addOrSubtractDays(dataHoje, -button.value));                    
           getApontamentosByDateRangeAndEquipe(dataInicial, {dias: button.value+1, barInterval: button.value+1}, $scope.equipe.componentes, false, true, false);//atualiza só o barData
         }
         else {
@@ -149,7 +149,7 @@
         //console.log('entrou no IF de buttons');
         if (button.value == 7 || button.value == 15 || button.value == 30) {
           //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
-          var dataInicial = new Date(addOrSubtractDays(dataHoje, -button.value));                    
+          var dataInicial = new Date(util.addOrSubtractDays(dataHoje, -button.value));                    
           getApontamentosByDateRangeAndEquipe(dataInicial, {dias: button.value+1, lineInterval: button.value+1}, $scope.equipe.componentes, false, false, true);//atualiza só o lineData
         }
       }
@@ -262,7 +262,7 @@
         //pegando o semanal (passa 8 mas traz 7, não inclui a última data)
         //Se quiser o do dia, basta passar 1.
         //a data inicial é a de hoje menos o número de dias que deseja 'voltar' no gráfico
-        var dataInicial = new Date(addOrSubtractDays(dataHoje, -(intervaloDias.dias-1)));
+        var dataInicial = new Date(util.addOrSubtractDays(dataHoje, -(intervaloDias.dias-1)));
         getApontamentosByDateRangeAndEquipe(dataInicial, intervaloDias, $scope.equipe.componentes, true, true, true);
       }
     };
@@ -1083,15 +1083,6 @@
         return 1; 
     };
 
-    function addOrSubtractDays(date, value) {
-          
-      date = angular.copy(date);
-      date.setHours(0,0,0,0);
-
-      return new Date(date.getTime() + (value*864e5));
-    }
-
-
     function getApontamentosFromSpecificDate(apontamentosSemanais, dataAtual){
 
       var apontamentosEquipeByDate = [];
@@ -1157,7 +1148,7 @@
 
         //console.log('objeto: ', itemChartData);
         chartData.push(itemChartData);
-        dataAtualLaco = addOrSubtractDays(dataAtualLaco, 1);
+        dataAtualLaco = util.addOrSubtractDays(dataAtualLaco, 1);
         itemChartData = {};
       }
       return chartData;
@@ -1259,8 +1250,8 @@
     function init(allTeams){
     
       $scope.currentWeek = {//fica variando a medida que o usuario navega
-        begin: addOrSubtractDays($scope.currentDate, -7),
-        end: addOrSubtractDays($scope.currentDate, -1)
+        begin: util.addOrSubtractDays($scope.currentDate, -7),
+        end: util.addOrSubtractDays($scope.currentDate, -1)
       };
       $scope.currentWeekFtd = {
         begin: $filter('date')($scope.currentWeek.begin, 'abvFullDate1'),

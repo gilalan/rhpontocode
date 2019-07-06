@@ -1,0 +1,10 @@
+<div class="row">
+		    	<p ng-if="dataReferenciaEscalaRevezamento">Data de Referência para cálculo do Espelho de Ponto no mês solicitado: {{dataReferenciaEscalaRevezamentoFtd}}</p>
+		    	<div class="form-group">
+			        <label for="inputDataInicial">Mudar data de referência: </label>
+			        <input type="text" class="form-control" id="inputDataInicial" placeholder="ex.: 01/03/2019" ng-model="periodo.dataReferencia" ui-date>
+			        <button id="idBtnSearch" type="button" class="btn-xs btn-primary btn-with-icon" ng-click="alterarDataReferencia()">
+						Alterar
+					</button>
+		      	</div>
+		    </div>

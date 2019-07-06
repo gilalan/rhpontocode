@@ -19,21 +19,28 @@ angular.module('BlurAdmin', [
   'BlurAdmin.theme',
   'BlurAdmin.pages'
 ])
-.config(function($stateProvider){
-  ////console.log('StateProvider?!', $stateProvider);
-   // $stateProvider
-   //   .state('MainLogin', {
-   //     url: '/',
-   //     templateUrl: 'app/pages/login/login.html'      
-   //   });
-})
-.run(['$rootScope', '$location', '$window', '$state', 'Auth', function($rootScope, $location, $window, $state, Auth){
+// .config(function($stateProvider){
+//   ////console.log('StateProvider?!', $stateProvider);
+//    // $stateProvider
+//    //   .state('MainLogin', {
+//    //     url: '/',
+//    //     templateUrl: 'app/pages/login/login.html'      
+//    //   });
+// })
+.config(['KeepaliveProvider', 'IdleProvider', function(KeepaliveProvider, IdleProvider) {
+  IdleProvider.idle(30); //começa a contabilizar depois de 30 seg inativo
+  IdleProvider.timeout(10 * 60); //Se ficar 10 minutos no contador, expira 
+  KeepaliveProvider.interval(20); //recomeça a contagem depois de 20 segundos
+}])
+.run(['$rootScope', '$location', '$window', '$state', 'Auth', 'Idle', function($rootScope, $location, $window, $state, Auth, Idle){
   
 
   $rootScope.$on("$stateChangeStart", function(e, toState, toParams, fromState, fromParams){
     //current é de "onde veio", só aparece esse objeto se NÃO for o primeiro acesso
     
     console.log('#toState ', toState);
+    Idle.watch();
+   // console.log('#Idle? ', Idle);   
     
     //Precisa estar logado e com algum nível de autorização
     if (toState && toState.accessLevel) { 
@@ -107,4 +114,7 @@ angular.module('BlurAdmin', [
       }
     }    
   });
+
+  
+
 }]);

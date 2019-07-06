@@ -1,72 +1,26 @@
-<div ba-panel ba-panel-title="Elaboração de Relatórios" ba-panel-class="with-scroll">
+<div ba-panel ba-panel-title="Tratamento do Espelho de Ponto" ba-panel-class="with-scroll">
     
     <div id="loaderDiv" loader>
 	  <p class="ajax-loader title-loader"> Carregando... </p>
 	  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
 	  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
 	</div>
-	<div class="row" ng-if="isAdmin">
-		<i><strong>Tela em construção para Administradores...</strong></i>
-	</div>
     <!-- <div class="row" ng-if="!isAdmin"> -->
     <div class="row">
-    	<div class="col-lg-4 col-md-4">
-    		<h4 class="sub-header"><strong style="color: #334db7;">Escolha o tipo de relatório:</strong></h4>
-    		<div class="list-group">
-			  <button type="button" class="list-group-item list-group-item-action active" ng-click="showEspelhoPonto()">Espelho de Ponto</button>
-			  <!-- <button type="button" class="list-group-item list-group-item-action " ng-click="showBancoHoras()">Banco de Horas</button> -->
-			</div>
+		<div class="col-lg-8 col-md-8" >
+	        <label style="color: #33aab7;">Funcionário:</label>
+	    	<input style="margin-bottom: 10px;" type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
+	    	<p><strong>Equipe: </strong> {{funcionario.selected.equipe}}</p>
+		    <p><strong>Nome e Cargo: </strong> {{funcionario.selected.name}} - {{funcionario.selected.cargo}}</p>
+        	<p class="muted"><strong>Matrícula: </strong>{{funcionario.selected.matricula}} </p>
+        	<p class="muted"><strong>PIS: </strong>{{funcionario.selected.PIS}} </p>
 		</div>
-		<div class="col-lg-8 col-md-8" ng-if="filtroPonto">
-			<h4 class="sub-header"><strong style="color: #334db7;">Escolha o Filtro</strong></h4>
-			
-			<div class="form-group" ng-disabled="!checkboxModel.equipe">
-		        <label for="inputEquipe" style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.equipe" ng-change="clickTeamCB()">Equipe:</label>
-		         <ui-select ng-model="selectedEquipe.item"
-		               class="btn-group bootstrap-select form-control"
-		               ng-disabled="false"
-		               ng-change="fillEmployees(selectedEquipe.item)"
-		               append-to-body="true"
-		               search-enabled="false"
-		               ng-required="false">
-		          <ui-select-match placeholder="Selecione uma Equipe">
-		            <span> {{$select.selected.nome}}</span>
-		          </ui-select-match>
-		          <ui-select-choices repeat="equipe in (equipes | filter: $select.search) track by equipe._id">
-		            <span ng-bind-html="equipe.nome"></span>
-		          </ui-select-choices>
-		        </ui-select>
-	        </div>
-	        
-	        <i> ou </i>
-
-	        <label style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.funcionario" ng-change="clickEmployeeCB()">Funcionário:</label>
-		    <!-- <pre>Model: {{funcionario.selected | json}}</pre> -->
-		    
-	    	<input type="text"  ng-disabled="!checkboxModel.funcionario" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
-
-	    	
-    		<button id="idBtnSearch" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin"  ng-click="buildAllReports()">
-				<i class="ion-search"></i> Gerar para Todos
-			</button>
-		</div>
-    </div>
-    <div class="separator"></div>
-    <div class="row">
-    	<div class="col-md-6">
-			<h4 class="sub-header"><strong style="color: #334db7;">Informações do Funcionário</strong></h4>
-		    <p>Equipe: {{funcionario.selected.equipe}}</p>
-		    <p>Nome e Cargo: {{funcionario.selected.name}} - {{funcionario.selected.cargo}}</p>
-        	<p class="muted">Matrícula: {{funcionario.selected.matricula}} </p>
-        	<p class="muted">PIS: {{funcionario.selected.PIS}} </p>
-		    
-    	</div>
-    	<div class="col-md-6">
-    		<h4 class="sub-header"><strong style="color: #334db7;">Horário Cadastrado no Sistema</strong></h4>
-    		<p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
+		<div class="col-lg-4 col-md-4">
+			<h4 class="sub-header"><strong style="color: #334db7;">Horário Cadastrado no Sistema</strong></h4>
+		    <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
 		        <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
 		    </p>
-    	</div>	
+		</div>
     </div>
     <div class="separator"></div>
     <div class="row"> 
@@ -138,7 +92,7 @@
 		</div>
     </div>
     <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
-    	<table class="table table-striped" st-table="periodoApontamento">
+    	<table class="table table-bordered" st-table="periodoApontamento">
 		    <thead style="color: #fff; background: #162733; font-weight: bold; font-size: medium;">
 			    <tr class="sortable">
 			      <!-- <th st-sort="itemApontamento.data.order">Data</th> ta bugando , aparecem outras imgs na tabela-->
@@ -146,15 +100,22 @@
 			      <th>Entradas e Saídas</th>
 			      <th>Saldo</th>
 			      <th>Observações</th>
-			      <!-- <th>Ações</th> -->
+			      <th>Ações</th>
 			    </tr>
 		    </thead>
 		    <tbody>
-		      <tr ng-repeat="itemApontamento in periodoApontamento track by $index">
+		      <tr ng-repeat="itemApontamento in periodoApontamento track by $index" ng-class="{'mdl-batida-inclusa': itemApontamento.edited}">
 		        <td style="line-height: 45px !important;">{{itemApontamento.data}}</td>
 		        <td style="line-height: 45px !important; color: #1166e8">{{itemApontamento.entradasSaidasTodas}}</td>
 		        <td style="line-height: 45px !important;" ng-class="{'bh-positivo': itemApontamento.saldo.horasPosit, 'bh-negativo': itemApontamento.saldo.horasNegat}">{{itemApontamento.saldo.horasFtd}}</td>
 		        <td style="line-height: 45px !important;">{{itemApontamento.observacao}}</td>
+		        <td> 
+		            <div class="btn-group" role="group" aria-label="acoes">
+		              <button title="Tratar" type="button" class="btn btn-md btn-default" ng-click="edit(itemApontamento, $index)" ng-disabled="itemApontamento.blocked">
+		                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>  
+		              </button>
+		            </div>
+	          	</td>
 		      </tr>
 		    </tbody>
 		    <tfoot>
@@ -169,26 +130,21 @@
     <div class="separator"></div>
     <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
 
-    	<div class="col-md-offset-3 col-md-6 col-md-offset-3"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
-	    	<h4 class="sub-header"><strong style="color: #334db7;">RESUMO GERAL</strong></h4>
+    	<div class="col-md-6"> 
+	    	<h4 class="sub-header"><strong style="color: #334db7;">RESUMO MENSAL</strong></h4>
 		    <h5 class="sub-header" style="color: #7c267d;">{{diasParaTrabalhar}} <strong>dias de trabalho</strong>, ou seja, {{minutosParaTrabalharFtd}} horas a trabalhar.</h5>
 		    <h5 class="sub-header" style="color: #253b80;">{{diasTrabalho}} dias trabalhados com o total de {{minutosTrabalhadosFtd}} horas de trabalho.</h5>
 		    <h5 class="sub-header" style="color: #008641;">Saldo Positivo: {{saldoFinalPositivoFtd}}</h5>
 		    <h5 class="sub-header" style="color: #c3000d;">Saldo Negativo: -{{saldoFinalNegativoFtd}}</h5>
 		    <h5 class="sub-header" style="color: #464646;">Saldo Final do Mês: {{saldoFinalMesFtd}}</h5>
 	    </div>
-    </div>
-    <div class="row" ng-if="periodoApontamento && periodoApontamento.length>0">
-    	<div class="col-md-offset-3 col-md-6 col-md-offset-3"> <!--Alterei para ficar em uma tela só, mas depois podemos dividir -->
-	    	<div class="form-group">
-					<div style="margin-bottom: 25px;"></div>
-					<button id="idBtnGerarPDF" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="gerarPDF()">
-						<i class="ion-report"></i> Gerar PDF
-					</button>
-					<button id="idBtnCorrigirPontoEscalaRevezamento" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin" ng-click="corrigirEscalaRevezamento()">
-						<i class="ion-report"></i> Corrigir Pontos da Escala 12x36h
-					</button>
-				</div>
+
+	    <div class="col-md-6">
+	    	<div class="col-md-offset-6 col-md-6">
+	    		<button id="salvar" type="button" class="btn btn-primary btn-with-icon" ng-click="salvarMudancas()">
+					<i class="ion-checkmark"></i> Salvar alterações
+				</button>
+	    	</div>
 	    </div>
-    </div>
+    </div>    
 </div>

@@ -70,5 +70,9 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 
 		return $http.post(_urlBaseApontamentos+'/allRepAppoints', {});
 	};
+
+	svc.createAndUpdateMany = function(arrayApontamentos){
+		return $http.post(_urlBaseApontamentos+'/createupdatemany', arrayApontamentos);
+	};
 	
 });

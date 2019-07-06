@@ -1,0 +1,51 @@
+<div id="loaderDiv" ng-show="dataProcess">
+  <p class="ajax-loader title-loader"> Processando dados... </p>
+  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+</div>
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">Confirmar Registro de Ponto</h4>
+    <div class="separator2" style="margin-bottom: 0px;"></div>
+  </div>
+
+  <div style="padding: 0px 15px 0px 15px;">
+    <p style="color: #e89c11; font-weight: bold;">Atenção: o último batimento armazenado foi efetuado a menos de 5 minutos atrás...</p>
+    <div class="row" style="margin: 0px;">
+      <div class="row" style="border: 2px solid #676db9; margin: 0px; border-radius: 5px; padding: 5px 0px 0px 0px;">
+        <div class="col-xs-12">
+          <h4 class="sub-header" style="color: #5a5a5a; margin-bottom: 4px; font-size: 14px;">Batimentos atualmente armazenados no servidor: </h4>
+          <div class="btn-toolbar-example">
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos do Servidor" ng-if="info.appointOnServer.marcacoes.length>0">
+              <div class="btn-group" style="margin-bottom: 5px;" role="group" aria-label="First group" ng-repeat="marcacao in info.appointOnServer.marcacoes track by $index">
+                  <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{marcacao.strHorario}}</label>
+              </div>
+            </div>
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimentos do Servidor" ng-if="info.appointOnServer.marcacoes.length<=0">
+              <label style="margin-left: 5px; font-size: 12px;"> Não havia batidas </label>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12" style="margin-top: 0px;">
+          <h4 class="sub-header" style="color: #5a5a5a; margin-bottom: 4px; font-size: 14px;">Batimento proposto: </h4>
+          <div class="btn-toolbar-example">
+            <div class="btn-toolbar" role="toolbar" aria-label="Batimento Proposto" ng-if="info.ultBatimentoLocal">
+                <label style="border: 1px solid; border-radius: 10px; padding: 5px; line-height: 20px;">{{info.ultBatimentoLocal.strHorario}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12" style="margin-top: 5px;">
+          <h4 class="sub-header" style="color: #000; margin-bottom: 5px; font-size: 14px;">Confirma o batimento proposto ?</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" ng-click="confirma()">Sim, confirmo</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Cancelar</button>
+  </div>
+</div>

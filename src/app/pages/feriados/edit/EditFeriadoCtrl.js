@@ -90,7 +90,7 @@
           while(current <= endDate) {
 
             feriado.array.push(current);
-            current = addOrSubtractDays(current, 1); //passa 1 dia
+            current = util.addOrSubtractDays(current, 1); //passa 1 dia
           } 
         }
       } else {
@@ -163,14 +163,6 @@
         return 0;
       else
         return 1; 
-    };
-
-    function addOrSubtractDays(date, value) {
-          
-      date = angular.copy(date);
-      date.setHours(0,0,0,0);
-
-      return new Date(date.getTime() + (value*864e5));
     };
 
     function fillFtdStringDate(dateObj, isFixed){

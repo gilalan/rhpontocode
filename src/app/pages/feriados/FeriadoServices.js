@@ -11,6 +11,17 @@ angular.module('BlurAdmin.pages.feriados').service("feriadoAPI", function($http,
 	svc.get = function() {
 
 		return $http.get(_urlBaseFeriados);
+		//PRECISO MUDAR ESSES SERVICES PARA QUANDO CHAMAR TRATAR OS ERROS PROVENIENTES 
+		//DO RESPONSE (ERRO DO MONGODB É FREQUENTE)
+		
+		// return $http.get(_urlBaseFeriados).then( function(response) {
+		//     //$scope.data = response.data;
+		//     console.log("Response do Service: ", response.data.length);
+		//     return response.data;
+		// }).catch ( function(response) {
+		//     console.log(response.status);
+		//     throw response;
+		// });;
 	};
 
 	svc.create = function (feriado) {

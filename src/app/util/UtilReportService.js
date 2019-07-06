@@ -3,7 +3,7 @@
  * Serviço utilitário para criação de relatórios em PDF usando o pdfMake
  *
 */
-angular.module('BlurAdmin').service("utilReports", function($filter){
+angular.module('BlurAdmin').service("utilReports", function($filter, util){
 
 	var svc = this;
 	var diff = 0;
@@ -429,19 +429,5 @@ angular.module('BlurAdmin').service("utilReports", function($filter){
 
 	    return signature;
 	};
-
-	function converteParaHoraMinutoSeparados(totalMinutes) {
-      
-      var hours = Math.floor(totalMinutes/60);
-      var minutes = totalMinutes % 60;
-
-      var hoursStr = "";
-      var minutesStr = "";
-
-      hoursStr = (hours >= 0 && hours <= 9) ? "0"+hours : ""+hours;           
-      minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
-
-      return {hora: hoursStr, minuto: minutesStr};
-    };
 
 });

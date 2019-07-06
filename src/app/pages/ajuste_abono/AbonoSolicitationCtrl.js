@@ -75,7 +75,7 @@
       $scope.something2.opened = true;
     }
     $scope.changeDate = function(date) {
-      console.log('já passou no changeDate no carregamento?');
+      //console.log('já passou no changeDate no carregamento?');
       $scope.dataErrorMsg = null;
       // if (util.compareOnlyDates(date, dataMaxBusca) == 1){
       //   $scope.datepic.dt = new Date($scope.currentDate);
@@ -83,7 +83,7 @@
       //   $timeout(hideDataError, 8000);
       //   return $scope.dataErrorMsg;
       // }
-      console.log('passou por aqui!!!');
+      //console.log('passou por aqui!!!');
       $scope.currentDate = new Date(date);
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
       //reset fields
@@ -93,12 +93,12 @@
       $scope.apontamento = null;
       $scope.ajuste = {};
       $scope.solicitacaoObtida = {};
-      console.log("infoHorario: ", $scope.infoHorario);
+      //console.log("infoHorario: ", $scope.infoHorario);
       //init(); Get Solicitacao de Abono existente...
     };
 
     $scope.changeDate2 = function(date) {
-      console.log('já passou no changeDate no carregamento?');
+      //console.log('já passou no changeDate no carregamento?');
       $scope.dataErrorMsg = null;
       // if (util.compareOnlyDates(date, dataMaxBusca) == 1){
       //   $scope.datepic.dt = new Date($scope.currentDate);
@@ -106,7 +106,7 @@
       //   $timeout(hideDataError, 8000);
       //   return $scope.dataErrorMsg;
       // }
-      console.log('passou por aqui!!!');
+      //console.log('passou por aqui!!!');
       $scope.currentDate2 = new Date(date);
       $scope.currentDateFtd2 = $filter('date')($scope.currentDate, 'abvFullDate');
       //reset fields
@@ -116,7 +116,7 @@
       $scope.apontamento = null;
       $scope.ajuste = {};
       $scope.solicitacaoObtida = {};
-      console.log("infoHorario: ", $scope.infoHorario);
+      //console.log("infoHorario: ", $scope.infoHorario);
       //init(); Get Solicitacao de Abono existente...
     };
 
@@ -124,19 +124,19 @@
       
       //FAZER UM FIND para saber se já tem uma solicitação com essa data e abrir uma dialog perguntando se deseja assim mesmo
 
-      console.log("vai criar uma solicitação de abono.");
+      //console.log("vai criar uma solicitação de abono.");
       //console.log($scope.infoHorario);
       var dataUnica = null;
       var horarioUnico = null;
       var dataRange = [];
       //Aqui, é o caso de um abono apenas para um dia
       if ($scope.currentDate2 == null){ 
-        console.log("Sem data final");
+        //console.log("Sem data final");
         //Turno inteiro
         dataUnica = util.getOnlyDate($scope.currentDate);
         if ($scope.hora.inicio == null && $scope.hora.fim == null){
           
-          console.log("Sem data fina, iniciall", dataUnica);
+          //console.log("Sem data fina, iniciall", dataUnica);
           var dataNaFolga = false;
           if ($scope.infoHorario.folgas){
             for (var i = 0; i < $scope.infoHorario.folgas.length; i++) {
@@ -150,13 +150,13 @@
           if (dataNaFolga)
             dataUnica = null;
 
-          console.log('#horario? ', $scope.hora);
+          //console.log('#horario? ', $scope.hora);
 
         } else if ($scope.hora.inicio != null && $scope.hora.inicio != "" 
           && $scope.hora.fim != null && $scope.hora.fim != "") {
 
-          console.log('com horarios');
-          console.log('#horario? ', $scope.hora);
+          //console.log('com horarios');
+          //console.log('#horario? ', $scope.hora);
 
           if ($scope.hora.inicio.length < 4){
             $scope.timeErrorMsg = "O horário deve conter dois dígitos para hora e dois dígitos para os minutos.";
@@ -231,17 +231,17 @@
       };
 
       if (dataUnica != null){
-        console.log("vai ser abono de data unica",dataUnica);
+        //console.log("vai ser abono de data unica",dataUnica);
         solicitacaoAjuste.data = dataUnica;
         if (horarioUnico != null){
-          console.log("vai ser abono de data unica + horario de turno");
+          //console.log("vai ser abono de data unica + horario de turno");
           solicitacaoAjuste.horarioEnviado = horarioUnico;
           //Tenho que ter as marcacoes se for apenas por horário e seguir o método igual ao de ajuste...
           //solicitacaoAjuste.proposto.marcacoes = _criarMarcacoesManuaisAbono(horarioUnico);
         }
 
       } else {
-        console.log("vai ser abono de data range", dataUnica);
+        //console.log("vai ser abono de data range", dataUnica);
         solicitacaoAjuste.data = util.getOnlyDate($scope.currentDate);
         solicitacaoAjuste.dataFinal = util.getOnlyDate($scope.currentDate2);
         solicitacaoAjuste.arrayAusAjt = dataRange;
@@ -267,7 +267,7 @@
     $scope.onUploadSelect = function(element){
       //console.log("clicou para upload". file);
       $scope.$apply(function(scope) {
-        console.log('files:', element.files);
+        //console.log('files:', element.files);
         var countErrors = 0;
         for (var i = 0; i < element.files.length; i++) {
           if(validateFile(element.files[i])){
@@ -297,14 +297,14 @@
     };
 
     $scope.makeUpload = function() {
-      console.log("$scope.files: ", $scope.files);
-      console.log("respirces files: ", resourcesFiles);
+      //console.log("$scope.files: ", $scope.files);
+      //console.log("respirces files: ", resourcesFiles);
       var obj = {
         array: resourcesFiles//$scope.files
       };
       myhitpointAPI.uploadImage(obj).then(function successCallback(response){
 
-        console.log("Response.data: ", response.data);
+        //console.log("Response.data: ", response.data);
 
       }, function errorCallback(response){
 
@@ -492,8 +492,6 @@
 
     function getApontamentosByDateRangeAndEquipe(beginDate, intervaloDias, componentes) {
 
-      ////console.log('beginDate? ', beginDate);
-      ////console.log('intervaloDias? ', intervaloDias);
       var dateAux = new Date(beginDate);
 
       var objDateEquipe = {
@@ -509,15 +507,13 @@
         equipe: componentes
       };
 
-      console.log("Objeto Date Equipe Enviado: ", objDateEquipe);
-
       appointmentAPI.getApontamentosByDateRangeAndEquipe(objDateEquipe).then(function successCallback(response){
 
         $scope.apontamento = null;
         var apontamentosResponse = response.data;
         var itemApontamento = {};
         var objEntradasSaidas = {};
-        console.log("!@# Apontamentos Recebidos: ", apontamentosResponse);
+        //console.log("!@# Apontamentos Recebidos: ", apontamentosResponse);
         if (apontamentosResponse.length > 0){
           $scope.apontamento = response.data[0];          
           itemApontamento.rawDate = new Date($scope.currentDate);
@@ -531,7 +527,7 @@
       }, function errorCallback(response){
         
         $errorMsg = response.data.message;
-        ////console.log("Erro ao obter apontamentos por um range de data e equipe");
+        //console.log("Erro ao obter apontamentos por um range de data e equipe");
       });
     };
 
@@ -568,7 +564,7 @@
       var objHoraMinuto = {};
 
       arrayESOriginal = angular.copy(apontamentoF.marcacoes);
-      console.log('ArrayES do apontamentoF');
+      //console.log('ArrayES do apontamentoF');
 
       for (var i=0; i<apontamentoF.marcacoes.length; i++){
 
@@ -597,7 +593,7 @@
           itemDescricaoHorario.strHorario = apontamentoF.marcacoes[i].strHorario;  
         } else {
           totalMinutes = (apontamentoF.marcacoes[i].hora * 60) + apontamentoF.marcacoes[i].minuto;
-          objHoraMinuto = converteParaHoraMinutoSeparados(totalMinutes);
+          objHoraMinuto = util.converteParaHoraMinutoSeparados(totalMinutes);
           itemDescricaoHorario.strHorario = objHoraMinuto.hora + ":" + objHoraMinuto.minuto;
         }
 
@@ -611,20 +607,6 @@
         esFinal: esFinal
       };
       return objetoEntradasSaidas;
-    };
-
-    function converteParaHoraMinutoSeparados(totalMinutes) {
-      
-      var hours = Math.floor(totalMinutes/60);
-      var minutes = totalMinutes % 60;
-
-      var hoursStr = "";
-      var minutesStr = "";
-
-      hoursStr = (hours >= 0 && hours <= 9) ? "0"+hours : ""+hours;           
-      minutesStr = (minutes >= 0 && minutes <= 9) ? "0"+minutes : ""+minutes;
-
-      return {hora: hoursStr, minuto: minutesStr};
     };
 
     function initGetSolicitacaoOuApontamento(){
