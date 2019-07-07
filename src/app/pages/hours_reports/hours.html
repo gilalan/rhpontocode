@@ -133,11 +133,7 @@
 		    		{{saldoFinalMesFtd}}
 				</div>
 		    </div>
-		    <div class="col-lg-12 col-md-12">
-	    		<button id="idBtnGerarPDF" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="gerarPDFPeriodo()">
-					<i class="ion-report"></i> Gerar PDF
-				</button>
-	    	</div>
+		    
 		</div>
 	</div>
 	<br/>
@@ -171,10 +167,12 @@
 		    		{{allSaldoFinalMesFtd}}
 				</div>
 		    </div>
-		    <div class="col-lg-12 col-md-12">
-	    		<button id="idBtnGerarPDF" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="gerarPDFAll()">
-					<i class="ion-report"></i> Gerar PDF
-				</button>
-	    	</div>
 	    </div>
+	</div>
+	<div class="row" style="margin-left: 0px; margin-right: 0px;">
+		<div class="col-lg-12 col-md-12">
+    		<button id="idBtnGerarPDF" type="button" class="btn btn-primary btn-with-icon" ng-disabled="periodoForm.$invalid" ng-click="gerarPDFPeriodo()">
+				<i class="ion-report"></i> Gerar PDF
+			</button>
+    	</div>
 	</div>

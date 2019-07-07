@@ -262,7 +262,26 @@
     };
 
     $scope.gerarPDFPeriodo = function(){
-
+      var docDefinition = {
+        content: [
+          'Relatório de Banco de Horas',
+          //'SISTEMA ALTERNATIVO DE BATIDA DE PONTO: RHPONTO',
+          //'CNPJ: '+$scope.cnpj,
+          //'LOCAL DO CONTRATO: '+'UNIVASF',
+          'NOME: ' + $scope.funcionarioOficial.nome + ' ' + $scope.funcionarioOficial.sobrenome, 
+          'PIS: ' + $scope.funcionarioOficial.PIS,
+          'Período Pesquisado: ' + $scope.currentDateFtd + " até " + $scope.currentDateFtd2,
+          'Saldo no Período pesquisado: ',
+          'Horas a Trabalhar: ' + $scope.minutosParaTrabalharFtd,
+          'Horas Trabalhadas: ' + $scope.minutosTrabalhadosFtd, 
+          'Saldo de horas no período pesquisado: ' + $scope.saldoFinalMesFtd,
+          'Período TOTAL: ' + $filter('date')($scope.allDataInicial, 'dd/MM/yyyy') + " até " + $filter('date')($scope.allDataFinal, 'dd/MM/yyyy'),
+          'Horas a Trabalhar: ' + $scope.allMinutosParaTrabalharFtd,
+          'Horas Trabalhadas: ' + $scope.allMinutosTrabalhadosFtd, 
+          'Saldo de horas no período TOTAL: ' + $scope.allSaldoFinalMesFtd
+        ]
+      };
+      pdfMake.createPdf(docDefinition).download('relatorio_bancohoras.pdf');
     };     
 
     /*     
@@ -444,7 +463,7 @@
             saldoFinalNegativo -= -itemApontamento.ocorrencia.minutosDevidos;
             minParaTrabalhar += itemApontamento.ocorrencia.minutosDevidos;
             //colocar o saldo negativo faltante do dia para exibição no Relatório de Espelho de Ponto
-            var devido = utilBancoHoras.converteParaHoraMinutoSeparados(itemApontamento.ocorrencia.minutosDevidos);
+            var devido = util.converteParaHoraMinutoSeparados(itemApontamento.ocorrencia.minutosDevidos);
             itemApontamento.saldo = {
               horasNegat: true,
               horasFtd: '-' + devido.hora + ':' + devido.minuto
@@ -461,14 +480,14 @@
         i++;
       }
 
-      var minTrabalhadosTot = utilBancoHoras.converteParaHoraMinutoSeparados(minTrabalhados);
-      var minParaTrabalharTot = utilBancoHoras.converteParaHoraMinutoSeparados(minParaTrabalhar);
+      var minTrabalhadosTot = util.converteParaHoraMinutoSeparados(minTrabalhados);
+      var minParaTrabalharTot = util.converteParaHoraMinutoSeparados(minParaTrabalhar);
       var minutosTrabalhadosFtd = minTrabalhadosTot.hora + ':' + minTrabalhadosTot.minuto;
       var minutosParaTrabalharFtd = minParaTrabalharTot.hora + ':' + minParaTrabalharTot.minuto;
-      var sfPos = utilBancoHoras.converteParaHoraMinutoSeparados(saldoFinalPositivo);
-      var sfNeg = utilBancoHoras.converteParaHoraMinutoSeparados(saldoFinalNegativo);
+      var sfPos = util.converteParaHoraMinutoSeparados(saldoFinalPositivo);
+      var sfNeg = util.converteParaHoraMinutoSeparados(saldoFinalNegativo);
       var diff = saldoFinalPositivo - saldoFinalNegativo;
-      var sfTot = utilBancoHoras.converteParaHoraMinutoSeparados(Math.abs(diff));
+      var sfTot = util.converteParaHoraMinutoSeparados(Math.abs(diff));
       var saldoFinalPositivoFtd = sfPos.hora + ':' + sfPos.minuto;
       var saldoFinalNegativoFtd = sfNeg.hora + ':' + sfNeg.minuto;
       
