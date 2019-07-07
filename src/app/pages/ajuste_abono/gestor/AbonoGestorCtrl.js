@@ -944,6 +944,8 @@
       }
       statusObj.id = 4;
       statusObj.descricao = "Abonado";
+      statusObj.abonoStr = $scope.solicitacao.eventoAbono.nome;
+      apontamento.correcao = {abono: $scope.solicitacao.eventoAbono};
 
       apontamento.status = statusObj;
     };    
@@ -965,6 +967,7 @@
       }
       statusObj.id = 4;
       statusObj.descricao = "Abonado";
+      statusObj.abonoStr = $scope.solicitacao.eventoAbono.nome;      
         
       if (!infoTrabalho){
         $scope.errorMsg = "Código 1020: Não foi possível obter a informação de horário do funcionário.";
@@ -977,6 +980,7 @@
         PIS: solicitacao.funcionario.PIS,
         status: statusObj,
         justificativa: "",
+        correcao: {abono: $scope.solicitacao.eventoAbono},
         infoTrabalho: infoTrabalho,
         marcacoes: [],
         marcacoesFtd: [],

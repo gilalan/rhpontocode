@@ -1,0 +1,115 @@
+<div ba-panel ba-panel-title="Bater Ponto" ba-panel-class="with-scroll">
+
+    <div class="row">
+	   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+	      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <strong>Feito!</strong> {{successMsg}}
+	    </div>
+
+	    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+	      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <strong>Ops!</strong> {{errorMsg}}
+	    </div>
+	</div>
+	<div class="row">
+		<table class="table">
+		    <thead>
+			    <tr>
+			      <th>#</th>
+			      <th>Funcionário</th>
+			      <th>Status</th>
+			      <th>Data Inicial</th>
+			      <th>Data Final</th>
+			      <th>Evento de Abono</th>
+			      <th>Ação</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+		      <tr ng-repeat="saj in solicitacaoAjustes track by $index" ng-class="{'funcionario-demitido': saj.destak}">
+		        	<td>{{$index}}</td>
+		        	<td>{{saj.funcionario.nome}} {{saj.funcionario.sobrenome}}</td>
+			        <td>{{saj.status}}</td>
+			        <td>{{saj.data | date : 'dd/MM/yyyy'}}</td>
+			        <td>{{saj.dataFinal | date : 'dd/MM/yyyy'}}</td>
+			        <td>{{saj.eventoAbono.nome}}</td>
+			        <td><button type="button" class="btn btn-md btn-primary" ng-click="make($index)">Make!</button></td>
+		      </tr>
+		    </tbody>
+		  </table>
+	</div>
+
+	<!--<td>
+	{{emp.alocacao.gestor}}
+	</td>-->
+	<!-- <td>
+	<div class="col-lg-6 col-md-6">
+		<h4 class="sub-header"><strong style="color: #334db7;">Horário</strong></h4>
+		<p ng-repeat="itemHorario in emp.infoHorario track by $index" style="font-weight: normal;">
+				<strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+		</p>
+		</div>
+	</td> -->
+
+	<!-- <div class="row">
+		<table class="table">
+		    <thead>
+			    <tr>
+			      <th>NSR</th>
+			      <th>PIS</th>
+			      <th>DATA</th>
+			      <th>HORA</th>
+			      <th>Ações</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+		      <tr ng-repeat="appoint in rawApps track by $index">
+		        <td>{{appoint.nsr}}</td>
+		        <td>{{appoint.pis}}</td>
+		        <td>{{appoint.data}}</td>
+		        <td>{{appoint.horario}}</td>
+		        <td>
+		          <ul class='list-group'>
+		            <p>Hey</p>
+		            <p>Olá</p>            
+		          </ul>
+		        </td>
+		      </tr>
+		    </tbody>
+		  </table>
+	</div>
+ -->
+    <!-- <div class="row">    
+    	
+		<h3> Estatisticas virão aqui </h3>
+		<table class="table" st-table="equipes">
+		    <thead>
+			    <tr class="sortable ">
+			      <th class="table-id" st-sort="id" st-sort-default="true">#</th>
+			      <th st-sort="setor">Setor</th>
+			      <th st-sort="equipe">Equipe</th>
+			      <th st-sort="gestor">Gestor</th>
+			      <th st-sort="componentes">Componentes</th>
+			      <th>Ações</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+		      <tr ng-repeat="equipe in equipes track by $index">
+		        <td>{{$index}}</td>
+		        <td>{{equipe.setor.nome}}</td>
+		        <td>{{equipe.nome}}</td>
+		        <td>{{equipe.gestor.nome}}</td>
+		        <td>
+		          <ul class='list-group'>
+		            <p ng-if='equipe.componentes.length===0'>Não há funcionários associados</p>
+		            <p ng-if='equipe.componentes.length>0'> {{equipe.componentes.length}} </p> -->
+		            <!-- <li ng-repeat="funcionario in equipe.componentes" class='list-group-item'>{{funcionario.nome + funcionario.sobrenome}}
+		            </li> -->
+		          <!-- </ul>
+		        </td>
+		      </tr>
+		    </tbody>
+		  </table>
+
+	</div> -->
+
+</div>

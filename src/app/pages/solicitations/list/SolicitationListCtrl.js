@@ -473,6 +473,9 @@
         }
         statusObj.id = 4;
         statusObj.descricao = "Abonado";
+        statusObj.abonoStr = $scope.solicitacao.eventoAbono.nome;
+
+        apontamento.correcao = {abono: $scope.solicitacao.eventoAbono};
       } 
 
       apontamento.status = statusObj;
@@ -502,6 +505,7 @@
         }
         statusObj.id = 4;
         statusObj.descricao = "Abonado";
+        statusObj.abonoStr = $scope.solicitacao.eventoAbono.nome;
       } 
         
       if (!infoTrabalho){
@@ -515,6 +519,7 @@
         PIS: solicitacao.funcionario.PIS,
         status: statusObj,
         justificativa: "",
+        correcao: {abono: $scope.solicitacao.eventoAbono},
         infoTrabalho: infoTrabalho,
         marcacoes: solicitacao.proposto.marcacoes,
         marcacoesFtd: resultArray.arrayESProposto,

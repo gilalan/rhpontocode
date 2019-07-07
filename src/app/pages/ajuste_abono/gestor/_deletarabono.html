@@ -1,0 +1,109 @@
+<div id="loaderDiv" loader>
+  <p class="ajax-loader title-loader"> Carregando... </p>
+  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+</div>
+
+<form name="ajusteForm">
+  <div class="row">
+   <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Feito!</strong> {{successMsg}}
+    </div>
+
+    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Ops!</strong> {{errorMsg}}
+    </div>
+  </div>  
+
+  <div class="row" style="margin: 0px;">
+    <div class="col-lg-6 col-md-6" style="padding:2px;">
+
+      <label style="color: #33aab7;">Funcionário:</label>
+      <input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control" typeahead-on-select="changeFunc(funcionario.selected)" ng-blur="isEmptyFunc()">
+      <label style="color: #33aab7; margin-top: 5px;" ng-if="funcionario.selected">Equipe: <strong style="color: #000;">{{funcionario.selected.equipe.nome}}</strong></label>
+
+    </div>
+    <div class="col-lg-6 col-md-6" style="padding-top:10px; padding-left: 20px;">
+      
+      <h4 class="sub-header"><strong style="color: #334db7;">Horário do Funcionário</strong></h4>
+      <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
+        <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+      </p>
+
+    </div>
+  </div> 
+
+  <div class="separator"></div>
+
+  <div ng-if="yearMonthMap && !apontamentosArray">
+    <div class="row" ng-if="funcionarioOficial.PIS" ng-repeat="(key1, value1) in yearMonthMap" style="margin-left:0px; margin-right: 0px;">
+          
+      <h2 style="color: #f7a309; text-decoration: underline">{{key1}}</h2>
+      <div class="row" ng-repeat="(key2, value2) in value1" style="margin-left:0px; margin-right: 0px;">
+        <h3 style="color: #757474; font-size: 20px;">{{meses[key2].nome}}</h3>
+        <table class="table table-sm" style="width: 60%;">
+          <thead style="color: #fff; background: #162733; font-weight: bold; font-size: medium;">
+            <tr>
+              <th style="text-align: left;">Data</th>
+              <th>Evento de Abono</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="apoint in value2 track by $index" ng-class="{'batida-desc': apoint.removed}">
+              <td style="text-align: left; line-height: 45px !important;">{{apoint.fullDate | date : 'dd/MM/yyyy'}}</td>
+              <td style="line-height: 45px !important; color: #1166e8">{{apoint.abonoStr}}</td>            
+              <td style="text-align: right;"> 
+                  <div class="btn-group" role="group" aria-label="acoes">
+                    <button title="Excluir" type="button" class="btn btn-sm btn-danger" ng-show="!apoint.removed" ng-click="delete($index, key1, key2)">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  
+                    </button>
+                    <button title="Readicionar" type="button" class="btn btn-sm btn-primary" ng-show="apoint.removed" ng-click="readd($index, key1, key2)">
+                      <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>  
+                    </button>
+                  </div>
+                </td>
+            </tr>
+          </tbody>
+        </table>  
+      </div>    
+
+    </div>
+  </div>
+  <div ng-if="!yearMonthMap && apontamentosArray">
+    <table class="table table-sm" style="width: 60%;">
+      <thead style="color: #fff; background: #162733; font-weight: bold; font-size: medium;">
+        <tr>
+          <th style="text-align: left;">Data</th>
+          <th>Evento de Abono</th>
+          <th style="text-align: right;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="apoint in apontamentosArray track by $index" ng-class="{'batida-desc': apoint.removed}">
+          <td style="text-align: left; line-height: 45px !important;">{{apoint.fullDate | date : 'dd/MM/yyyy'}}</td>
+          <td style="line-height: 45px !important; color: #1166e8">{{apoint.abonoStr}}</td>            
+          <td style="text-align: right;"> 
+            <div class="btn-group" role="group" aria-label="acoes">
+              <button title="Excluir" type="button" class="btn btn-sm btn-danger" ng-show="!apoint.removed" ng-click="delete($index)">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  
+              </button>
+              <button title="Readicionar" type="button" class="btn btn-sm btn-primary" ng-show="apoint.removed" ng-click="readd($index)">
+                <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>  
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="separator"></div> 
+        
+  <div class="row" ng-if="!hasSolicitation" style="margin: 0px;">
+    <button type="button" class="btn btn-primary btn-with-icon" ng-click="salvar()" ng-disabled="!saveFlag">Salvar Alterações</button>
+  </div>
+
+</form>

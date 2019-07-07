@@ -579,8 +579,11 @@
 
             if (apontamentoF.infoTrabalho.ferias)
               itemApontamento.observacao = "Férias";
-            else if (apontamentoF.status.id > 0) //Se for Incompleto, Erro ou Justificado...
+            else if (apontamentoF.status.id > 0){//Se for Incompleto, Erro ou Justificado...
               itemApontamento.observacao = apontamentoF.status.descricao;
+              if (apontamentoF.status.id == 4) //abono
+                itemApontamento.observacao += " (" + apontamentoF.status.abonoStr + ")";
+            }
           } else {
 
             $scope.diasTrabalho--;
