@@ -134,39 +134,51 @@ angular.module('BlurAdmin').service("util", function(){
       var arrayProposto = solicitacaoAjuste.proposto.marcacoes;
 
       arrayAnterior.sort(
-          function (a, b) {
-              if (a.totalMin < b.totalMin)
-              return -1;
-              if (a.totalMin > b.totalMin)
-              return 1;
-              return 0;
-          } 
+        function (a, b) {
+            if (a.totalMin < b.totalMin)
+            return -1;
+            if (a.totalMin > b.totalMin)
+            return 1;
+            return 0;
+        } 
       );
 
       arrayProposto.sort(
-          function (a, b) {
-              if (a.totalMin < b.totalMin)
-              return -1;
-              if (a.totalMin > b.totalMin)
-              return 1;
-              return 0;
-          } 
+        function (a, b) {
+            if (a.totalMin < b.totalMin)
+            return -1;
+            if (a.totalMin > b.totalMin)
+            return 1;
+            return 0;
+        } 
       );
 
       var arrayESAnterior = [];
       var arrayESProposto = [];
 
       for (var i=0; i<arrayAnterior.length; i++){
+        if (arrayAnterior[i].strHorario && !arrayAnterior[i].horario)
           arrayESAnterior.push(arrayAnterior[i].strHorario);
+        else if (!arrayAnterior[i].strHorario && arrayAnterior[i].horario)
+          arrayESAnterior.push(arrayAnterior[i].horario);
+        else if (!arrayAnterior[i].strHorario && !arrayAnterior[i].horario)
+          arrayESAnterior.push(svc.setStringHorario(arrayAnterior[i].hora, 
+                                    arrayAnterior[i].minuto));
       }
 
       for (var i=0; i<arrayProposto.length; i++){
+        if (arrayProposto[i].strHorario && !arrayProposto[i].horario)
           arrayESProposto.push(arrayProposto[i].strHorario);
+        else if (!arrayProposto[i].strHorario && arrayProposto[i].horario)
+          arrayESProposto.push(arrayProposto[i].horario);
+        else if (!arrayProposto[i].strHorario && !arrayProposto[i].horario)
+          arrayESProposto.push(svc.setStringHorario(arrayProposto[i].hora, 
+                                    arrayProposto[i].minuto));
       }
 
       return {
-          arrayESAnterior: arrayESAnterior,
-          arrayESProposto: arrayESProposto
+        arrayESAnterior: arrayESAnterior,
+        arrayESProposto: arrayESProposto
       };
   };
 
@@ -278,6 +290,22 @@ angular.module('BlurAdmin').service("util", function(){
 
     return hoursStr + ":" + minutesStr;
 
+  };
+
+  svc.getJustificativaStr = function(marcacoes){
+    var justStr = "";
+    for (var i=0; i<marcacoes.length; i++){
+      if (!justStr.includes(marcacoes[i].motivo)){
+        if (i == 0)
+          justStr += marcacoes[i].motivo;        
+        else if (i == marcacoes.length - 1)
+          justStr += " e " + marcacoes[i].motivo;
+        else
+          justStr += ", " + marcacoes[i].motivo;
+      }
+    }
+    // console.log("justificativaStr: ", justStr);
+    return justStr;
   };
 
   /*

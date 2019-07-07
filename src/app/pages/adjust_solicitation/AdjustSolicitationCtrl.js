@@ -12,9 +12,11 @@
       .controller('ConfirmationModalEmpAdjCtrl', ConfirmationModalEmpAdjCtrl);
 
   /** @ngInject */
-  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, feriados) {
+  function AdjustSolicitationCtrl($scope, $filter, $state, $uibModal, $timeout, util, employeeAPI, appointmentAPI, myhitpointAPI, usuario, currentDate, dataSolicitada, motivosAjuste, feriados) {
 
     var Usuario = usuario.data;
+    var motivos = motivosAjuste.data;
+    console.log("Motivos? ", motivos);
     var feriados = feriados.data;
     var arrayESOriginal = [];
     var equipe = {};
@@ -146,12 +148,12 @@
 
     $scope.incluir = function(){
 
-      openIncluirModal($scope.currentDate, $scope.arrayES);
+      openIncluirModal($scope.currentDate, $scope.arrayES, motivos);
     };
 
     $scope.desconsiderar = function(index){
       
-      openDesconsiderarModal($scope.currentDate, $scope.arrayES, index);
+      openDesconsiderarModal($scope.currentDate, $scope.arrayES, index, motivos);
     };
 
     //Compara duas marcações e retorna a "menor" (que bateu mais cedo no dia)
@@ -227,7 +229,7 @@
       });
     };
 
-    function openDesconsiderarModal (data, arrayES, indice) {
+    function openDesconsiderarModal (data, arrayES, indice, motivos) {
 
       var objBatida = {
         data: data,
@@ -243,13 +245,15 @@
         resolve: {
           objBatida: function () {
             return objBatida;
+          },
+          motivos: function(){
+            return motivos;
           }
         }
       });
 
       modalInstance.result.then(function (result){
 
-        //console.log('Result: ', result);
         if (result.indice >= 0){
 
           $scope.arrayES[result.indice].desconsiderada = true;
@@ -258,16 +262,12 @@
           //console.log('$scope.arrayES: ', $scope.arrayES);
         }
 
-        ////console.log('array novo: ', $scope.arrayES);
-
       }, function (args) {
-
-        ////console.log('modal is dismissed or closed.', args);
 
       });
     };
 
-    function openIncluirModal (data, arrayES) {
+    function openIncluirModal (data, arrayES, motivos) {
 
       var objBatida = {
         data: data        
@@ -281,6 +281,9 @@
         resolve: {
           objBatida: function () {
             return objBatida;
+          },
+          motivos: function(){
+            return motivos;
           }
         }
       });
@@ -420,7 +423,7 @@
       var objHoraMinuto = {};
 
       arrayESOriginal = angular.copy(apontamentoF.marcacoes);
-      //console.log('ArrayES do apontamentoF');
+      //console.log('ArrayES do apontamentoF', arrayESOriginal);
 
       for (var i=0; i<apontamentoF.marcacoes.length; i++){
 
@@ -532,32 +535,43 @@
     init();
   };
 
-  function DesconsiderarCtrl($uibModalInstance, $scope, $state, $filter, objBatida){
+  function DesconsiderarCtrl($uibModalInstance, $scope, $state, $filter, objBatida, motivos){
     
-    ////console.log('objBatida: ', objBatida);
+    console.log("DESCONSIDERAR BATIMENTOS CTRL");    
     $scope.algo = {};
+    $scope.selected = {};
+    $scope.motivos = motivos;
     $scope.objBatida = objBatida;
     $scope.objBatida.data = $filter('date')($scope.objBatida.data, 'abvFullDate');
     $scope.horario = objBatida.array[objBatida.index].strHorario;
 
+    if ($scope.motivos.length > 0)
+      $scope.selected = { item: $scope.motivos[0] };
+
     $scope.confirmDes = function() {
       
       //$state.go('point_adjust', {obj: objAjusteParams});
-      $uibModalInstance.close({indice: $scope.objBatida.index, motivo: $scope.algo.motivo});
+      $uibModalInstance.close({indice: $scope.objBatida.index, motivo: $scope.selected.item.nome});
     };
 
   };
 
-  function IncluirBatimentoCtrl($uibModalInstance, $scope, $state, $filter, util, objBatida){
-   
+  function IncluirBatimentoCtrl($uibModalInstance, $scope, $state, $filter, util, objBatida, motivos){
+    
+    console.log("INCLUIR BATIMENTOS CTRL");   
     $scope.algo = {};
+    $scope.selected = {};
+    $scope.motivos = motivos;
+    console.log("Motivos? ", motivos);
     $scope.errorMsg = null;
     $scope.objBatida = objBatida;
     $scope.objBatida.data = $filter('date')($scope.objBatida.data, 'abvFullDate');
 
+    if ($scope.motivos.length > 0)
+      $scope.selected = { item: $scope.motivos[0] };
+
     $scope.confirmaInclusao = function(batida) {
       
-      //$state.go('point_adjust', {obj: objAjusteParams});
       if (batida.horario){
         var objHorario = util.isValidHorarioField(batida.horario);
         if (!objHorario){
@@ -579,7 +593,7 @@
             NSR: "MANUAL",
             desconsiderada: false,
             // itemDescricaoHorario.reconvertida = apontamentoF.marcacoes[i].reconvertida;
-            motivo: batida.motivo,
+            motivo: $scope.selected.item.nome,
             gerada: {created_at: new Date()}
           };
           marcacao.estadoAtual = util.obterStatusMarcacao(marcacao);

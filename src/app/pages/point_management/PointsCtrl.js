@@ -416,7 +416,10 @@
             }
             else if (apontamentoF.status.id > 0){ //Se for Incompleto, Erro ou Justificado...
               itemApontamento.observacao = apontamentoF.status.descricao;
-              if (apontamentoF.status.id == 4) {//se abonado, bloqueia de ajustar
+              if (apontamentoF.status.id == 3)
+                if (apontamentoF.status.justificativaStr)
+                  itemApontamento.observacao += " (" + apontamentoF.status.justificativaStr + ")";
+              else if (apontamentoF.status.id == 4) {//se abonado, bloqueia de ajustar
                 itemApontamento.blocked = true;
                 itemApontamento.observacao += " (" + apontamentoF.status.abonoStr + ")";
               }
@@ -806,7 +809,8 @@
 
       var statusObj = {
         id: 3,
-        descricao: "Justificado"
+        descricao: "Justificado",
+        justificativaStr: util.getJustificativaStr(novasMarcacoes)
       };
 
       return {nm: novasMarcacoes, nmftd: novasMarcacoesFtd, sta: statusObj};

@@ -426,7 +426,7 @@
       var marcacoesArr = [];
       var marcacoesFtdArr = [];
       if (!isNew){
-        marcarcoesArr = angular.copy(apontamento.marcacoes);
+        marcacoesArr = angular.copy(apontamento.marcacoes);
         marcacoesFtdArr = angular.copy(apontamento.marcacoesFtd);
       }
 
@@ -450,19 +450,21 @@
       //console.log('nextItemHistorico: ', nextItemHistorico);
       historicoArray.push(nextItemHistorico);
       console.log("historicoArray", historicoArray);
-    };
+    };    
 
     function modificarApontamento(apontamento){
       console.log("modificar apontamento");
       var statusObj = {
         id: 3,
-        descricao: "Justificado"
+        descricao: "Justificado",
+        justificativaStr: util.getJustificativaStr(solicitacao.proposto.marcacoes)
       };      
 
       if ($scope.solicitacao.tipo === 0) {//Ajuste
-        apontamento.infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(apontamento.marcacoes);
+        apontamento.infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(solicitacao.proposto.marcacoes);
         apontamento.marcacoesFtd = resultArray.arrayESProposto;
-        apontamento.marcacoes = solicitacao.proposto.marcacoes;      
+        apontamento.marcacoes = solicitacao.proposto.marcacoes;
+        //apontamento.correcao = {justificado: []};
       }
       else {//abono
         if ($scope.solicitacao.horarioEnviado) {
@@ -489,7 +491,8 @@
 
       var statusObj = {
         id: 3,
-        descricao: "Justificado"
+        descricao: "Justificado",
+        justificativaStr: util.getJustificativaStr(solicitacao.proposto.marcacoes)
       };
       var infoTrabalho = util.getInfoTrabalho(solicitacao.funcionario, equipe, data, feriados);
       

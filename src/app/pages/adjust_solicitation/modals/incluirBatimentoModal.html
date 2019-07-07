@@ -14,9 +14,22 @@
         <!-- <label style="border: 1px solid; border-radius: 5px; padding: 3px 5px 3px 5px; background-color: #ede7e7; color: #1344ed;">{{horario}}</label> -->
       </div>
       <div class="form-group" style="margin: 10px 0px 10px 0px;">
-        <label style="font-size: 14px; font-weight: bold; color: #e73b2e;" for="textAreaMotivo">Motivo da Inclusão da Batida*</label>
-        <textarea class="form-control" id="textAreaMotivo" placeholder="Informe o motivo para incluir esta batida. Ex.: esquecimento da entrada 1" ng-model="algo.motivo" ng-required="true">
-        </textarea>
+        <label style="font-size: 14px; font-weight: bold; color: #e73b2e;">Motivo</label>
+        <div class="form-group">
+          <ui-select ng-model="selected.item"
+                   class="btn-group bootstrap-select form-control"
+                   ng-disabled="false"
+                   append-to-body="false"
+                   search-enabled="false" 
+                   ng-required="true">
+            <ui-select-match placeholder="Selecione um motivo:">
+              <span> {{$select.selected.nome}}</span>
+            </ui-select-match>
+            <ui-select-choices repeat="motivo in (motivos | filter: $select.search) track by motivo._id">
+              <span ng-bind-html="motivo.nome"></span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
       </div>
     </div>
   </form>

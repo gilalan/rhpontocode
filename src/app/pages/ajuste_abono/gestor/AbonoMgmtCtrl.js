@@ -107,6 +107,8 @@
         }
       }
 
+      console.log("Apontamentos enviados: ", apontamentosToSend);
+
       appointmentAPI.deleteMany(apontamentosToSend).then(function successCallback(response){
         
         var resp = response.data.message;

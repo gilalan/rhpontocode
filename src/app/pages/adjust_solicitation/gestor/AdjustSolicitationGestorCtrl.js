@@ -7,8 +7,8 @@
 
   angular.module('BlurAdmin.pages.adjustsolicitation')
       .controller('AdjustSolicitationGestorCtrl', AdjustSolicitationGestorCtrl)
-      .controller('DesconsiderarCtrl', DesconsiderarCtrl)
-      .controller('IncluirBatimentoCtrl', IncluirBatimentoCtrl)
+      .controller('DesconsiderarGestorCtrl', DesconsiderarGestorCtrl)
+      .controller('IncluirBatimentoGestorCtrl', IncluirBatimentoGestorCtrl)
       .controller('ConfirmationModalGestCtrl', ConfirmationModalGestCtrl);
 
   /** @ngInject */
@@ -361,7 +361,7 @@
         animation: true,
         templateUrl: pagePath,
         size: defaultSize,
-        controller: 'DesconsiderarCtrl',
+        controller: 'DesconsiderarGestorCtrl',
         resolve: {
           objBatida: function () {
             return objBatida;
@@ -399,7 +399,7 @@
         animation: true,
         templateUrl: pageIncluirPath,
         size: defaultSize,
-        controller: 'IncluirBatimentoCtrl',
+        controller: 'IncluirBatimentoGestorCtrl',
         resolve: {
           objBatida: function () {
             return objBatida;
@@ -688,7 +688,7 @@
     init(allEmployees, allEquipes);
   };
 
-  function DesconsiderarCtrl($uibModalInstance, $scope, $state, $filter, objBatida){
+  function DesconsiderarGestorCtrl($uibModalInstance, $scope, $state, $filter, objBatida){
     
     ////console.log('objBatida: ', objBatida);
     $scope.algo = {};
@@ -704,8 +704,8 @@
 
   };
 
-  function IncluirBatimentoCtrl($uibModalInstance, $scope, $state, $filter, util, objBatida){
-   
+  function IncluirBatimentoGestorCtrl($uibModalInstance, $scope, $state, $filter, util, objBatida){
+        
     $scope.algo = {};
     $scope.errorMsg = null;
     $scope.objBatida = objBatida;
