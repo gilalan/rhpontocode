@@ -359,7 +359,16 @@
 
       if (revezamentoFlag){
         if (apontamentos.length > 0){
-          apontamentos.sort(function(a,b){return a.data - b.data;});
+          //apontamentos.sort(function(a,b){return a.data - b.data;});
+          apontamentos.sort(
+            function (a, b) {
+              if (a.data < b.data)
+                return -1;
+              if (a.data > b.data)
+                return 1;
+              return 0;
+            } 
+          );
           if(apontamentos[0].infoTrabalho.dataReferencia)
             dataReferencia = apontamentos[0].infoTrabalho.dataReferencia;
           else

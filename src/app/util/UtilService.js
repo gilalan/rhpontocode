@@ -581,9 +581,19 @@ angular.module('BlurAdmin').service("util", function(){
     var esFinal = "";
     var esTodas = "";
     
-    arrayMarcacoes.sort(function(a, b){//ordena o array de marcaçõesFtd
-      return a.totalMin > b.totalMin;
-    });
+    // arrayMarcacoes.sort(function(a, b){//ordena o array de marcaçõesFtd
+    //   return a.totalMin > b.totalMin; //Comportamento ATIPICO, NAO USAR
+    // });
+    arrayMarcacoes.sort(
+      function (a, b) {
+        if (a.totalMin < b.totalMin)
+          return -1;
+        if (a.totalMin > b.totalMin)
+          return 1;
+        return 0;
+      } 
+    );
+
 
     var length = arrayMarcacoes.length;
 
@@ -617,9 +627,10 @@ angular.module('BlurAdmin').service("util", function(){
     var esFinal = "";
     var esTodas = "";
     
-    apontamentoF.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
-      return a > b;
-    });
+    // apontamentoF.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
+    //   return a > b;
+    // });
+    apontamentoF.marcacoesFtd.sort((a,b) => a.localeCompare(b));
 
     var length = apontamentoF.marcacoesFtd.length;
 
@@ -767,7 +778,16 @@ angular.module('BlurAdmin').service("util", function(){
       return obj.desconsiderada === true;
     });
     //2.
-    newArrayES.sort(function(a,b){return a.totalMin > b.totalMin});
+    //newArrayES.sort(function(a,b){return a.totalMin > b.totalMin});
+    newArrayES.sort(
+      function (a, b) {
+        if (a.totalMin < b.totalMin)
+          return -1;
+        if (a.totalMin > b.totalMin)
+          return 1;
+        return 0;
+      } 
+    );
 
     //começando o index com 1.
     for (var i=1; i<=newArrayES.length; i++){
@@ -800,7 +820,11 @@ angular.module('BlurAdmin').service("util", function(){
       return obj.desconsiderada === true;
     });
 
-    newArrayES.sort(function(a,b){return a.horario > b.horario});
+    // for (var z=0; z<newArrayES.length; z++){
+
+    // }
+    //newArrayES.sort(function(a,b){return a.horario > b.horario}); //COMPORTAMENTO ATIPICO EM ALGUNS NAVEGADORES
+    newArrayES.sort((a,b) => a.horario.localeCompare(b.horario));
 
     //começando o index com 1.
     for (var i=1; i<=newArrayES.length; i++){

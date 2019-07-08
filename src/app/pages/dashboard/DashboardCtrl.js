@@ -499,10 +499,8 @@
 
       var entSaidas = ['ent1', 'sai1', 'ent2', 'sai2'];//só mostro as 4 primeiras nessa tabela
       var strMarcacoesHtml = '';
-      //console.log('[antes] - apontamento marcacaoes ftd: ', apontamento.marcacoesFtd);
-      apontamento.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
-        return a > b;
-      });
+      //console.log('[antes] - apontamento marcacaoes ftd: ', apontamento.marcacoesFtd);      
+      apontamento.marcacoesFtd.sort((a,b) => a.localeCompare(b));//ordena
       //console.log('[depois] - apontamento marcacaoes ftd: ', apontamento.marcacoesFtd);
       apontamento.marcacoesStringObj = {};
       apontamento.marcacoesType = {};

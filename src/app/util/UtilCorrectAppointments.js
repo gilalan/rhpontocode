@@ -419,9 +419,15 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
 
     function sortArrayMarcacoes(apontamento){
 
-      apontamento.marcacoes.sort(function (a, b) {
-        return a.totalMin - b.totalMin;        
-      });
+      apontamento.marcacoes.sort(
+        function (a, b) {
+          if (a.totalMin < b.totalMin)
+            return -1;
+          if (a.totalMin > b.totalMin)
+            return 1;
+          return 0;
+        } 
+      );
 
       apontamento.marcacoesFtd = [];
 

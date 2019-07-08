@@ -541,9 +541,10 @@
 
       var esFinal = "";
       
-      apontamentoF.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
-        return a > b;
-      });
+      // apontamentoF.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
+      //   return a > b;
+      // });
+      apontamentoF.marcacoesFtd.sort((a,b) => a.localeCompare(b));
 
       var length = apontamentoF.marcacoesFtd.length;
 

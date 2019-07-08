@@ -64,12 +64,12 @@
 
       apontament.marcacoes.sort(
         function (a, b) {
-          // if (a.totalMin < b.totalMin)
-          //   return -1;
-          // if (a.totalMin > b.totalMin)
-          //   return 1;
-          // return 0;
-          return a.id - b.id;
+          if (a.id < b.id)
+            return -1;
+          if (a.id > b.id)
+            return 1;
+          return 0;
+          //return a.id - b.id;
         } 
       );
 
@@ -144,12 +144,16 @@
           else {
 
             //console.log('apontamento.marcacoes normal: ', apontamento.marcacoes);        
-            apontamento.marcacoes.sort(function(a, b){//ordena o array de marcações
-              return a.id - b.id;
-            });
-            apontamento.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
-              return a > b;
-            });
+            apontamento.marcacoes.sort(
+              function (a, b) {
+                if (a.id < b.id)
+                  return -1;
+                if (a.id > b.id)
+                  return 1;
+                return 0;
+              } 
+            );
+            apontamento.marcacoesFtd.sort((a,b) => a.localeCompare(b));
             //console.log('apontamento.marcacoes ordenados: ', apontamento.marcacoes);
 
             updateExtraInformations(serverDate);//tem que ser chamado ANTES da atualização das marcações (o push abaixo)
