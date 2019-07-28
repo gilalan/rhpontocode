@@ -28,9 +28,9 @@ angular.module('BlurAdmin', [
 //    //   });
 // })
 .config(['KeepaliveProvider', 'IdleProvider', function(KeepaliveProvider, IdleProvider) {
-  IdleProvider.idle(30); //começa a contabilizar depois de 30 seg inativo
-  IdleProvider.timeout(10 * 60); //Se ficar 10 minutos no contador, expira 
-  KeepaliveProvider.interval(20); //recomeça a contagem depois de 20 segundos
+  IdleProvider.idle(60); //começa a contabilizar depois de 60 seg inativo
+  IdleProvider.timeout(60 * 60); //Se ficar 60 minutos no contador, expira 
+  KeepaliveProvider.interval(60); //recomeça a contagem depois de 60 segundos
 }])
 .run(['$rootScope', '$location', '$window', '$state', 'Auth', 'Idle', function($rootScope, $location, $window, $state, Auth, Idle){
   

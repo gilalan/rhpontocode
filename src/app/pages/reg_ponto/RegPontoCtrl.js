@@ -153,7 +153,7 @@
                 return 0;
               } 
             );
-            apontamento.marcacoesFtd.sort((a,b) => a.localeCompare(b));
+            apontamento.marcacoesFtd.sort( function(a,b){ return a.localeCompare(b)} );
             //console.log('apontamento.marcacoes ordenados: ', apontamento.marcacoes);
 
             updateExtraInformations(serverDate);//tem que ser chamado ANTES da atualização das marcações (o push abaixo)

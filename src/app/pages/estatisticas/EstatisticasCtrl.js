@@ -18,6 +18,10 @@
     $scope.newResource = {};
     $scope.files = [];
     var resourcesFiles = [];
+    $scope.flags = {
+      funcs: true,
+      appoints: false
+    };
 
     if (allEmployees.data){
       allEmployees.data.sort(function (a, b) {
@@ -34,6 +38,7 @@
     $scope.employees = allEmployees.data;
     $scope.equipes = equipes.data;
     $scope.rawApps = [];
+    //$scope.apontamentos = allApontamentos.data;
     //$scope.rawApps = rawAppoints.data.rawReps;
     console.log("Equipes: ", $scope.equipes);
     console.log("employees: ", $scope.employees);
@@ -53,12 +58,53 @@
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
     $scope.format = $scope.formats[0];  
 
+    init();
+
+    $scope.allFuncs = function(){
+
+      $scope.flags.funcs = true;
+      $scope.flags.appoints = false;
+      indicateFiredEmployees();
+      getAllEquipesEstatistica($scope.equipes);
+
+    };
+
+    $scope.adjustAppoints = function(){
+
+      $scope.flags.funcs = false;
+      $scope.flags.appoints = true;
+      console.log("Vai solicitar o ajuste!");
+      appointmentAPI.adjustRepeated().then(function successCallback(response){
+
+        var apontamentosResponse = response.data;
+        fillFields(apontamentosResponse);
+
+      }, function errorCallback(response){
+        
+        $scope.errorMsg = response.data.message;
+      });
+    };
+
     function open() {
         console.log("open function", $scope.something.opened);
         $scope.something.opened = true;
     };
 
-    init();
+    $scope.adjustAppointsEmp = function(empl){
+
+      console.log("employee: ", empl);
+
+      appointmentAPI.adjustRepeatedEmp(empl).then(function successCallback(response){
+
+        var apontamentosResponse = response.data;
+        fillFields(apontamentosResponse);
+
+      }, function errorCallback(response){
+        
+        $scope.errorMsg = response.data.message;
+      });
+
+    };    
     
     function getAllEquipesEstatistica (equipesArray) {
 
@@ -147,9 +193,66 @@
       return (array.length + 1);
     };
 
-    function init () {
+    function init() {
+
       indicateFiredEmployees();
       getAllEquipesEstatistica($scope.equipes);
+    };
+
+
+    function fillFields (apontamentos) {
+      
+      console.log("apontamentos: ", apontamentos);
+      $scope.quantity = apontamentos.quantity;
+      $scope.quantityRepeated = apontamentos.quantityRep;
+      // var repeatedAppoints = [];
+      // $scope.quantity = apontamentos.length;
+      for (var i=0; i<apontamentos.arrayRep.length; i++){
+        
+        console.log('Date: ', new Date(apontamentos.arrayRep[i].data));
+        //console.log('Timezone da data: ', .getTimezoneOffset());  
+        
+      }
+      // $scope.quantityRepeated = repeatedAppoints.length;
+      // console.log("repeatedAppoints: ", repeatedAppoints);
+    };
+
+    function checkRepeatedElements(marcacoes){
+
+      if (marcacoes.length < 2){
+        return false;
+      }
+
+      else {
+        var keyObj = {};
+        for (var j=0; j<marcacoes.length; j++){
+          //keyObj[marcacoes[j].totalMin] = 
+          if(!keyObj[marcacoes[j].totalMin])
+            keyObj[marcacoes[j].totalMin] = 0;
+          keyObj[marcacoes[j].totalMin] += 1;
+        }
+        var hasDupl = false;
+        for (var prop in keyObj){
+          if (keyObj[prop] >= 2)
+            hasDupl = true;
+        }
+
+        return hasDupl;
+      }
+
+    };
+
+    function removeRepeatedElements(marcacoes){
+
+      var obj = {};
+
+      for ( var i=0, len=things.thing.length; i < len; i++ )
+        obj[things.thing[i]['place']] = things.thing[i];
+
+      things.thing = new Array();
+      for ( var key in obj )
+        things.thing.push(obj[key]);
+
     };
   }   
 

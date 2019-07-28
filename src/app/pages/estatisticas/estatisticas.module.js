@@ -40,11 +40,10 @@
             equipes: function(teamAPI) {
               return teamAPI.get(); //ARRAY VAZIO PARA AGILIZAR OS OUTROS TESTES
               //return [];
-            }
-            // ,
+            }//,
 
-            // rawAppoints: function(appointmentAPI) {
-            //   return appointmentAPI.getAllRawAppoints();
+            // apontamentos: function(appointmentAPI) {
+            //   return appointmentAPI.get();
             // }
             
           //   currentDate: function(appointmentAPI) {

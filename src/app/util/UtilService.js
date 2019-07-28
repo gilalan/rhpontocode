@@ -630,7 +630,7 @@ angular.module('BlurAdmin').service("util", function(){
     // apontamentoF.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
     //   return a > b;
     // });
-    apontamentoF.marcacoesFtd.sort((a,b) => a.localeCompare(b));
+    apontamentoF.marcacoesFtd.sort( function(a,b){ return a.localeCompare(b)} );
 
     var length = apontamentoF.marcacoesFtd.length;
 
@@ -824,7 +824,7 @@ angular.module('BlurAdmin').service("util", function(){
 
     // }
     //newArrayES.sort(function(a,b){return a.horario > b.horario}); //COMPORTAMENTO ATIPICO EM ALGUNS NAVEGADORES
-    newArrayES.sort((a,b) => a.horario.localeCompare(b.horario));
+    newArrayES.sort( function(a,b){ return a.horario.localeCompare(b.horario)} );
 
     //começando o index com 1.
     for (var i=1; i<=newArrayES.length; i++){

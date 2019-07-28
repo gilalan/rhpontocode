@@ -25,10 +25,12 @@
 	        <label>Format: <span class="muted-text">(manual alternate <em>{{altInputFormats[0]}}</em>)</span></label> <select class="form-control" ng-model="format" ng-options="f for f in formats"><option></option></select>
 	    </div>
 	</div> -->	
-
-	<button type="button" class="btn btn-primary btn-with-icon" ng-click="makeUpload()">Upload</button>
-
 	<div class="row">
+		<button type="button" class="btn btn-primary btn-with-icon" ng-click="allFuncs()">Trazer Funcionários</button>
+		<button type="button" class="btn btn-primary btn-with-icon" ng-click="adjustAppoints()">Corrigir Apontamentos</button>
+	</div>
+
+	<div class="row" ng-if="flags.funcs">
 		<table class="table">
 		    <thead>
 			    <tr>
@@ -38,6 +40,7 @@
 			      <th>Matricula</th>
 			      <th>Demitido em</th>
 			      <th>Equipe(s)</th>
+			      <th>Corrigir</th>
 			    </tr>
 		    </thead>
 		    <tbody>
@@ -52,10 +55,15 @@
       						{{team}}
     					</p>	
 			        </td>
-			        
+			        <td><button type="button" class="btn btn-primary btn-with-icon" ng-click="adjustAppointsEmp(emp)">Corrigir Apontamentos</button></td>
 		      </tr>
 		    </tbody>
 		  </table>
+	</div>
+
+	<div class="row" ng-if="flags.appoints">
+		<p>Quantidade de Apontamentos: {{quantity}}</p>
+		<p>Quantidade de Apontamentos com marcações repetidas: {{quantityRepeated}}</p>
 	</div>
 
 	<!--<td>

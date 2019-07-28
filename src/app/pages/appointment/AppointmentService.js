@@ -87,5 +87,13 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 	svc.deleteMany = function (arrayApontamentos) {
 		return $http.post(_urlBaseApontamentos+'/deletemany', arrayApontamentos);	
 	};
+
+	svc.adjustRepeated = function(){
+		return $http.post(_urlBaseApontamentos+'/adjustRepeated');
+	};
+
+	svc.adjustRepeatedEmp = function(employee){
+		return $http.post(_urlBaseApontamentos+'/adjustRepeatedEmployee', employee);
+	};
 	
 });
