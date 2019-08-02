@@ -100,6 +100,43 @@ angular.module('BlurAdmin').service("utilReports", function($filter, util){
       	return docDefinition;	
 	};
 
+	svc.gerarBancoHoras = function(employee, periodo, totais){
+
+
+		var contentArray = [];
+		contentArray.push(getCompanyInfo('RELATÓRIO DE BANCO DE HORAS'));
+		contentArray.push(createEmployeeInfoBH(employee));
+		contentArray.push(createSaldoBH(periodo, totais));
+
+		var docDefinition = {
+		    pageSize: 'A4',
+		    pageOrientation: 'landscape',
+		    pageMargins: [ 20, 10 ],
+		 //    footer: function(currentPage, pageCount) { 
+			//     return { 
+			//     	text: 'teste',//currentPage.toString() + ' de ' + pageCount, 
+			//     	alignment: 'right', 
+			//     	margin: [20, 0] 
+			//     }; 
+			// },
+		    styles: createStylesBancoHoras(),
+		    defaultStyle: {
+				fontSize: 10,
+				margin: 0,
+				color: 'black'
+			},
+		    // footer: {
+		    //     columns: [
+		    //       {text: 'Left part', aligment: 'left'},
+		    //       {text: 'Right part', alignment: 'right'}
+		    //     ]
+		    // },
+    	    content: contentArray
+      	};
+
+      	return docDefinition;
+	};
+
 	function createStylesEspelhoPonto(){
 
 		var styles = {
@@ -120,6 +157,38 @@ angular.module('BlurAdmin').service("utilReports", function($filter, util){
 			},
 			textoMenor: {
 			    fontSize: 6
+			}
+		};
+
+		return styles;
+	};
+
+	function createStylesBancoHoras(){
+
+		var styles = {
+			normalText: {
+			    fontSize: 12,
+			    bold: true,
+			    margin: 0
+			},
+			headerI: {
+				fontSize: 16,
+				bold: true,
+				margin: [0, 2, 0, 2],
+				alignment: 'center'
+			},
+			headerII: {
+				fontSize: 14,
+				bold: true,
+				margin: [0, 2, 0, 2],
+				alignment: 'center'
+			},
+			rigPeq: {
+			    fontSize: 12,
+			    margin: [0, 2, 0, 2]
+			},
+			textoMenor: {
+			    fontSize: 9
 			}
 		};
 
@@ -428,6 +497,53 @@ angular.module('BlurAdmin').service("utilReports", function($filter, util){
 	    };
 
 	    return signature;
+	};
+
+	/* Banco de HOras */
+	function createEmployeeInfoBH(employeeInfo){
+
+		var empInfo = {
+	       table: {
+            headerRows: 1,
+            widths: [424,150,200],
+            body: [
+              [
+                {text: 'Nome: '+employeeInfo.name+' \n Cargo: '+employeeInfo.cargo, border: [true, false, false, true]},
+                {text: 'Matrícula: '+employeeInfo.matricula+' \n Equipe: '+employeeInfo.equipe.nome, border: [false, false, false, true]},
+                {text: 'PIS: '+employeeInfo.PIS+' \n Instituição: Univasf', border: [false, false, true, true], alignment: 'right'}
+              ]
+            ]  
+          } 
+	    };
+
+	    return empInfo;
+	};
+
+	function createSaldoBH(title, totais){
+		
+		//var emiDate = $filter('date')(new Date(), 'dd/MM/yyyy, HH:mm');
+		var cInfo = {
+          table: {
+            headerRows: 1,
+            widths: ['auto'],
+            body: [
+              [ 
+                {text: title, style: 'headerII', border: [true, true, true, true] }                
+              ],
+              [
+                {text: 'Horas a Trabalhar: '+totais.aTrabalhar, style: 'normalText', border: [true, false, true, true]}
+              ],
+              [ 
+              	{text: 'Horas Trabalhadas: '+totais.trabalhados, style: 'normalText', border: [true, false, true, true]}
+              ],
+              [
+                {text: 'Saldo do Período: '+totais.saldoFinal, style: 'normalText', border: [true, false, true, true]}             
+              ]
+            ]  
+          }
+	    };
+
+	    return cInfo;
 	};
 
 });

@@ -11,6 +11,7 @@
   /** @ngInject */
   function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, myhitpointAPI, util, utilReports, Auth, usuario, equipes, allEmployees){//, rawAppoints) {
 
+    //Correção de apontamentos duplicados e alterados por TIMEZONE
     console.log("dentro do EstatisticasCtrl, USUARIO: ", usuario);
     $scope.funcionario = usuario.data.funcionario;
     console.log('Funcionário: ', $scope.funcionario);

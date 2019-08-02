@@ -9,7 +9,7 @@
       .controller('HoursCtrl', HoursCtrl);
 
   /** @ngInject */
-  function HoursCtrl($scope, $filter, $location, $state, $interval, $timeout, appointmentAPI, teamAPI, employeeAPI, Auth, util, utilBancoHoras, usuario, feriados, currentDate, allEmployees, allEquipes) {
+  function HoursCtrl($scope, $filter, $location, $state, $interval, $timeout, appointmentAPI, teamAPI, employeeAPI, Auth, util, utilBancoHoras, utilReports, usuario, feriados, currentDate, allEmployees, allEquipes) {
 
     var Usuario = usuario.data;
     var feriados = feriados.data;
@@ -261,27 +261,63 @@
 
     };
 
-    $scope.gerarPDFPeriodo = function(){
-      var docDefinition = {
-        content: [
-          'Relatório de Banco de Horas',
-          //'SISTEMA ALTERNATIVO DE BATIDA DE PONTO: RHPONTO',
-          //'CNPJ: '+$scope.cnpj,
-          //'LOCAL DO CONTRATO: '+'UNIVASF',
-          'NOME: ' + $scope.funcionarioOficial.nome + ' ' + $scope.funcionarioOficial.sobrenome, 
-          'PIS: ' + $scope.funcionarioOficial.PIS,
-          'Período Pesquisado: ' + $scope.currentDateFtd + " até " + $scope.currentDateFtd2,
-          'Saldo no Período pesquisado: ',
-          'Horas a Trabalhar: ' + $scope.minutosParaTrabalharFtd,
-          'Horas Trabalhadas: ' + $scope.minutosTrabalhadosFtd, 
-          'Saldo de horas no período pesquisado: ' + $scope.saldoFinalMesFtd,
-          'Período TOTAL: ' + $filter('date')($scope.allDataInicial, 'dd/MM/yyyy') + " até " + $filter('date')($scope.allDataFinal, 'dd/MM/yyyy'),
-          'Horas a Trabalhar: ' + $scope.allMinutosParaTrabalharFtd,
-          'Horas Trabalhadas: ' + $scope.allMinutosTrabalhadosFtd, 
-          'Saldo de horas no período TOTAL: ' + $scope.allSaldoFinalMesFtd
-        ]
+    $scope.gerarPDFLimitado = function(){
+
+      //console.log("FuncSel: ", funcSel);
+      var cDate1Ftd = $filter('date')($scope.currentDate, 'dd/MM/yyyy');
+      var cDate2Ftd = $filter('date')($scope.currentDate2, 'dd/MM/yyyy');
+      var periodoStr = 'Período Selecionado: ' + cDate1Ftd + ' até ' + cDate2Ftd;
+      var totais = {
+        aTrabalhar: $scope.minutosParaTrabalharFtd,
+        trabalhados: $scope.minutosTrabalhadosFtd,
+        saldoFinal: $scope.saldoFinalMesFtd
       };
-      pdfMake.createPdf(docDefinition).download('relatorio_bancohoras.pdf');
+
+      var docDefinition = utilReports.gerarBancoHoras($scope.funcionario.selected, periodoStr, totais);
+      
+      //console.log('Funcionario selecionado para relatorio: ', $scope.funcionario.selected);
+
+      docDefinition.footer = function(currentPage, pageCount) { 
+        return { 
+          text: currentPage.toString() + ' de ' + pageCount, 
+          alignment: 'right', 
+          margin: [20, 0] 
+        }; 
+      };
+
+      //var name = funcSel.nome + ' ' + funcSel.sobrenome;
+      var strPDFName = $scope.funcionario.selected.name + '-' + $scope.funcionario.selected.matricula + '-banco_horas.pdf';
+
+      // download the PDF
+      pdfMake.createPdf(docDefinition).download(strPDFName);
+
+    };
+
+    $scope.gerarPDFPeriodo = function(){
+     
+      var periodoStr = 'Período Selecionado: ' + $scope.allDataInicial + ' até ' + $scope.allDataFinal;
+      var totais = {
+        aTrabalhar: $scope.allMinutosParaTrabalharFtd,
+        trabalhados: $scope.allMinutosTrabalhadosFtd,
+        saldoFinal: $scope.allSaldoFinalMesFtd
+      };
+
+      var docDefinition = utilReports.gerarBancoHoras($scope.funcionario.selected, periodoStr, totais);
+      console.log("docDefinition: ", docDefinition);
+      //console.log('Funcionario selecionado para relatorio: ', $scope.funcionario.selected);
+
+      docDefinition.footer = function(currentPage, pageCount) { 
+        return { 
+          text: currentPage.toString() + ' de ' + pageCount, 
+          alignment: 'right', 
+          margin: [20, 0] 
+        }; 
+      };
+
+      var strPDFName = $scope.funcionario.selected.name + '-' + $scope.funcionario.selected.matricula + '-banco_horas.pdf';
+
+      // download the PDF
+      pdfMake.createPdf(docDefinition).download(strPDFName);
     };     
 
     /*     

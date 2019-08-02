@@ -95,5 +95,9 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 	svc.adjustRepeatedEmp = function(employee){
 		return $http.post(_urlBaseApontamentos+'/adjustRepeatedEmployee', employee);
 	};
+
+	svc.reverterFerias = function(objEmployeeFerias){
+		return $http.post(_urlBaseApontamentos+'/reverterFerias', objEmployeeFerias);
+	};
 	
 });

@@ -1,0 +1,86 @@
+<div ba-panel ba-panel-title="Gerenciar Cadastro de Férias" ba-panel-class="with-scroll">
+    
+    <div id="loaderDiv" loader>
+	  <p class="ajax-loader title-loader"> Carregando... </p>
+	  <!--<img src="img/rhPontoSlogan.png" class="ajax-loader"/>-->
+	  <div class='sk-spinner sk-spinner-wave ajax-loader'><div class='sk-rect1'></div><div class='sk-rect2'></div><div class='sk-rect3'></div><div class='sk-rect4'></div><div class='sk-rect5'></div></div>
+	</div>
+    <!-- <div class="row" ng-if="!isAdmin"> -->
+    <div class="row">
+		<div class="col-lg-8 col-md-8" >
+	        <label style="color: #33aab7;">Funcionário:</label>
+	    	<input style="margin-bottom: 10px;" type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
+	    	<p><strong>Equipe: </strong> {{funcionario.selected.equipe}}</p>
+		    <p><strong>Nome e Cargo: </strong> {{funcionario.selected.name}} - {{funcionario.selected.cargo}}</p>
+        	<p class="muted"><strong>Matrícula: </strong>{{funcionario.selected.matricula}} </p>
+        	<p class="muted"><strong>PIS: </strong>{{funcionario.selected.PIS}} </p>
+		</div>
+		<div class="col-lg-4 col-md-4">
+			<h4 class="sub-header"><strong style="color: #334db7;">Horário Cadastrado no Sistema</strong></h4>
+		    <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
+		        <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+		    </p>
+		</div>
+    </div>
+    <div class="row">
+	    <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+	      <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <strong>Ops!</strong> {{errorMsg}}
+	    </div>
+	</div>
+    <div class="separator"></div>
+    
+    <div class="row" ng-if="!periodoFerias || periodoFerias.length==0">
+    	<div class="col-xs-12">
+	    	<div class="form-group">
+	    		<p><strong>A busca não retornou dados para este período de data.</strong></p>
+			</div>
+		</div>
+    </div>
+    <div class="row" ng-if="periodoFerias && periodoFerias.length>0">
+	 	<h4 class="sub-header"><strong style="color: #334db7;">Histórico de Férias</strong></h4>
+    	<div class="col-xs-12">
+	    	<div class="form-group">
+	          	<div class="row" ng-if="periodoFerias" style="margin: 0px;">
+	         	   	<table class="table table-condensed" style="table-layout: fixed;">
+	              		<thead>
+	                		<tr style="color: #334db7;">
+	                  			<th class="col-xs-1 centerColSpan first" style="width: 2%;"><b>#</b></th>
+	                  			<th class="col-xs-1 centerColSpan first" style="width: 30%;"><b>Periodo</b></th>
+	                  			<th class="col-xs-1 centerColSpan first" style="width: 18%;"><b>Dias corridos</b></th>                  
+	                  			<th class="col-xs-1 centerColSpan first" style="width: 25%;"><b>Reverter</b></th>
+	                  			<th class="col-xs-1 centerColSpan first last" style="width: 25%;"><b>Aprovado por</b></th>
+	                		</tr>
+	              		</thead>
+	              		<tbody>
+	                		<tr ng-repeat="item in periodoFerias track by $index" class="editable-row">
+		                  		<td style="line-height: 19px !important; overflow: hidden; width: 2%;">{{item.id}}</td>
+		                  		<td style="line-height: 19px !important; text-align: center; padding-left: 15px; overflow: hidden; width: 30%;">{{item.dataIniFtd | 	date:'dd/MM/yyyy'}} ate {{item.dataFinFtd | date:'dd/MM/yyyy'}}</td>
+		                  		<td style="line-height: 19px !important; text-align: center; overflow: hidden; width: 18%;">
+		                    		{{item.qtdeDias}}
+		                  		</td>
+		                  		<td style="line-height: 19px !important; text-align: center; overflow: hidden; width: 18%;">
+		                    		<button id="idBtnRevert" type="button" class="btn btn-primary btn-with-icon" ng-click="reverterFerias(item)">
+										<i class="ion-search"></i> Reverter período
+									</button>
+		                  		</td>
+	                  			<td style="line-height: 19px !important; text-align: center; padding-left: 5px; overflow: hidden; width: 25%;">              
+	                    			{{item.aprovadoPor.email ? item.aprovadoPor.email : "--"}}
+	                  			</td>
+	                		</tr>
+	              		</tbody>
+	            	</table>
+	          	</div>
+	          	<div ng-if="!periodoFerias || periodoFerias.length == 0">
+	            	Não há registro de férias anteriores.
+	         	</div>
+			</div>
+		</div>
+    </div>
+    <div class="row">
+		<div style="margin-bottom: 25px;"></div>
+		<button id="idBtnSearch" type="button" class="btn btn-primary btn-with-icon" ng-click="search()">
+			<i class="ion-search"></i> Pesquisar
+		</button>
+	</div>
+</div>

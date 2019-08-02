@@ -27,6 +27,7 @@
     'BlurAdmin.pages.solicitations',
     'BlurAdmin.pages.users',
     'BlurAdmin.pages.estatisticas',
+    'BlurAdmin.pages.vacations',
     'BlurAdmin.pages.testes',
     'BlurAdmin.pages.reports',
     'BlurAdmin.pages.points',
