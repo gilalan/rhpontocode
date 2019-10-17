@@ -6,10 +6,11 @@
   'use strict';
 
   angular.module('BlurAdmin.pages.estatisticas')
-      .controller('EstatisticasCtrl', EstatisticasCtrl);
+      .controller('EstatisticasCtrl', EstatisticasCtrl)
+      .controller('ModalListAbonosCtrl', ModalListAbonosCtrl);
 
   /** @ngInject */
-  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, appointmentAPI, employeeAPI, myhitpointAPI, util, utilReports, Auth, usuario, equipes, allEmployees){//, rawAppoints) {
+  function EstatisticasCtrl($scope, $filter, $location, $state, $interval, $uibModal, appointmentAPI, employeeAPI, myhitpointAPI, util, utilReports, Auth, usuario, equipes, allEmployees){//, rawAppoints) {
 
     //Correção de apontamentos duplicados e alterados por TIMEZONE
     console.log("dentro do EstatisticasCtrl, USUARIO: ", usuario);
@@ -23,6 +24,8 @@
       funcs: true,
       appoints: false
     };
+    var pageModalPath = 'app/pages/estatisticas/listAbonosModal.html';
+    var defaultSize = 'md';
 
     if (allEmployees.data){
       allEmployees.data.sort(function (a, b) {
@@ -98,6 +101,7 @@
       appointmentAPI.adjustRepeatedEmp(empl).then(function successCallback(response){
 
         var apontamentosResponse = response.data;
+
         fillFields(apontamentosResponse);
 
       }, function errorCallback(response){
@@ -107,6 +111,21 @@
 
     };    
     
+    $scope.adjustFolgaCompensatoria = function(emp){
+
+      appointmentAPI.adjustFolgaCompensatoria(emp).then(function successCallback(response){
+
+        var apontamentosResponse = response.data;
+        
+        fillFieldsFC(apontamentosResponse);
+
+      }, function errorCallback(response){
+        
+        $scope.errorMsg = response.data.message;
+      });      
+
+    };
+
     function getAllEquipesEstatistica (equipesArray) {
 
       console.log("Equipes Array: ", equipesArray);
@@ -218,6 +237,51 @@
       // console.log("repeatedAppoints: ", repeatedAppoints);
     };
 
+    function fillFieldsFC (apontamentos) {
+      
+      var totais = {geral: 0, folgaComp: 0};
+      var arrayOnlyAbonosFC = [];
+
+      for (var i=0; i<apontamentos.length; i++){
+        totais.geral += apontamentos[i].infoTrabalho.trabalhados;
+        if (apontamentos[i].status.abonoStr){
+          if (apontamentos[i].status.abonoStr.toUpperCase().includes("FOLGA COMPENSATÓRIA")){
+            totais.folgaComp += apontamentos[i].infoTrabalho.trabalhados;
+            arrayOnlyAbonosFC.push(apontamentos[i]);
+          } 
+        }
+      }
+
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: pageModalPath,
+        size: defaultSize,
+        controller: 'ModalListAbonosCtrl',
+        resolve: {
+          apontamentos: function () {
+            return apontamentos;
+          },
+          totais: function(){
+            return totais;
+          },
+          abonosToUpdate: function(){
+            return arrayOnlyAbonosFC;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (confirmation) {
+        console.log('confirmação: ', confirmation);
+        if (confirmation){
+          alert("Tudo atualizado com sucesso.");
+        }
+      }, function () {
+        console.log('modal-component dismissed at: ' + new Date());
+
+      });
+    
+    };
+
     function checkRepeatedElements(marcacoes){
 
       if (marcacoes.length < 2){
@@ -255,6 +319,34 @@
         things.thing.push(obj[key]);
 
     };
-  }   
+  };
+
+  function ModalListAbonosCtrl ($uibModalInstance, $scope, appointmentAPI, apontamentos, totais, abonosToUpdate) {
+
+    console.log('Apontamentos: ', apontamentos);
+    $scope.apontamentos = apontamentos;
+    $scope.abonosToUpdt = abonosToUpdate;
+    $scope.totais = totais;
+    var $ctrl = this;
+    $ctrl.confirmation = true;
+    console.log("TotalTRABALHADOS: ", totais);
+    console.log("Total de Abonos: ", apontamentos.length);
+    console.log("Total de Abonos FC: ", abonosToUpdate.length);
+
+    $scope.corrigir = function(){      
+      console.log('clicou para corrigir os apontamentos de folga comp.');
+      appointmentAPI.changeAbonoFolgaComp(abonosToUpdate).then(function successCallback(response){
+
+        var objMessage = response.data;
+        console.log(objMessage);
+        $uibModalInstance.close(true);
+
+      }, function errorCallback(response){
+          
+        $scope.errorMsg = response.data.message;
+        $uibModalInstance.close(false);
+      });      
+    }
+  };   
 
 })();

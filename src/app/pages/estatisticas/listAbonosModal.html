@@ -1,0 +1,54 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <em class="ion-ios-close-empty sn-link-close"></em>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">Lista de Abonos do funcionario</h4>
+  </div>
+  <div class="modal-body">
+          
+        <div class="row">
+         <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
+            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Feito!</strong> {{successMsg}}
+          </div>
+
+          <div ng-show="errorMsg" class="alert bg-danger closeable" role="alert">
+            <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Ops!</strong> {{errorMsg}}
+          </div>
+        </div>
+        <h4 class="sub-header"><strong style="color: #334db7;">Dados</strong></h4>
+        
+        <div class="row">
+          <strong>Total de Abonos: {{apontamentos.length}}</strong>
+          <strong>Total de Abonos do tipo Folga Compensatoria: {{abonosToUpdt.length}}</strong>  
+          <strong>Total de horas a remover: {{totais.folgaComp/60}}</strong>
+        </div>
+        <div class="row">
+          <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>                  
+                  <th>Data</th>
+                  <th>Status</th>
+                  <th>InfoTrabalho</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="apont in apontamentos track by $index">
+                    <td>{{$index}}</td>
+                    <td>{{apont.data}}</td>
+                    <td>{{apont.status.descricao}} {{(apont.status.abonoStr)}}</td>
+                    <td>{{apont.infoTrabalho.trabalhados}} de {{apont.infoTrabalho.aTrabalhar}}</td>                                                                                                 
+                </tr>
+              </tbody>
+            </table>
+        </div>   
+    
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-click="corrigir()">Corrigir</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

@@ -186,7 +186,7 @@
       console.log("Data passada: ", $scope.periodo.dataReferencia);
       var flag = utilCorrectApps.changeBaseDate($scope.periodo.dataReferencia, apontamentosTesteCorrect);
 
-    };
+    };        
 
     $scope.gerarPDF = function() {
 
@@ -232,6 +232,24 @@
     };
 
     function generateSuperPDF(beginDate, endDate, interval, arrayFuncionariosApontamentos){
+
+    };
+
+    function correctMarcacoesFtd(apontamentosErrosNull){
+
+      
+      
+      appointmentAPI.correctMarcacoesFtd(apontamentosErrosNull).then(function successCallback(response){
+
+        var resp = response.data;
+        console.log("##*## Correcao dos erros: ", resp);
+        //generateSuperPDF(dateAux, endDateAux, 1, arrayFuncAppoints);
+
+      }, function errorCallback(response){
+        
+        $scope.errorMsg = response.data.message;
+        console.log("Erro ao corrigir apontamentos...");
+      });      
 
     };
 
@@ -333,7 +351,15 @@
         $scope.dataReferenciaEscalaRevezamento = checkEscalaFillData(funcionario, apontamentosResponse);
         $scope.dataReferenciaEscalaRevezamentoFtd = $filter('date')($scope.dataReferenciaEscalaRevezamento, 'dd/MM/yyyy');
         console.log("$scope dataReferencia: ", $scope.dataReferenciaEscalaRevezamento);
-        $scope.periodoApontamento = fillReportHtml(dateAux, endDateAux, 1, apontamentosResponse, funcionario);
+        var objRetorno = fillReportHtml(dateAux, endDateAux, 1, apontamentosResponse, funcionario);
+        var apontamentosErrosNull = objRetorno.erros;
+        if(apontamentosErrosNull.length > 0){
+          //correctMarcacoesFtd(apontamentosErrosNull);
+          //console.log("Erros: ", apontamentosErrosNull);
+          //var correctedApps = utilCorrectApps.correctMarcacoesFtd(apontamentosErrosNull);
+          //console.log("correctMarcacoesFtd: ", correctedApps);
+        }
+        $scope.periodoApontamento = objRetorno.retVal;
 
       }, function errorCallback(response){
         
@@ -527,7 +553,8 @@
     function fillReportHtml (startDate, endDate, interval, apontamentosSemanais, funcionario) {
       
       var interval = interval || 1;
-      var retVal = [];
+      var objRetorno = {retVal: [], erros: []};
+      // var retVal = [];
       var current = new Date(startDate);
       var endDate = new Date(endDate);
 
@@ -546,7 +573,7 @@
       $scope.diasTrabalho = apontamentosSemanais.length;
       $scope.diasParaTrabalhar = 0;
       var minTrabalhados = 0;
-      var minParaTrabalhar = 0;
+      var minParaTrabalhar = 0;      
       
       while (current <= endDate) {//navegar no período solicitado
 
@@ -561,11 +588,14 @@
 
         if (apontamentoF){ //se tiver apontamento já tem os dados de horas trabalhadas
           
-          if (apontamentoF.marcacoes.length > 0 || apontamentoF.status.id == 4) {
+          if (apontamentoF.marcacoes.length > 0 || apontamentoF.status.id == 4 || apontamentoF.status.id == 5) {
 
             console.log('apontamentoF #: ', apontamentoF);
             objEntradasSaidas = util.getEntradasSaidas(apontamentoF);
             // //console.log('objEntradasSaidas: ', objEntradasSaidas);
+            if (objEntradasSaidas.erros){
+              objRetorno.erros.push(apontamentoF);
+            }
             itemApontamento.entradaSaidaFinal = objEntradasSaidas.esFinal;
             itemApontamento.entradasSaidasTodas = objEntradasSaidas.esTodas;
             itemApontamento.arrayEntSai = objEntradasSaidas.arrayEntSai;
@@ -651,7 +681,7 @@
         }
 
         ////////console.log('itemApontamento depois: ', itemApontamento);
-        retVal.push(itemApontamento);
+        objRetorno.retVal.push(itemApontamento);
         current = util.addOrSubtractDays(current, interval);
         i++;
       }
@@ -676,7 +706,7 @@
       // retVal.sort(function(a, b){//ordena o array de datas criadas
       //   return a.order < b.order;
       // });
-      retVal.sort(function (a, b) {
+      objRetorno.retVal.sort(function (a, b) {
         if (a.order > b.order) {
           return 1;
         }
@@ -687,7 +717,7 @@
         return 0;
       });
       //////////console.log('rangeDate calculado e ordenado decresc:', retVal);
-      return retVal;  
+      return objRetorno;  
     };
 
     function getApontamentoFromSpecificDateAndPis(apontamentosSemanais, dataAtual, pis){

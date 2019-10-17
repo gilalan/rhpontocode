@@ -630,6 +630,15 @@ angular.module('BlurAdmin').service("util", function(){
     // apontamentoF.marcacoesFtd.sort(function(a, b){//ordena o array de marcaçõesFtd
     //   return a > b;
     // });
+    var erro = false;
+    for (var i=0; i<apontamentoF.marcacoesFtd.length; i++){
+      if (apontamentoF.marcacoesFtd[i] == null){
+        apontamentoF.marcacoesFtd[i] = "00:00";
+        erro = true;
+      }
+    }
+    console.log("erros encontrados: ", erro);
+
     apontamentoF.marcacoesFtd.sort( function(a,b){ return a.localeCompare(b)} );
 
     var length = apontamentoF.marcacoesFtd.length;
@@ -686,7 +695,8 @@ angular.module('BlurAdmin').service("util", function(){
     var objetoEntradasSaidas = {
       arrayEntSai: arrayEntSai,
       esFinal: esFinal,
-      esTodas: esTodas
+      esTodas: esTodas,
+      erros: erro
     };
     return objetoEntradasSaidas;
   };

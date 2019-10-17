@@ -389,7 +389,7 @@
 
         if (apontamentoF){ //se tiver apontamento já tem os dados de horas trabalhadas
           
-          if (apontamentoF.marcacoes.length > 0 || apontamentoF.status.id == 4) {
+          if (apontamentoF.marcacoes.length > 0 || apontamentoF.status.id == 4 || apontamentoF.status.id == 5) {
 
             console.log('apontamentoF #: ', apontamentoF);
             objEntradasSaidas = util.getEntradasSaidas(apontamentoF);

@@ -26,6 +26,8 @@
     $scope.bancoHoras = false;
     $scope.filtroPonto = false;    
 
+    $scope.obsActive = false;
+    $scope.obsMessage = "";
     $scope.funcionario = {};
     $scope.funcionarioOficial = {};
     $scope.employees = [];
@@ -85,7 +87,7 @@
         $timeout(hideDataError, 8000);
         return $scope.dataErrorMsg;
       }
-      $scope.currentDate = new Date(date);
+      $scope.currentDate = new Date(date);      
       $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
       $scope.periodoSelecionadoFtd = $scope.currentDateFtd + " até ";
       if ($scope.currentDate2){
@@ -93,8 +95,56 @@
       } else {
         $scope.periodoSelecionadoFtd += "data final (selecionar)";
       }
-
+      checkDates();
       //visualizar(date);            
+    };
+
+    function checkDates(){
+      
+      var dataAdmissao = new Date($scope.funcionarioOficial.alocacao.dataAdmissao);  
+      
+      if ($scope.currentDate){
+        //se a data inicial da pesquisa for antes da data de admissão: não pode!
+        if (util.compareOnlyDates($scope.currentDate, dataAdmissao) == -1) {        
+          $scope.datepic.dt = new Date(dataAdmissao);
+          $scope.dataErrorMsg = "Data Inicial deve ser igual ou maior que a data de admissão do colaborador: "+$filter('date')(dataAdmissao, 'dd/MM/yyyy');
+          $scope.currentDate = new Date(dataAdmissao);
+          $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
+          $scope.periodoSelecionadoFtd = $scope.currentDateFtd + " até ";
+          if ($scope.currentDate2){
+            $scope.periodoSelecionadoFtd += $scope.currentDateFtd2;
+          } else {
+            $scope.periodoSelecionadoFtd += "data final (selecionar)";
+          }
+          $timeout(hideDataError, 8000);
+          //return $scope.dataErrorMsg;
+        }
+      }
+      if ($scope.currentDate2){
+
+        if (!$scope.funcionarioOficial.active){
+          console.log("Caso de funcionario demitido...", $scope.funcionarioOficial);
+          if ($scope.funcionarioOficial.historico)
+            if ($scope.funcionarioOficial.historico.datasDemissao)
+              if($scope.funcionarioOficial.historico.datasDemissao.length > 0){
+                var dataDemissao = new Date($scope.funcionarioOficial.historico.datasDemissao[0]);
+                if (util.compareOnlyDates(dataDemissao, $scope.currentDate2) == -1) {
+                  $scope.datepic2.dt = new Date(dataDemissao);
+                  $scope.dataErrorMsg = "A data final deve ser igual ou menor que a data de demissão do colaborador: "+$filter('date')(dataDemissao, 'dd/MM/yyyy');
+                  $scope.currentDate2 = new Date(dataDemissao);
+                  $scope.currentDateFtd2 = $filter('date')($scope.currentDate2, 'abvFullDate');
+                  if ($scope.currentDate){
+                    $scope.periodoSelecionadoFtd = $scope.currentDateFtd + " até " + $scope.currentDateFtd2;
+                  } else {
+                    $scope.periodoSelecionadoFtd = "Data inicial (selecionar) até " + $scope.currentDateFtd2;
+                  }
+                  $timeout(hideDataError, 8000);
+                  //return $scope.dataErrorMsg;
+                }   
+              }
+        }
+      }
+      
     };
 
     $scope.changeDate2 = function(date) {
@@ -127,6 +177,7 @@
       } else {
         $scope.periodoSelecionadoFtd = "Data inicial (selecionar) até " + $scope.currentDateFtd2;
       }
+      checkDates();
       //visualizar($scope.currentDate, date);
     };
 
@@ -196,6 +247,7 @@
 
     $scope.changeFunc = function(funcSel){
       
+      console.log("funcSel: ", funcSel);
       $scope.funcionarioOficial = $scope.equipes[funcSel.indiceEq].componentes[funcSel.indiceComp];
       $scope.funcionarioOficial.equipe = angular.copy(funcSel.equipe);
       //console.log("funcionario ferias do INIT: ", $scope.funcionarioOficial);
@@ -208,10 +260,8 @@
             $scope.funcionarioOficial.ferias[i].periodo.mesFinal-1, $scope.funcionarioOficial.ferias[i].periodo.dataFinal, 0, 0, 0, 0);
         }
       }
-      $scope.infoHorario = util.getInfoHorario($scope.funcionarioOficial, []);
-
-      //if (!lastAllSearch.funcId == funcSel._id)
-      getAllApontamentos($scope.funcionarioOficial);
+      $scope.infoHorario = util.getInfoHorario($scope.funcionarioOficial, []);      
+      checkDates();
     };
 
     $scope.isEmptyFunc = function(){
@@ -225,7 +275,8 @@
     };
 
     $scope.search = function () {
-
+      $scope.obsActive = false;
+      $scope.obsMessage = "";
       if ($scope.checkboxModel.funcionario){
 
         if (!$scope.funcionario.selected){
@@ -239,10 +290,44 @@
           $scope.infoHorario = util.getInfoHorario(funcSel, []);
           equipe = funcSel.equipe;
           // //console.log('funcionario AutoComplete: ', $scope.funcionario.selected);
-          ////console.log('funcionario pego: ', funcSel);
+          console.log('funcionario pego: ', funcSel);
 
+          var dataAdmissao = new Date(funcSel.alocacao.dataAdmissao);
           var dataInicial = $scope.currentDate;//new Date(ano.value, mes._id, 1);
           var dataFinal = $scope.currentDate2;//new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
+
+          //se a data inicial da pesquisa for antes da data de admissão: não pode!
+          if (util.compareOnlyDates(dataInicial, dataAdmissao) == -1) {
+            dataInicial = angular.copy(dataAdmissao);
+            $scope.currentDate = new Date(dataInicial);
+            $scope.currentDateFtd = $filter('date')($scope.currentDate, 'abvFullDate');
+            $scope.obsMessage = "A data inicial era anterior a data de admissão (" + dataAdmissao + ") por conta disso esta ultima foi utilizada como data inicial na busca.";
+            $scope.obsActive = true;
+          }
+          if (util.compareOnlyDates(dataFinal, dataAdmissao) == -1) {
+            return alert("A data final deve ser maior que a data de admissão.");
+          }
+          if (util.compareOnlyDates(new Date(), dataInicial) == -1 || util.compareOnlyDates(new Date(), dataFinal) == -1){
+            return alert ("data inicial ou final não podem ser maiores que a data corrente");            
+          }
+          if (util.compareOnlyDates(dataInicial, dataFinal) == 1){
+            return alert("data final deve ser maior que a data inicial.");            
+          }
+          if (!funcSel.active){
+            console.log("Caso de funcionario demitido...");
+            if ($scope.funcionarioOficial.historico)
+              if ($scope.funcionarioOficial.historico.datasDemissao)
+                if(funcSel.historico.datasDemissao.length > 0){
+                  var dataDemissao = new Date(funcSel.historico.datasDemissao[0]);
+                  if (util.compareOnlyDates(dataDemissao, dataFinal) == -1) {
+                    dataFinal = angular.copy(dataDemissao);
+                    $scope.currentDate2 = new Date(dataFinal);
+                    $scope.currentDateFtd2 = $filter('date')($scope.currentDate2, 'abvFullDate');
+                    $scope.obsMessage = "A data final era posterior a data de demissão (" + dataDemissao + ") por conta disso esta ultima foi utilizada como data final na busca.";
+                    $scope.obsActive = true;
+                  }   
+                }
+          }
 
           getApontamentosByDateRangeAndEquipe(dataInicial, dataFinal, funcSel);          
         }
@@ -254,6 +339,19 @@
         ////console.log('Selected Equipe: ', $scope.selectedEquipe.item);
         //vou ter que calcular os totais para cada employee da equipe e depois gerar o PDF para concatenar num documento so
       }      
+      
+    };
+
+    $scope.searchAll = function(){     
+      
+      if (!$scope.funcionario.selected){
+        
+          alert('Por favor, preencha o campo com o nome do funcionário.');
+
+        } else {
+
+          getAllApontamentos($scope.funcionarioOficial);
+        }
       
     };
 
@@ -318,7 +416,9 @@
 
       // download the PDF
       pdfMake.createPdf(docDefinition).download(strPDFName);
-    };     
+    };    
+
+
 
     /*     
      * Solicita ao servidor um objeto com os apontamentos dos componentes da equipe (apenas 1 componente nesse caso)     
@@ -617,6 +717,7 @@
             indiceComp: j, 
             equipe: $scope.equipes[i], 
             //equipe: $scope.equipes[i].nome
+            dataAdmissao: $scope.equipes[i].componentes[j].alocacao.dataAdmissao,
             id: $scope.equipes[i].componentes[j]._id, 
             name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome,
             matricula: $scope.equipes[i].componentes[j].matricula,

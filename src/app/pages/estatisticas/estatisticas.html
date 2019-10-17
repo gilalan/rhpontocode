@@ -37,10 +37,12 @@
 			      <th>#</th>
 			      <th>Nome</th>
 			      <th>PIS</th>
+			      <th>CARGO</th>
 			      <th>Matricula</th>
 			      <th>Demitido em</th>
 			      <th>Equipe(s)</th>
 			      <th>Corrigir</th>
+			      <th>Recalcular Folga Compensatoria</th>
 			    </tr>
 		    </thead>
 		    <tbody>
@@ -48,6 +50,7 @@
 		        	<td>{{$index}}</td>
 		        	<td>{{emp.name}}</td>
 			        <td>{{emp.PIS}}</td>
+			        <td>{{emp.sexoMasculino ? emp.alocacao.cargo.especificacao : emp.alocacao.cargo.nomeFeminino}}</td>
 			        <td>{{emp.matricula}}</td>
 			        <td>{{emp.FIRED}}</td>
 			        <td>
@@ -56,6 +59,7 @@
     					</p>	
 			        </td>
 			        <td><button type="button" class="btn btn-primary btn-with-icon" ng-click="adjustAppointsEmp(emp)">Corrigir Apontamentos</button></td>
+			        <td><button type="button" class="btn btn-primary btn-with-icon" ng-click="adjustFolgaCompensatoria(emp)">Recalcular</button></td>
 		      </tr>
 		    </tbody>
 		  </table>

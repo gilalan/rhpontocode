@@ -96,8 +96,20 @@ angular.module('BlurAdmin.pages').service("appointmentAPI", function($http, conf
 		return $http.post(_urlBaseApontamentos+'/adjustRepeatedEmployee', employee);
 	};
 
+	svc.adjustFolgaCompensatoria = function(employee){
+		return $http.post(_urlBaseApontamentos+'/adjustFolgaCompensatoria', employee);
+	};
+
 	svc.reverterFerias = function(objEmployeeFerias){
 		return $http.post(_urlBaseApontamentos+'/reverterFerias', objEmployeeFerias);
+	};
+
+	svc.correctMarcacoesFtd = function(arrayApontamentos){
+		return $http.post(_urlBaseApontamentos+'/correctMarcacoesFtd', arrayApontamentos);
+	};
+
+	svc.changeAbonoFolgaComp = function (arrayApontamentos) {
+		return $http.post(_urlBaseApontamentos+'/changeAbonoFolgaComp', arrayApontamentos);	
 	};
 	
 });

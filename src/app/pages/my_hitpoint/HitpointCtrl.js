@@ -373,6 +373,13 @@
           ocorrencia.statusString = "Abonado";
           ocorrencia.statusImgUrl = "assets/img/app/todo/watch-16px.png";
           ocorrencia.observacao = "Ponto Abonado";
+
+        } else if (apontamento.status.id == 5) {
+
+          ocorrencia.statusCodeString = "FOL";
+          ocorrencia.statusString = "Folga Compensatoria";
+          ocorrencia.statusImgUrl = "assets/img/app/todo/mypoint_justified16.png";
+          ocorrencia.observacao = "Falta Justificada";
         }
       }
 

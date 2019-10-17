@@ -3,7 +3,7 @@
  * Serviço utilitário para criação de relatórios em PDF usando o pdfMake
  *
 */
-angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reportsAPI){
+angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reportsAPI, util){
 
 	var svc = this;
 	var diff = 0;
@@ -46,6 +46,25 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
   	});
 	};
 
+  svc.correctMarcacoesFtd = function(apontamentos){
+    
+    var novasMarcacoes = [];
+    for(var i=0; i<apontamentos.length; i++){
+      novasMarcacoes = angular.copy (apontamentos[i].marcacoes);
+      apontamentos[i].marcacoesFtd = [];
+      _adjustUniqueMarcacao(novasMarcacoes);
+      util.reorganizarBatidasPropostas(novasMarcacoes);
+      apontamentos[i].marcacoes = novasMarcacoes;
+      for(var k=0; k<novasMarcacoes.length; k++){
+        apontamentos[i].marcacoesFtd.push( novasMarcacoes[k].strHorario );
+      }
+      apontamentos[i].infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(novasMarcacoes);
+      
+    }
+    return apontamentos;
+
+  };
+
   svc.changeBaseDate = function(newDate, apontamentos){
 
     reportsAPI.setNewBaseDate({newDate: newDate, apontamentos: apontamentos}).then(function successCallback(response){
@@ -83,6 +102,32 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
       console.log('message returned: ', response.data);
     });
      
+  };
+
+  function _adjustUniqueMarcacao(marcacoes){
+
+    var marcacoesRet = [];
+    var marcacao = {};
+    var added = false;
+    for (var i=0; i < marcacoes.length; i++){
+      marcacao = marcacoes[i];
+      added = false;
+      //encontra a marcacao igual e retorna a que seja via REP ou WEB de preferencia.
+      for (var j=i+1; j < marcacoes.length; j++){
+        if (marcacao.hora == marcacoes[j].hora && marcacao.minuto == marcacoes[j].minuto){
+          if ( (marcacao.REP == true || marcacao.RHWeb == true) && (marcacoes[j].REP == false && marcacoes[j].RHWeb == false) ){
+            /*for (var k=0; k < marcacoesRet.length; k++){
+              if (marcacao.hora )
+            }*/
+            console.log("");
+            marcacoes.splice(j, 1);
+          }
+          else {
+            marcacoes.splice(i, 1);
+          }          
+        }  
+      }      
+    }
   };
 
 	function verifyWorkerInfo(apontamento, data, funcionario, feriados, equipe) {
