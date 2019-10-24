@@ -1,0 +1,64 @@
+<div class="modal-content">
+  <form name="motivoForm">
+    <div class="modal-header">
+      <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+        <em class="ion-ios-close-empty sn-link-close"></em>
+      </button>
+      <h4 class="modal-title" id="myModalLabel" style="color: #4933b7;">Marcação de Folga Compensatória</h4>
+      <div class="separator2" style="margin-bottom: 0px;"></div>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label class="modal-label modal-label-associate"><strong>Data: </strong></label>
+              <label class="modal-label modal-label-value" style="font-size: 14px; font-weight: bold; color: #da2626; border: 1px solid #000; padding: 3px;
+    border-radius: 5px;">{{apontamento.dataCompleta}}</label>
+            </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          
+            <h4 class="sub-header"><strong style="color: #334db7; font-size: 13px;">Horário Cadastrado no Sistema</strong></h4>
+              <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal; font-size: 12px;">
+                  <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
+              </p>
+          
+        </div>
+    </div>
+    <div class="separator2" style="margin-bottom: 0px;"></div>
+  <div class="row">
+    <div class="col-sm-12" ng-init="checked=true">
+     <br/>
+     <label class="checkbox-inline custom-checkbox nowrap">
+      <input type="checkbox" id="checkboxTotal" ng-model="folgar.total" ng-checked="checked" ng-click="changeCheckBox()">
+      <span style="color: #9e490d;">Compensar a jornada inteira</span>
+     </label>
+    </div>
+    <br/>
+    <div class="col-sm-12">
+      <label> ou </labek>
+    </div>
+    <br/>
+    <div class="col-sm-12">
+      <div class="form-group">
+        <label for="inputPeriodoParcial">Compensar apenas a seguinte quantidade de horas: </label>
+        <input type="text" class="form-control" id="inputPeriodoParcial" title="Quantidade de horas a ser compensadas" ng-model="parcial" ng-disabled="checked" style="color: #9e490d; max-width: 50px;">
+      </div>
+    </div>
+            
+  </div>
+</div>
+    
+    
+  </form>
+  <div class="separator2" style="margin-bottom: 5px; margin-top: 5px;"></div>
+  <div ng-show="errorMsg" class="alert bg-danger" role="alert">
+    {{errorMsg}}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-disabled="motivoForm.$invalid" ng-click="confirmaFC()">Salvar</button>
+    <button type="button" class="btn btn-danger" ng-click="$dismiss()">Fechar</button>
+  </div>
+</div>

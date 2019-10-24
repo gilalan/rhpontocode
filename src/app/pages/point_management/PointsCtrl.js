@@ -9,7 +9,8 @@
       .controller('PointsCtrl', PointsCtrl)
       .controller('DesconsiderarPointCtrl', DesconsiderarPointCtrl)
       .controller('AddPointCtrl', AddPointCtrl)
-      .controller('TratarPointCtrl', TratarPointCtrl);
+      .controller('TratarPointCtrl', TratarPointCtrl)
+      .controller('EditFolgaCompCtrl', EditFolgaCompCtrl);
 
   /** @ngInject */
   function PointsCtrl($scope, $filter, $location, $state, $uibModal, $timeout, $interval, appointmentAPI, teamAPI, employeeAPI, pointsAPI, Auth, util, utilReports, utilCorrectApps, utilBancoHoras, usuario, feriados, motivosAjuste, allEmployees, allEquipes) {
@@ -48,6 +49,7 @@
     var pageDescPath = 'app/pages/point_management/modals/desconsiderarPointModal.html'; //representa o local que vai estar o html de conteúdo da modal
     var pageIncluirPath = 'app/pages/point_management/modals/addPointModal.html';
     var pageTratarPath = 'app/pages/point_management/modals/tratarPointModal.html';
+    var pageEditFolgaCompPath = 'app/pages/point_management/modals/editFolgaComp.html';
     var defaultSize = 'md'; //representa o tamanho da Modal
 
     
@@ -89,6 +91,40 @@
 
       }, function () {
         ////console.log('modal is dismissed or close.', args);
+      });
+    };
+
+    $scope.editFolgaComp = function(itemApontamento, index){      
+
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: pageEditFolgaCompPath,
+        size: defaultSize,
+        controller: 'EditFolgaCompCtrl',
+        resolve: {
+            apontamentoObj: function () {
+                return itemApontamento;
+            },
+            funcionario: function() {
+                return funcSel;
+            },
+            infoHorario: function() {
+                return $scope.infoHorario;
+            }
+        }
+      });
+
+      modalInstance.result.then(function (valorHoras){
+          
+      if (valorHoras){
+
+          console.log("retornou: ", valorHoras);
+          _createFolgaCompensatoria(itemApontamento, valorHoras);
+                    
+      } 
+
+      }, function () {
+      ////console.log('modal is dismissed or close.', args);
       });
     };
 
@@ -600,6 +636,20 @@
 
     };
 
+    function _createFolgaCompensatoria(itemApontamento, valorHoras){
+      
+      _adjustItemApontamento(itemApontamento, []);
+      itemApontamento.observacao = "Folga Compensatória";
+      itemApontamento.FC = true;
+      // if(!itemApontamento.apontamento){
+      //   _criarNovoApontamentoFC(itemApontamento, valorHoras);
+      // } else {
+      //   _modificarApontamentoFC(itemApontamento, valorHoras);
+      // }
+      // itemApontamento.edited = true;
+
+    };
+
     function _isEdited(itemApontamento, newArrayES){
 
       var changed = false;
@@ -741,10 +791,18 @@
           console.log("apontamento editado, devo enviar");
           if (currentItemApont.apontamento){
             _coletarHistorico(currentItemApont.apontamento);
-            _modificarApontamento(currentItemApont);
+            if (currentItemApont.FC)
+              _modificarApontamentoFC(currentItemApont, -1);
+            else
+              _modificarApontamento(currentItemApont);
             apontamentosModificados.push(currentItemApont.apontamento);
           } else {
-            var newApont = _criarNovoApontamento(currentItemApont);
+            var newApont;
+            if(currentItemApont.FC)
+              newApont = _criarNovoApontamentoFC(currentItemApont, -1);
+            else
+              newApont = _criarNovoApontamento(currentItemApont);
+            
             apontamentosNovos.push(newApont);
           }
         }
@@ -825,6 +883,51 @@
       itemApontamento.apontamento.infoTrabalho = itemApontamento.infoTrabalho;
       itemApontamento.apontamento.status = apontamentoInfo.sta;
       console.log("após mudanças: ", itemApontamento.apontamento);
+    };
+    
+    function _modificarApontamentoFC(itemApontamento, valorHoras){
+
+      console.log("modificar apontamento", itemApontamento.apontamento.data);
+      //var apontamentoInfo = _getInfoApontamento(itemApontamento.arrayEntSai);
+      itemApontamento.apontamento.marcacoes = [];
+      itemApontamento.apontamento.marcacoesFtd = [];
+      itemApontamento.apontamento.infoTrabalho.trabalhados = valorHoras == -1 ? 0 : 60*valorHoras;
+      itemApontamento.apontamento.status = {id: 5, descricao: "Folga Compensatória", abonoStr: ""};
+      console.log("após mudanças: ", itemApontamento.apontamento);
+
+    };
+
+    function _criarNovoApontamentoFC(itemApontamento, valorHoras){
+      
+      console.log("Criando novo apontamento de FOLGA COMP...");
+      var data = util.getOnlyDate(new Date(itemApontamento.rawDate));
+
+      var apontamento = {
+        data: data,
+        funcionario: funcSel,
+        PIS: funcSel.PIS,
+        status: {id: 5, descricao: "Folga Compensatória", abonoStr: ""},
+        justificativa: "",
+        infoTrabalho: itemApontamento.infoTrabalho,
+        marcacoes: [],
+        marcacoesFtd: [],
+        historico: []
+      };
+      
+      if(itemApontamento.infoTrabalho == undefined){
+
+        var infoTrabalho = util.getInfoTrabalho(funcSel, equipe, data, feriados);
+        apontamento.infoTrabalho = infoTrabalho;
+
+      } 
+
+      if (valorHoras == -1)
+        infoTrabalho.trabalhados = 0;      
+      else
+        infoTrabalho.trabalhados = 60*valorHoras;
+
+      console.log('apontamento a ser criado: ', apontamento);
+      return apontamento;
     };
 
     function _criarNovoApontamento(itemApontamento, anotherDate){
@@ -1111,6 +1214,79 @@
       
     };
     
-  };  
+  }; 
+
+  function EditFolgaCompCtrl ($uibModalInstance, $scope, $state, $filter, util, apontamentoObj, funcionario, infoHorario){
+
+    console.log("Apontamentos; ", apontamentoObj);
+    console.log("Funcionario: ", funcionario);
+    $scope.checked = true;
+    var currentDate = new Date(apontamentoObj.data);
+    $scope.parcial = '-';
+    $scope.errorMsg = null;
+    $scope.apontamento = apontamentoObj;
+    $scope.apontamento.dataCompleta = $filter('date')(apontamentoObj.data, 'abvFullDate');
+    $scope.funcionario = funcionario;
+    $scope.infoHorario = infoHorario;
+    // $scope.funcionario.alocacao.jornadaStr = funcionario.alocacao.turno.escala.codigo == 1 ? 
+    // funcionario.alocacao.turno.jornada.array[currentDate.getDay()].horarioFtd : 
+    // funcionario.alocacao.turno.jornada.array[0].horarioFtd;
+
+    $scope.changeCheckBox = function(){
+
+      $scope.checked = !$scope.checked;
+      // if ($scope.checked)
+      //   $scope.parcial = '-';
+      // else
+      //   $scope.parcial = "0";
+    };
+
+    $scope.confirmaFC = function(batida) {
+            
+      if($scope.checked){
+              
+        console.log('esta ok - folga total');
+        $uibModalInstance.close(-1);
+
+      } else {
+
+        alert("Para salvar, faz-se necessario marcar a caixa de Folga Compensatória.");
+        // if(_estaOk()){
+        //   console.log('esta ok - folga parcial');
+        //   $uibModalInstance.close(parseInt($scope.parcial));
+        // }
+        // else
+        //   $scope.errorMsg = "O Valor de quantidade de horas deve ser um numero inteiro positivo.";
+      }
+    };
+
+    function _estaOk(){
+      
+      if(checkInp()){
+        var horas = parseInt($scope.parcial);
+        if(horas > 0)
+          return true;
+        else
+          return false;
+      }
+      else {
+        return false;
+      }      
+    };
+
+    function checkInp()
+    {
+      var x = $scope.parcial;
+      var regex=/^[0-9]+$/;
+      if (x.match(regex))
+      {        
+        return true;
+      }
+      else{
+        return false;
+      }
+    };
+
+  };
 
 })();
