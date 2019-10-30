@@ -646,7 +646,7 @@
       // } else {
       //   _modificarApontamentoFC(itemApontamento, valorHoras);
       // }
-      // itemApontamento.edited = true;
+      itemApontamento.edited = true;
 
     };
 
@@ -922,9 +922,9 @@
       } 
 
       if (valorHoras == -1)
-        infoTrabalho.trabalhados = 0;      
+        apontamento.infoTrabalho.trabalhados = 0;      
       else
-        infoTrabalho.trabalhados = 60*valorHoras;
+        apontamento.infoTrabalho.trabalhados = 60*valorHoras;
 
       console.log('apontamento a ser criado: ', apontamento);
       return apontamento;
