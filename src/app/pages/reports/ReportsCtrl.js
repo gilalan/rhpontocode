@@ -32,6 +32,8 @@
     $scope.funcionario = {};
     $scope.employees = [];
     $scope.employeesNames = []; //Auxiliar para o AutoComplete do Input do nome do funcionario
+    $scope.mes = "";
+    $scope.ano = "";
     $scope.meses = [];
     $scope.anos = [];
     $scope.periodo = {}; //para data de referência da escala de revezamento
@@ -40,6 +42,7 @@
       equipe: false,
       funcionario: true
     };
+    $scope.matchHistorico = false;
     $scope.textoBotao = "Visualizar";
 
     // ////////console.log("### Dentro de ReportsCtrl!!!", $scope.gestor);
@@ -98,11 +101,26 @@
 
         } else {
 
+          $scope.matchHistorico = false;
           funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);
+          $scope.mes = mes;
+          $scope.ano = ano;
           $scope.infoHorario = [];
           $scope.infoHorario = util.getInfoHorario(funcSel, []);
           equipe = funcSel.equipe;
-          // console.log('funcionario AutoComplete: ', $scope.funcionario.selected);
+          
+          if (funcSel.historico){
+            if (funcSel.historico.turnos){
+              if (funcSel.historico.turnos.length > 0){
+                $scope.horarioHistorico = {};
+                $scope.horarioHistorico = util.getInfoHorarioHistorico(funcSel, [], mes, ano);
+                if ($scope.horarioHistorico) {
+                  $scope.matchHistorico = true;
+                }
+              }
+            }
+          }          
+          console.log('periodo: ' + mes._id + ", " + ano.value);
           console.log('funcionario pego: ', funcSel);
           //$scope.infoHorario = util.getInfoHorario(funcSel, []);
 
@@ -178,6 +196,12 @@
 
       utilCorrectApps.correctArray(funcSel, 
         $scope.infoHorario, apontamentosTesteCorrect, totais, feriados, equipe);
+
+    };
+
+    $scope.corrigirErroZerados = function(){
+
+      utilCorrectApps.correctRepeatedAppointments(apontamentosTesteCorrect);
 
     };
 
@@ -350,7 +374,7 @@
         ////console.log("!@# Apontamentos do funcionário: ", apontamentosResponse);
         $scope.dataReferenciaEscalaRevezamento = checkEscalaFillData(funcionario, apontamentosResponse);
         $scope.dataReferenciaEscalaRevezamentoFtd = $filter('date')($scope.dataReferenciaEscalaRevezamento, 'dd/MM/yyyy');
-        console.log("$scope dataReferencia: ", $scope.dataReferenciaEscalaRevezamento);
+        //console.log("$scope dataReferencia: ", $scope.dataReferenciaEscalaRevezamento);
         var objRetorno = fillReportHtml(dateAux, endDateAux, 1, apontamentosResponse, funcionario);
         var apontamentosErrosNull = objRetorno.erros;
         if(apontamentosErrosNull.length > 0){
@@ -452,9 +476,12 @@
     };
 
     function fillEmployees(){
+      var cargoTemp;
       ////console.log('gsetor, equipes comonentes: ', $scope.equipes);
       for (var i=0; i<$scope.equipes.length; i++){
         for (var j=0; j<$scope.equipes[i].componentes.length; j++) {
+          //console.log('C: ', $scope.equipes);
+          cargoTemp = $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino;
           setEquipeAttrsForEmployee($scope.equipes[i].componentes[j], $scope.equipes[i]);
           $scope.employees.push($scope.equipes[i].componentes[j]);
           $scope.employeesNames.push( { 
@@ -462,14 +489,14 @@
             name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome,
             matricula: $scope.equipes[i].componentes[j].matricula,
             PIS: $scope.equipes[i].componentes[j].PIS,
-            cargo: $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino,
+            cbNameMatr: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome + ', ' + 
+            $scope.equipes[i].componentes[j].matricula + '(' + $scope.equipes[i].nome + ' - '+ cargoTemp +')',
+            cargo: cargoTemp,
             equipe: $scope.equipes[i].nome
             // equipe: $scope.equipes[i]
           });
         }
-      }
-
-      ////////console.log('employees: ', $scope.employeesNames);
+      }      
     };
 
     function setEquipeAttrsForEmployee(employee, equipe){
@@ -545,7 +572,7 @@
 
     function fillAnos() {
 
-      $scope.anos = [{value: '2019'}, {value: '2018'}, {value: '2017'}, {value: '2016'}, {value: '2015'}, {value: '2014'}, {value: '2013'}];
+      $scope.anos = [{value: '2020'}, {value: '2019'}, {value: '2018'}, {value: '2017'}];
       $scope.selectedAno = { item: $scope.anos[0] };
       ano = $scope.anos[0];
     };
@@ -584,13 +611,13 @@
         itemApontamento.rawDate = new Date(current);
         itemApontamento.data = $filter('date')(new Date(current), 'abvFullDate2');
         itemApontamento.dataReport = $filter('date')(new Date(current), 'dd/EEE');
-        console.log('current ', current);
+        //console.log('current ', current);
 
         if (apontamentoF){ //se tiver apontamento já tem os dados de horas trabalhadas
           
           if (apontamentoF.marcacoes.length > 0 || apontamentoF.status.id == 4 || apontamentoF.status.id == 5) {
 
-            console.log('apontamentoF #: ', apontamentoF);
+            //console.log('apontamentoF #: ', apontamentoF);
             objEntradasSaidas = util.getEntradasSaidas(apontamentoF);
             // //console.log('objEntradasSaidas: ', objEntradasSaidas);
             if (objEntradasSaidas.erros){
@@ -754,8 +781,7 @@
         getAllEmployees(allEmployees, allEquipes);
 
       } else {
-
-        ////////console.log("Não deve ter acesso.");
+        
         $scope.errorMsg = "Este funcionário não tem permissão para visualizar estas informações";
 
       }

@@ -739,16 +739,20 @@
     };
 
     function fillEmployees(){
-
+      var cargoTemp;
       for (var i=0; i<$scope.equipes.length; i++){
         for (var j=0; j<$scope.equipes[i].componentes.length; j++) {
+          cargoTemp = $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino;
           $scope.employees.push($scope.equipes[i].componentes[j]);
           $scope.employeesNames.push( { 
             indiceEq: i, 
             indiceComp: j, 
             equipe: $scope.equipes[i],
-            id: $scope.equipes[i].componentes[j]._id, 
-            name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome
+            id: $scope.equipes[i].componentes[j]._id,
+            name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome,
+            cbNameMatr: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome + ', ' + 
+            $scope.equipes[i].componentes[j].matricula + '(' + $scope.equipes[i].nome + ' - '+ cargoTemp +')',
+            cargo: cargoTemp
           });
         }
       }

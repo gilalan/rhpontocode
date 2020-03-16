@@ -707,9 +707,11 @@
     };
 
     function fillEmployees(){
-      //////console.log('gsetor, equipes comonentes: ', $scope.equipes);
+      
+      var cargoTemp;
       for (var i=0; i<$scope.equipes.length; i++){
         for (var j=0; j<$scope.equipes[i].componentes.length; j++) {
+          cargoTemp = $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino;
           setEquipeAttrsForEmployee($scope.equipes[i].componentes[j], $scope.equipes[i]);
           $scope.employees.push($scope.equipes[i].componentes[j]);
           $scope.employeesNames.push( {
@@ -722,7 +724,9 @@
             name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome,
             matricula: $scope.equipes[i].componentes[j].matricula,
             PIS: $scope.equipes[i].componentes[j].PIS,
-            cargo: $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino
+            cbNameMatr: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome + ', ' + 
+            $scope.equipes[i].componentes[j].matricula + '(' + $scope.equipes[i].nome + ' - '+ cargoTemp +')',
+            cargo: cargoTemp
           });
         }
       }

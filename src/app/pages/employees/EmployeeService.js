@@ -68,5 +68,12 @@ angular.module('BlurAdmin.pages.employees').service("employeeAPI", function($htt
 
 		return $http.post(_urlBaseFuncionarios+'/'+idFuncionario+'/equipe', {});
 	};
+
+	svc.checkMatricula = function(matricula) {
+		return $http.post(_urlBaseFuncionarios+'/checkMatricula', matricula);
+	};
 	
+	svc.checkEmail = function(email) {
+		return $http.post(_urlBaseFuncionarios+'/checkEmail', email);
+	};
 });

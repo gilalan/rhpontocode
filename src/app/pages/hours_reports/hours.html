@@ -35,7 +35,7 @@
 
 			<div class="col-lg-6 col-md-6" style="padding-top: 30px;">
 		        <label style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.funcionario" ng-change="clickEmployeeCB()">Funcionário:</label>
-		    	<input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control" typeahead-on-select="changeFunc(funcionario.selected)" ng-blur="isEmptyFunc()">
+		    	<input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.cbNameMatr for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control" typeahead-on-select="changeFunc(funcionario.selected)" ng-blur="isEmptyFunc()">
 			</div>
 	    </div>
 

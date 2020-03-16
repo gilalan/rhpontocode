@@ -9,7 +9,7 @@
       .controller('NewEmployeeCtrl', NewEmployeeCtrl);
 
   /** @ngInject */
-  function NewEmployeeCtrl($scope, $filter, $state, $window, employeeAPI, cargos, turnos, instituicoes) {
+  function NewEmployeeCtrl($scope, $filter, $state, $window, $timeout, employeeAPI, cargos, turnos, instituicoes) {
 
     // console.log("dentro do NewEmployeeCtrl! Lista de cargos: ", cargos);
     // console.log("dentro do NewEmployeeCtrl! Lista de turnos: ", turnos);
@@ -20,7 +20,7 @@
     $scope.cargos = cargos.data;
     $scope.turnos = turnos.data;
     $scope.instituicoes = instituicoes.data;
-    $scope.perfis = [{id: 1, nome: 'Colaborador'}, {id: 2, nome: 'Fiscal'}, {id: 3, nome: 'Gestor'}];
+    $scope.perfis = [{id: 1, nome: 'Colaborador'}, {id: 2, nome: 'Fiscal'}, {id: 3, nome: 'Gestor'}];    
     
     $scope.selectedPerfil = { item: $scope.perfis[0] };
 
@@ -32,6 +32,69 @@
     if ($scope.instituicoes.length > 0)
       $scope.selectedInst = { item: $scope.instituicoes[0] };
     
+    $scope.outMatr = function(matricula) {
+
+      //var matricula = funcionario.matricula;
+      if (matricula != null && matricula != ""){
+        console.log("matricula", matricula);
+        employeeAPI.checkMatricula({'matr': matricula}).then(function sucessCallback(response){
+
+          console.log("dados recebidos: ", response.data);
+          var func = response.data;          
+          if (func){
+            $window.scrollTo(0, 0);
+            $scope.errorMsg = "Número de matrícula já existe!";
+            $timeout(hideTimeErrorMsg, 5000);
+            return $scope.errorMsg;
+          } else {
+            $window.scrollTo(0, 0);
+            $scope.successMsg = "Número de matrícula válido.!";
+            $timeout(hideTimeSuccMsg, 5000);
+            return $scope.successMsg;
+          }
+          //back to list
+          //$state.go('employees.list');
+
+        }, function errorCallback(response){
+          
+          $window.scrollTo(0, 0);
+          $scope.errorMsg = response.data.message;
+          console.log("Erro ao inserir matricula: " + response.data.message);
+        });   
+      }
+    };
+
+    $scope.outEmail = function(email) {
+
+      if (email != null && email != ""){
+        console.log("email", email);
+        employeeAPI.checkEmail({'email': email}).then(function sucessCallback(response){
+
+          console.log("dados recebidos: ", response.data);
+          var func = response.data;          
+          if (func){
+            $window.scrollTo(0, 0);
+            $scope.errorMsg = "E-mail já existe!";
+            $timeout(hideTimeErrorMsg, 5000);
+            return $scope.errorMsg;
+          } else {
+            $window.scrollTo(0, 0);
+            $scope.successMsg = "E-mail válido.!";
+            $timeout(hideTimeSuccMsg, 5000);
+            return $scope.successMsg;
+          }
+          //back to list
+          //$state.go('employees.list');
+
+        }, function errorCallback(response){
+          
+          $window.scrollTo(0, 0);
+          $scope.errorMsg = response.data.message;
+          console.log("Erro ao inserir e-mail: " + response.data.message);
+        });   
+      }
+    };
+
     $scope.save = function (funcionario) {
 
       if (!funcionario.email || funcionario.email == ""){
@@ -98,10 +161,20 @@
       $scope.isInitDateRequired = (turno.escala.codigo == 2) ? true : false;
     }
     
+    function hideTimeErrorMsg(seconds){
+      $scope.errorMsg = null;
+    };
+
+    function hideTimeSuccMsg(seconds){
+      $scope.successMsg = null;
+    };
+
     if ($scope.turnos.length > 0) {
       $scope.selectedTurno = { item: $scope.turnos[0] };
       $scope.checkEscala($scope.selectedTurno.item);
     }
+
+
 
   }
 

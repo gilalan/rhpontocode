@@ -46,6 +46,93 @@ angular.module('BlurAdmin').service("utilCorrectApps", function($filter, reports
   	});
 	};
 
+  svc.correctRepeatedAppointments = function(apontamentos){
+
+    var arrayApps = [];
+    var hasNull = false;
+    var marcacoesAntigas = [];
+    var marcacoesREP = [];
+    var marcacoesMAN = [];
+    for (var i=0; i<apontamentos.length; i++){
+
+      hasNull = false;
+      marcacoesAntigas = [];
+      marcacoesREP = [];
+      marcacoesMAN = [];
+
+      if (apontamentos[i].marcacoesFtd){
+        for (var j=0; j<apontamentos[i].marcacoesFtd.length; j++){
+          //o certo seria null, mas eh uma string e vou ter que botar 00:00, cuidado se o func tiver um batimento de verrdade nessa hora
+          //console.log("App "+i+", marc " + j + ", " + typeof(apontamentos[i].marcacoesFtd[j]));
+          if (apontamentos[i].marcacoesFtd[j] == "00:00"){
+            hasNull = true;
+            break;
+          }
+        }
+      }
+
+      if (hasNull){
+        console.log('apontamento: ', apontamentos[i]);
+        marcacoesAntigas = apontamentos[i].marcacoes;
+        for (var k=0; k<apontamentos[i].marcacoes.length; k++){
+          if (apontamentos[i].marcacoes[k].REP == true)
+            marcacoesREP.push(apontamentos[i].marcacoes[k]);
+          else
+            marcacoesMAN.push(apontamentos[i].marcacoes[k]);
+        }
+        
+        if (marcacoesREP.length % 2 == 0){
+
+          apontamentos[i].marcacoes = marcacoesREP;
+
+        } else { //caso de número impar de marcacoes (status = incorreto)
+
+          apontamentos[i].marcacoes = [];
+          for (var r=0; r<marcacoesREP.length; r++){
+            apontamentos[i].marcacoes.push(marcacoesREP[r]);
+            for (var m=0; m<marcacoesMAN.length; m++){
+              console.log("Result: ");
+              if ( Math.abs(marcacoesREP[r].totalMin - marcacoesMAN[m].totalMin) <= 10) {
+                marcacoesMAN[m].DELETED = true;
+              }
+              else {
+                apontamentos[i].marcacoes.push(marcacoesMAN[m]);
+              }
+            }
+          }
+
+          apontamentos[i].status = {
+            id: 3,
+            descricao: "Justificado",
+            justificativaStr: "Esquecimento"
+          };
+        }
+        util.reorganizarBatidasPropostas(apontamentos[i].marcacoes);
+        apontamentos[i].marcacoesFtd = util.getMarcacoesFtd(apontamentos[i].marcacoes);
+        apontamentos[i].infoTrabalho.trabalhados = util.calcularHorasMarcacoesPropostas(apontamentos[i].marcacoes);
+
+        arrayApps.push({
+          _id: apontamentos[i]._id,
+          trabalhados: apontamentos[i].infoTrabalho.trabalhados,
+          marcacoes: apontamentos[i].marcacoes,
+          marcacoesFtd: apontamentos[i].marcacoesFtd,
+          status: apontamentos[i].status
+        });
+      }
+    }    
+
+    //console.log('apontamentos corrigidos: ', apontamentos);
+      
+    reportsAPI.setApontamentosRemoveZerados(arrayApps).then(function successCallback(response){
+          
+      console.log('message returned: ', response.data);
+
+    }, function errorCallback(response){
+      
+      console.log('message returned: ', response.data);
+    });
+  };
+
   svc.correctMarcacoesFtd = function(apontamentos){
     
     var novasMarcacoes = [];

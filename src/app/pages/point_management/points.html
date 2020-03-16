@@ -8,20 +8,44 @@
 	<h1 style="font-size: 13px;">Atenção: O Ajuste/Correção de batidas segue as diretrizes governamentais, entre elas a portaria 1510 do MTE que informa que uma batida efetuada por um colaborador jamais poderá ser editada/removida, apenas desconsiderada e devidamente motivada.</h1>
     <!-- <div class="row" ng-if="!isAdmin"> -->
     <div class="row">
-		<div class="col-lg-8 col-md-8" >
+		<div class="col-lg-12 col-md-12" >
 	        <label style="color: #33aab7;">Funcionário:</label>
-	    	<input style="margin-bottom: 10px;" type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
-	    	<p><strong>Equipe: </strong> {{funcionario.selected.equipe}}</p>
-		    <p><strong>Nome e Cargo: </strong> {{funcionario.selected.name}} - {{funcionario.selected.cargo}}</p>
-        	<p class="muted"><strong>Matrícula: </strong>{{funcionario.selected.matricula}} </p>
-        	<p class="muted"><strong>PIS: </strong>{{funcionario.selected.PIS}} </p>
+	    	<input style="margin-bottom: 10px;" type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.cbNameMatr for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
 		</div>
-		<div class="col-lg-4 col-md-4">
-			<h4 class="sub-header"><strong style="color: #334db7;">Horário Cadastrado no Sistema</strong></h4>
-		    <p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
+    </div>
+    <div class="separator"></div>
+    <div class="row">
+    	<div class="col-md-4">
+			<h4 class="sub-header"><strong style="color: #334db7;">Informações do Funcionário</strong></h4>
+		    <p><strong>Equipe: </strong>{{funcionario.selected.equipe}}</p>
+		    <p><strong>Nome: </strong>{{funcionario.selected.name}} </p>
+		    <p><strong>Cargo: </strong>{{funcionario.selected.cargo}}</p>
+        	<p class="muted">Matrícula: {{funcionario.selected.matricula}} </p>
+        	<p class="muted">PIS: {{funcionario.selected.PIS}} </p>
+		    
+    	</div>
+    	<div class="col-md-4">
+    		<h4 class="sub-header"><strong style="color: #334db7;">Horário Atualmente Cadastrado</strong></h4>
+    		<p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
 		        <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
 		    </p>
-		</div>
+    	</div>
+    	<div class="col-md-4">
+    		<div class="row" ng-if="matchHistorico">
+	    		<div style="border: 2px solid #4bbb4b; border-radius: 8px; padding: 5px; display: inline-block;">
+		    		<h4 class="sub-header"><strong style="color: #334db7;">Horário no Período {{mes.nome}}/{{ano.value}}</strong></h4>
+		    		<p ng-repeat="itemHorarioHist in horarioHistorico.infoHorario track by $index" style="font-weight: normal;">
+				        <strong>{{itemHorarioHist.dia}}:</strong> {{itemHorarioHist.horario}}
+				    </p>
+				    <p><strong>Vigência deste horário: </strong>{{horarioHistorico.vigencia.inicio | date : "MMMM/y"}} até {{horarioHistorico.vigencia.fim | date : "MMMM/y"}}</p>
+				</div>
+			</div>
+
+			<div class="row" ng-if="!matchHistorico">
+				<h4 class="sub-header">-- Sem Histórico de Horários no Período {{mes.nome}}/{{ano.value}} --</h4>
+				<p> O horário válido é o atualmente cadastrado no sistema, mostrado ao lado. </p>
+			</div>
+    	</div>	
     </div>
     <div class="separator"></div>
     <div class="row"> 

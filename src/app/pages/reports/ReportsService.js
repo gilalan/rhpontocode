@@ -38,6 +38,11 @@ angular.module('BlurAdmin.pages.reports').service("reportsAPI", function($http, 
 		return $http.post(_urlBaseReports + '/getAll', objEquipe);
 	};
 
+	svc.setApontamentosRemoveZerados = function(arrayApps) {
+
+		return $http.post(_urlBaseReports + '/updateRemoveZeros', arrayApps);
+	};
+
 	// svc.update = function (solicitacao) {
 
 	// 	return $http.put(_urlBaseReports + '/' + solicitacao._id, solicitacao);

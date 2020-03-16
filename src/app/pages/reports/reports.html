@@ -43,7 +43,7 @@
 	        <label style="color: #33aab7;"><input type="checkbox" ng-model="checkboxModel.funcionario" ng-change="clickEmployeeCB()">Funcionário:</label>
 		    <!-- <pre>Model: {{funcionario.selected | json}}</pre> -->
 		    
-	    	<input type="text"  ng-disabled="!checkboxModel.funcionario" ng-model="funcionario.selected" uib-typeahead="employee as employee.name for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
+	    	<input type="text"  ng-disabled="!checkboxModel.funcionario" ng-model="funcionario.selected" uib-typeahead="employee as employee.cbNameMatr for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
 
 	    	
     		<button id="idBtnSearch" type="button" class="btn btn-primary btn-with-icon" ng-if="isAdmin"  ng-click="buildAllReports()">
@@ -53,19 +53,36 @@
     </div>
     <div class="separator"></div>
     <div class="row">
-    	<div class="col-md-6">
+    	<div class="col-md-4">
 			<h4 class="sub-header"><strong style="color: #334db7;">Informações do Funcionário</strong></h4>
 		    <p>Equipe: {{funcionario.selected.equipe}}</p>
-		    <p>Nome e Cargo: {{funcionario.selected.name}} - {{funcionario.selected.cargo}}</p>
+		    <p>Nome: {{funcionario.selected.name}} </p>
+		    <p>Cargo: {{funcionario.selected.cargo}}</p>
         	<p class="muted">Matrícula: {{funcionario.selected.matricula}} </p>
         	<p class="muted">PIS: {{funcionario.selected.PIS}} </p>
 		    
     	</div>
-    	<div class="col-md-6">
-    		<h4 class="sub-header"><strong style="color: #334db7;">Horário Cadastrado no Sistema</strong></h4>
+    	<div class="col-md-4">
+    		<h4 class="sub-header"><strong style="color: #334db7;">Horário Atualmente Cadastrado</strong></h4>
     		<p ng-repeat="itemHorario in infoHorario track by $index" style="font-weight: normal;">
 		        <strong>{{itemHorario.dia}}:</strong> {{itemHorario.horario}}
 		    </p>
+    	</div>
+    	<div class="col-md-4">
+    		<div class="row" ng-if="matchHistorico">
+	    		<div style="border: 2px solid #4bbb4b; border-radius: 8px; padding: 5px; display: inline-block;">
+		    		<h4 class="sub-header"><strong style="color: #334db7;">Horário no Período {{mes.nome}}/{{ano.value}}</strong></h4>
+		    		<p ng-repeat="itemHorarioHist in horarioHistorico.infoHorario track by $index" style="font-weight: normal;">
+				        <strong>{{itemHorarioHist.dia}}:</strong> {{itemHorarioHist.horario}}
+				    </p>
+				    <p><strong>Vigência deste horário: </strong>{{horarioHistorico.vigencia.inicio | date : "MMMM/y"}} até {{horarioHistorico.vigencia.fim | date : "MMMM/y"}}</p>
+				</div>
+			</div>
+
+			<div class="row" ng-if="!matchHistorico">
+				<h4 class="sub-header">-- Sem Histórico de Horários no Período {{mes.nome}}/{{ano.value}} --</h4>
+				<p> O horário válido é o atualmente cadastrado no sistema, mostrado ao lado. </p>
+			</div>
     	</div>	
     </div>
     <div class="separator"></div>

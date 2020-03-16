@@ -39,6 +39,9 @@
     $scope.anos = [];
     $scope.periodoApontamento = [];
     $scope.textoBotao = "Visualizar";
+    $scope.mes = "";
+    $scope.ano = "";
+    $scope.matchHistorico = false;
 
     //Para auxílio no cálculo do banco de horas
     var saldoFinalPositivo = 0;
@@ -142,11 +145,25 @@
 
       } else {
 
+        $scope.matchHistorico = false;
         funcSel = searchEmployee($scope.funcionario.selected.id, $scope.employees);
+        $scope.mes = mes;
+        $scope.ano = ano;
         $scope.infoHorario = [];
         $scope.infoHorario = util.getInfoHorario(funcSel, []);
         equipe = funcSel.equipe;
-        console.log('funcionario pego: ', funcSel);
+        //console.log('funcionario pego: ', funcSel);
+        if (funcSel.historico){
+          if (funcSel.historico.turnos){
+            if (funcSel.historico.turnos.length > 0){
+              $scope.horarioHistorico = {};
+              $scope.horarioHistorico = util.getInfoHorarioHistorico(funcSel, [], mes, ano);
+              if ($scope.horarioHistorico) {
+                $scope.matchHistorico = true;
+              }
+            }
+          }
+        } 
 
         var dataInicial = new Date(ano.value, mes._id, 1);
         var dataFinal = new Date(ano.value, mes._id+1, 1);//primeiro dia do mês posterior
@@ -291,8 +308,10 @@
     };
 
     function fillEmployees(){
+      var cargoTemp;
       for (var i=0; i<$scope.equipes.length; i++){
         for (var j=0; j<$scope.equipes[i].componentes.length; j++) {
+          cargoTemp = $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino;
           setEquipeAttrsForEmployee($scope.equipes[i].componentes[j], $scope.equipes[i]);
           $scope.employees.push($scope.equipes[i].componentes[j]);
           $scope.employeesNames.push( { 
@@ -300,7 +319,9 @@
             name: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome,
             matricula: $scope.equipes[i].componentes[j].matricula,
             PIS: $scope.equipes[i].componentes[j].PIS,
-            cargo: $scope.equipes[i].componentes[j].sexoMasculino ? $scope.equipes[i].componentes[j].alocacao.cargo.especificacao : $scope.equipes[i].componentes[j].alocacao.cargo.nomeFeminino,
+            cbNameMatr: $scope.equipes[i].componentes[j].nome + ' ' + $scope.equipes[i].componentes[j].sobrenome + ', ' + 
+            $scope.equipes[i].componentes[j].matricula + '(' + $scope.equipes[i].nome + ' - '+ cargoTemp +')',
+            cargo: cargoTemp,
             equipe: $scope.equipes[i].nome
           });
         }
@@ -380,7 +401,7 @@
 
     function fillAnos() {
 
-      $scope.anos = [{value: '2019'}, {value: '2018'}, {value: '2017'}, {value: '2016'}, {value: '2015'}, {value: '2014'}, {value: '2013'}];
+      $scope.anos = [{value: '2020'}, {value: '2019'}, {value: '2018'}, {value: '2017'}];
       $scope.selectedAno = { item: $scope.anos[0] };
       ano = $scope.anos[0];
     };

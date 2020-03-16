@@ -128,6 +128,127 @@ angular.module('BlurAdmin').service("util", function(){
       return infoHorario;
   };
 
+  //Traz um cabeçalho de informações com o horário do funcionário em questão
+  svc.getInfoHorarioHistorico = function(funcionario, infoHorario, mesObj, anoObj) {
+
+      var weekFullDays = ["Domingo","Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+      var turnosHistorico = funcionario.historico.turnos;
+      console.log("QUantidade de turnos historico: ", turnosHistorico.length);
+      var mes = mesObj._id;
+      var ano = parseInt(anoObj.value);
+      var turnoObt = null;
+      var dateRef = new Date(ano, mes, 1, 0, 0, 0, 0);
+      console.log("dateRef: ", dateRef);
+      var startDate, endDate;
+      for (var i=turnosHistorico.length-1; i>=0; i--){
+        startDate = new Date(turnosHistorico[i].vigencia.inicio);
+        endDate = new Date(turnosHistorico[i].vigencia.fim);
+        if ( (svc.compareOnlyDates(dateRef, startDate) >= 0) && (svc.compareOnlyDates(dateRef, endDate) <= 0) ) {
+          console.log('Entra aqui se a data de referencia da pesquisa estiver entre a vigencia de algum turno ');
+          turnoObt = turnosHistorico[i];
+          break;
+        }
+      }
+      //Se bateu a data pesquisada com um histórico de turno...
+      if (turnoObt) {
+
+        var jornada;
+        var escala = turnoObt.escala;
+        var dia = null;
+        var itemHorario = {};
+        var flagRepetido = false;
+        var itemRepetido = null;
+
+        if (escala && escala.codigo == 1) { //jornada semanal
+
+          jornada = turnoObt.jornada;
+          //////console.log("jornadada: ", jornada);
+          if (jornada && jornada.array){
+            jornada.array.sort(function (a, b) { //ordena por segurança
+              if (a.dia > b.dia) {
+                return 1;
+              }
+              if (a.dia < b.dia) {
+                return -1;
+              }
+              // a must be equal to b
+              return 0;
+            });
+            for (var i=0; i<jornada.array.length; i++){
+              itemHorario = {};
+              flagRepetido = false;
+              dia = jornada.array[i].dia;
+              itemHorario.dia = weekFullDays[dia];
+              if (!jornada.array[i].horarios){
+                itemHorario.horario = "Descanso Semanal Remunerado";
+                itemHorario.minTrabalho = 0;
+                infoHorario.folgas == null ? infoHorario.folgas = [dia] : infoHorario.folgas.push(dia);
+              }
+              else {
+                itemHorario.horario = jornada.array[i].horarioFtd.replace(/\//g, " às ");
+                itemHorario.minTrabalho = jornada.array[i].minutosTrabalho;
+              }
+              for (var j=0; j<infoHorario.length; j++){
+                if (infoHorario[j].horario == itemHorario.horario){
+                  flagRepetido = true;
+                  itemRepetido = infoHorario[j];
+                }
+              }
+              if (!flagRepetido)
+                infoHorario.push(itemHorario);
+              else
+                itemRepetido.dia = itemRepetido.dia.concat(",", itemHorario.dia);
+            }
+          }
+
+        } else if (escala && escala.codigo == 2){
+
+          jornada = turnoObt.jornada;
+          if (jornada.array.length == 1){
+            if (jornada.array[0].horarios){
+              itemHorario.dia = "Revezamento 12 x 36h (dia sim, dia não)";
+              itemHorario.horario = jornada.array[0].horarioFtd.replace(/\//g, " às ");
+              itemHorario.minTrabalho = jornada.minutosTrabalho;
+              infoHorario.push(itemHorario);
+            }
+          }
+        }
+
+        infoHorario.sort(function (a, b) { //ordena para deixar os DSR por último
+        if (a.horario.includes("Descanso")) {
+          return 1;
+        }
+        else {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+        });
+
+        //condensar linhas com mesmo horário
+        var arrayStrRep = null;
+        for (var i=0; i<infoHorario.length; i++){
+
+        arrayStrRep = infoHorario[i].dia.split(',');
+        if (arrayStrRep.length == 2)
+          infoHorario[i].dia = arrayStrRep[0].concat(" e ", arrayStrRep[1]);
+        else if (arrayStrRep.length > 2)
+          infoHorario[i].dia = arrayStrRep[0].concat(" à ", arrayStrRep[arrayStrRep.length-1]);        
+        }
+
+        return {
+          infoHorario: infoHorario, 
+          vigencia: {
+            inicio: new Date(turnoObt.vigencia.inicio),
+            fim: new Date(turnoObt.vigencia.fim)
+          }
+        };
+
+      } else {
+        return null;
+      }      
+  };
+
   svc.getInfoSolicitacaoAjuste = function(solicitacaoAjuste){
 
       var arrayAnterior = solicitacaoAjuste.anterior.marcacoes;
@@ -306,6 +427,18 @@ angular.module('BlurAdmin').service("util", function(){
     }
     // console.log("justificativaStr: ", justStr);
     return justStr;
+  };
+
+  svc.getMarcacoesFtd = function(marcacoes){
+
+    var hourMinObj = {};
+    var marcacoesFtd = [];
+    for (var i=0; i<marcacoes.length; i++){
+      hourMinObj = svc.converteParaHoraMinutoSeparados(marcacoes[i].totalMin);
+      marcacoesFtd.push(""+hourMinObj.hora+":"+hourMinObj.minuto);
+    }
+    return marcacoesFtd;
+
   };
 
   /*
@@ -637,7 +770,7 @@ angular.module('BlurAdmin').service("util", function(){
         erro = true;
       }
     }
-    console.log("erros encontrados: ", erro);
+    //console.log("erros encontrados: ", erro);
 
     apontamentoF.marcacoesFtd.sort( function(a,b){ return a.localeCompare(b)} );
 

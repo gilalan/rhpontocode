@@ -48,13 +48,13 @@
     <div class="col-sm-6">
       <div class="form-group">
         <label for="inputMatricula">Matrícula</label>
-        <input type="text" class="form-control" id="inputMatricula" placeholder="Matrícula" ng-model="funcionario.matricula">
+        <input type="text" class="form-control" id="inputMatricula" placeholder="Matrícula" ng-model="funcionario.matricula" ng-blur="outMatr(funcionario.matricula)">
       </div>
     </div>
     <div class="col-sm-6">
       <div class="form-group">
         <label for="inputEmail">E-mail</label>
-        <input type="text" class="form-control" id="inputEmail" placeholder="E-mail" ng-model="funcionario.email">
+        <input type="text" class="form-control" id="inputEmail" placeholder="E-mail" ng-model="funcionario.email" ng-blur="outEmail(funcionario.email)">
       </div>
     </div>
   </div>
@@ -185,4 +185,5 @@
     </div>
   </div>
 </form>
-<button type="submit" class="btn btn-primary" ng-disabled="funcionarioForm.$invalid" ng-click="save(funcionario)">Salvar</button>
+<label for="btnSaveFuncionario" style="color: red;">Atenção: Após Salvar e cadastrar o funcionário, não esquecer de associar o novo funcionário em uma equipe para que seja habilitada a função de Espelho de Ponto. A associação de um funcionário em uma equipe é realizada através do menu lateral esquerdo na opção "Equipes".</label>
+<button id="btnSaveFuncionario" type="submit" class="btn btn-primary" ng-disabled="funcionarioForm.$invalid" ng-click="save(funcionario)">Salvar</button>
