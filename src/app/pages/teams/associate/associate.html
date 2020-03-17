@@ -9,7 +9,7 @@
          ba-panel
          ba-panel-title="Associar/Desassociar Colaboradores a uma Equipe"
          ba-panel-class="with-scroll">
-        <div>
+
           <div class="row">
             <div ng-show="successMsg" class="alert bg-success closeable" role="alert">
               <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -37,60 +37,87 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="horizontal-scroll">
-                <div class="form-group select-page-size-wrap ">
-                  <label>Linhas por página
-                    <select class="form-control selectpicker show-tick" title="Linhas por página" selectpicker
-                            ng-model="smartTablePageSize" ng-options="i for i in [5,10,15,20,25]">
-                    </select>
-                  </label>
-                </div>
-               
-                <table class="table" st-table="funcionarios">
-                  <thead>
-                  <tr class="sortable ">
-                    <th class="table-id">Associado?</th>
-                    <th st-sort="nome">Nome</th>
-                    <th st-sort="email">E-mail</th>
-                    <th st-sort="cargo">Cargo</th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th><input st-search="nome" placeholder="Buscar Nome" class="input-sm form-control search-input"
-                               type="search"/></th>      
-                    <th><input st-search="email" placeholder="Buscar E-mail" class="input-sm form-control search-input"
-                               type="search"/></th>
-                    <th><input st-search="cargo" placeholder="Buscar Cargo" class="input-sm form-control search-input"
-                               type="search"/></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="pointer-class" ng-repeat="componente in funcionarios track by $index" ng-click="setSelected(componente)" ng-class="{'selected-func': componente.selected}">
-                      <td>{{componente.selected ? "Sim" : "Não"}}</td>
-                      <td>{{componente.nome}} {{componente.sobrenome}}</td>
-                      <td>{{componente.email}}</td>
-                      <td>
-                        {{componente.sexoMasculino ? componente.alocacao.cargo.especificacao : componente.alocacao.cargo.nomeFeminino}}
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                    <td colspan="6" class="text-center">
-                      <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
-                    </td>
-                  </tr>
-                  </tfoot>
-                </table>
+          
+          <div class="separator"></div>
+
+          <h4 class="sub-header">Colaboradores Associados a Equipe <strong style="color: #334db7;"> {{equipe.nome}} </strong></h4>
+          <div class="row" ng-if="!arrayComponentes || arrayComponentes.length==0">
+            <div class="col-xs-12">
+              <div class="form-group">
+                <p><strong>A Equipe {{equipe.nome}} não possui componentes associados.</strong></p>
               </div>
             </div>
           </div>
-        </div>
-    </div>
+          <div class="row" ng-if="arrayComponentes && arrayComponentes.length>0">
+            <table class="table table-bordered" st-table="equipe.componentes">
+              <thead style="color: #fff; background: #162733; font-weight: bold; font-size: medium;">
+                <tr class="sortable">
+                  <th>Nome</th>
+                  <th>Matrícula</th>
+                  <th>Cargo</th>
+                  <th>Turno de Trabalho</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="itemComponente in arrayComponentes track by $index" ng-class="{'mdl-batida-inclusa': itemComponente.edited}">
+                  <td style="line-height: 45px !important;">{{itemComponente.nome}} {{itemComponente.sobrenome}}</td>
+                  <td style="line-height: 45px !important; color: #1166e8">{{itemComponente.matricula}}</td>
+                  <td style="line-height: 45px !important;">{{itemComponente.alocacao.cargo.especificacao}}</td>
+                  <td style="line-height: 45px !important;">{{itemComponente.alocacao.turno.descricao}}</td>
+                  <td> 
+                      <div class="btn-group" role="group" aria-label="acoes">
+                        <button title="Remover da Equipe" type="button" class="btn btn-xs btn-danger" ng-click="deletar($index)">
+                          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>  
+                        </button>
+                      </div>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+              <tr>
+                <td colspan="6" class="text-center">
+                  <div st-pagination="" st-items-by-page="smartTablePageSize" st-displayed-pages="5"></div>
+                </td>
+              </tr>
+              </tfoot>
+          </table>    
+       </div>             
+       <div class="separator"></div>
+
+       <div class="row"> 
+          <div class="col-sm-10">
+            <label style="color: #33aab7;">Pesquise pelo nome do Funcionário para associar a esta Equipe:</label>
+            <input type="text" ng-model="funcionario.selected" uib-typeahead="employee as employee.cbNameMatr for employee in employeesNames | filter:{name:$viewValue} | limitTo:8" class="form-control">
+          </div>
+          
+          <div class="col-sm-2" style="padding-top: 19px;">
+            <button id="idBtnSearch" type="button" class="btn btn-primary btn-with-icon" ng-click="search()">
+              <i class="ion-search"></i> Pesquisar
+            </button>
+          </div>
+       </div>
+       
+       <div class="row" style="margin: 10px;">
+          <div class="col-md-6" style="border: 2px solid #4b54bb; border-radius: 8px; padding: 5px; display: inline-block;">
+          
+            <h4 class="sub-header"><strong style="color: #334db7;">Informações do Funcionário</strong></h4>
+              <p>Equipe: {{funcionario.selected.equipe}}</p>
+              <p>Nome: {{funcionario.selected.name}} </p>
+              <p>Cargo: {{funcionario.selected.cargo}}</p>
+                <p class="muted">Matrícula: {{funcionario.selected.matricula}} </p>
+                <p class="muted">PIS: {{funcionario.selected.PIS}} </p>
+            
+          </div>
+          <div class="col-md-6" style="padding-top: 60px;">
+            <button title="Associar Funcionário" type="button" class="btn btn-lg btn-default" ng-click="localAssociate()" ng-disabled="!funcionario.selected">
+              <span style="color: #4bbb4b;" class="glyphicon glyphicon-ok" aria-hidden="true">ASSOCIAR</span>  
+            </button>
+          </div>
+       </div>
+
   </div>
   <div class="add-row-editable-table">
-    <button class="btn btn-primary" ng-click="associar()">Salvar</button>
+    <button class="btn btn-primary btn-lg" ng-click="associar()">Salvar e Enviar Alterações!</button>
   </div>
 </div>
